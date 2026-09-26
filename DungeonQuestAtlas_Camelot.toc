@@ -1,0 +1,158 @@
+## Interface: 16001
+# Interfaz de la beta 1.60.1 de WoW Forever. Comprobar en el cliente con
+# /dump select(4, GetBuildInfo()) y actualizar si cambia en el lanzamiento.
+## Version: 1.00
+## Author: Pirson
+## IconTexture: Interface\AddOns\DungeonQuestAtlas\img\logo_dqa
+## Title: Dungeon Quest Atlas |cff00ccffForever|r
+
+# https://warcraft.wiki.gg/wiki/Addon_Categories
+## Category: Quests & Leveling
+## Category-deDE: Quests & Stufenaufstieg
+## Category-esES: Misiones y subida de nivel
+## Category-esMX: Misiones y subida de nivel
+## Category-frFR: Quêtes et progression
+## Category-itIT: Missioni e livellamento
+## Category-koKR: 퀘스트 및 레벨업
+## Category-ptBR: Missões e evolução
+## Category-ruRU: Задания и прокачка
+## Category-zhCN: 任务与升级
+## Category-zhTW: 任務與升級
+## Category-plPL: Zadania i rozwój postaci
+## Category-svSE: Uppdrag och levling
+## Category-noNO: Oppdrag og nivåøkning
+## Category-csCZ: Úkoly a levelování
+## Category-nlNL: Quests en levelen
+## Category-roRO: Misiuni și avansare
+## Category-huHU: Küldetések és szintlépés
+## Category-elGR: Αποστολές και ανέβασμα επιπέδου
+## Category-ukUA: Завдання й прокачування
+## Category-daDK: Quests og levelering
+## Category-fiFI: Tehtävät ja tasonnousu
+## Category-skSK: Úlohy a levelovanie
+## Category-bgBG: Задачи и качване на нива
+## Category-hrHR: Zadaci i napredovanje
+## Category-srRS: Zadaci i napredovanje
+## Category-slSI: Naloge in napredovanje
+## Category-ltLT: Užduotys ir lygių kėlimas
+## Category-lvLV: Uzdevumi un līmeņu celšana
+## Category-etEE: Ülesanded ja tasemetõus
+## Category-idID: Misi dan naik level
+## Category-msMY: Misi dan naik tahap
+## Category-faIR: مأموریت‌ها و ارتقای سطح
+## Category-heIL: משימות ועליית רמות
+## Category-bnBD: কোয়েস্ট ও লেভেলিং
+## Category-urPK: کوئسٹس اور لیولنگ
+## Category-taIN: பணிகள் மற்றும் நிலை உயர்வு
+## Category-teIN: క్వెస్ట్‌లు మరియు లెవలింగ్
+## Category-trTR: Görevler ve seviye atlama
+## Category-jaJP: クエストとレベル上げ
+## Category-arSA: المهام ورفع المستوى
+## Category-hiIN: क्वेस्ट और लेवलिंग
+## Category-thTH: เควสและการเลเวล
+## Category-viVN: Nhiệm vụ và lên cấp
+
+## Notes: |cFF33CCFFEvery dungeon quest in WoW Forever: quest chains, rewards, bosses & loot, quest givers, map pins & instance entrances.|r
+## Notes-deDE: |cFF33CCFFAlle Dungeon-Quests von WoW Forever: Questreihen, Belohnungen, Bosse und Beute, Questgeber, Kartenmarkierungen und Instanzeingänge.|r
+## Notes-esES: |cFF33CCFFTodas las misiones de mazmorra de WoW Forever: cadenas, recompensas, jefes y botín, PNJ, pines en el mapa y entradas de instancia.|r
+## Notes-esMX: |cFF33CCFFTodas las misiones de mazmorra de WoW Forever: cadenas, recompensas, jefes y botín, PNJ, pines en el mapa y entradas de instancia.|r
+## Notes-frFR: |cFF33CCFFToutes les quêtes de donjon de WoW Forever : suites de quêtes, récompenses, boss et butin, donneurs de quête, repères sur la carte et entrées d'instance.|r
+## Notes-itIT: |cFF33CCFFTutte le missioni delle spedizioni di WoW Forever: catene, ricompense, boss e bottino, PNG, segnalini sulla mappa e ingressi delle istanze.|r
+## Notes-koKR: |cFF33CCFFWoW Forever의 모든 던전 퀘스트: 연계 퀘스트, 보상, 우두머리와 전리품, 제공자, 지도 표시, 인스턴스 입구.|r
+## Notes-ptBR: |cFF33CCFFTodas as missões de masmorra do WoW Forever: cadeias, recompensas, chefes e saque, quem entrega, marcadores no mapa e entradas de instância.|r
+## Notes-ruRU: |cFF33CCFFВсе задания подземелий WoW Forever: цепочки, награды, боссы и добыча, кто выдаёт, метки на карте и входы в подземелья.|r
+## Notes-zhCN: |cFF33CCFFWoW Forever 所有地下城任务：任务链、奖励、首领与掉落、任务发布者、地图标记和副本入口。|r
+## Notes-zhTW: |cFF33CCFFWoW Forever 所有地城任務：任務鏈、獎勵、首領與掉落、任務發布者、地圖標記與副本入口。|r
+## Notes-plPL: |cFF33CCFFWszystkie zadania lochów WoW Forever: łańcuchy, nagrody, bossowie i łupy, zleceniodawcy, znaczniki na mapie i wejścia do instancji.|r
+## Notes-svSE: |cFF33CCFFAlla dungeon-uppdrag i WoW Forever: uppdragskedjor, belöningar, bossar och byte, uppdragsgivare, kartmarkeringar och instansingångar.|r
+## Notes-noNO: |cFF33CCFFAlle dungeon-oppdrag i WoW Forever: oppdragskjeder, belønninger, bosser og bytte, oppdragsgivere, kartmarkører og instansinnganger.|r
+## Notes-csCZ: |cFF33CCFFVšechny úkoly z dungeonů WoW Forever: řetězce, odměny, bossové a kořist, zadavatelé, špendlíky na mapě a vchody do instancí.|r
+## Notes-nlNL: |cFF33CCFFAlle kerkerquests van WoW Forever: questreeksen, beloningen, bazen en buit, questgevers, kaartmarkeringen en instantie-ingangen.|r
+## Notes-roRO: |cFF33CCFFToate misiunile din temnițele WoW Forever: lanțuri, recompense, boși și pradă, cine le dă, marcaje pe hartă și intrările în instanțe.|r
+## Notes-huHU: |cFF33CCFFA WoW Forever összes kazamata-küldetése: küldetésláncok, jutalmak, bossok és zsákmány, küldetésadók, térképjelölők és bejáratok.|r
+## Notes-elGR: |cFF33CCFFΌλες οι αποστολές μπουντρουμιών του WoW Forever: αλυσίδες, ανταμοιβές, αρχηγοί και λάφυρα, ποιος τις δίνει, σημάδια στον χάρτη και είσοδοι.|r
+## Notes-ukUA: |cFF33CCFFУсі завдання підземель WoW Forever: ланцюжки, нагороди, боси та здобич, хто видає, мітки на мапі та входи до підземель.|r
+## Notes-daDK: |cFF33CCFFAlle dungeon-quests i WoW Forever: questkæder, belønninger, bosser og bytte, questgivere, kortmarkeringer og instansindgange.|r
+## Notes-fiFI: |cFF33CCFFKaikki WoW Foreverin luolastotehtävät: tehtäväketjut, palkkiot, pomot ja saaliit, tehtävänantajat, karttamerkit ja sisäänkäynnit.|r
+## Notes-skSK: |cFF33CCFFVšetky úlohy z dungeonov WoW Forever: reťazce, odmeny, bossovia a korisť, zadávatelia, špendlíky na mape a vchody do inštancií.|r
+## Notes-bgBG: |cFF33CCFFВсички задачи от подземията на WoW Forever: вериги, награди, босове и плячка, кой ги дава, маркери на картата и входове.|r
+## Notes-hrHR: |cFF33CCFFSvi zadaci iz tamnica u WoW Foreveru: lanci zadataka, nagrade, šefovi i plijen, davatelji zadataka, oznake na karti i ulazi.|r
+## Notes-srRS: |cFF33CCFFSvi zadaci iz tamnica u WoW Foreveru: lanci zadataka, nagrade, šefovi i plen, davaoci zadataka, oznake na mapi i ulazi.|r
+## Notes-slSI: |cFF33CCFFVse naloge iz ječ v WoW Forever: verige nalog, nagrade, šefi in plen, dajalci nalog, oznake na zemljevidu in vhodi.|r
+## Notes-ltLT: |cFF33CCFFVisos WoW Forever požemių užduotys: užduočių grandinės, apdovanojimai, bosai ir grobis, užduočių davėjai, žymės žemėlapyje ir įėjimai.|r
+## Notes-lvLV: |cFF33CCFFVisi WoW Forever pazemju uzdevumi: uzdevumu ķēdes, balvas, bosi un laupījums, uzdevumu devēji, kartes atzīmes un ieejas.|r
+## Notes-etEE: |cFF33CCFFKõik WoW Foreveri koopaülesanded: ülesandeahelad, auhinnad, bossid ja saak, ülesande andjad, kaardimärgid ja sissepääsud.|r
+## Notes-idID: |cFF33CCFFSemua misi dungeon WoW Forever: rangkaian misi, hadiah, bos dan jarahan, pemberi misi, penanda peta, dan pintu masuk instance.|r
+## Notes-msMY: |cFF33CCFFSemua misi kurungan WoW Forever: rantaian misi, ganjaran, bos dan rampasan, pemberi misi, penanda peta dan pintu masuk instance.|r
+## Notes-faIR: |cFF33CCFFهمه مأموریت‌های سیاهچال WoW Forever: زنجیره‌ها، پاداش‌ها، رئیس‌ها و غنیمت، مأموریت‌دهنده، نشانگرهای نقشه و ورودی‌ها.|r
+## Notes-heIL: |cFF33CCFFכל משימות המבוכים של WoW Forever: שרשראות משימות, פרסים, בוסים ושלל, נותני משימות, סימונים במפה וכניסות.|r
+## Notes-bnBD: |cFF33CCFFWoW Forever-এর সব ডানজন কোয়েস্ট: কোয়েস্ট শৃঙ্খল, পুরস্কার, বস ও লুট, কোয়েস্টদাতা, ম্যাপ পিন ও প্রবেশপথ।|r
+## Notes-urPK: |cFF33CCFFWoW Forever کے تمام ڈنجن کوئسٹس: کوئسٹ سلسلے، انعامات، باس اور لوٹ، کوئسٹ دینے والے، نقشے کے نشان اور داخلی راستے۔|r
+## Notes-taIN: |cFF33CCFFWoW Forever-இன் அனைத்து நிலவறை பணிகள்: பணித் தொடர்கள், வெகுமதிகள், தலைவர்கள் மற்றும் கொள்ளை, பணி வழங்குபவர், வரைபடக் குறிகள், நுழைவாயில்கள்.|r
+## Notes-teIN: |cFF33CCFFWoW Forever లోని అన్ని డంజన్ క్వెస్ట్‌లు: క్వెస్ట్ గొలుసులు, బహుమతులు, బాస్‌లు మరియు లూట్, క్వెస్ట్ ఇచ్చేవారు, మ్యాప్ పిన్‌లు, ప్రవేశ ద్వారాలు.|r
+## Notes-trTR: |cFF33CCFFWoW Forever'daki tüm zindan görevleri: görev zincirleri, ödüller, bosslar ve ganimet, görevi verenler, harita işaretleri ve zindan girişleri.|r
+## Notes-jaJP: |cFF33CCFFWoW Forever の全ダンジョンクエスト：クエストチェーン、報酬、ボスとドロップ、クエストをくれるNPC、マップのピン、入口。|r
+## Notes-arSA: |cFF33CCFFكل مهام زنزانات WoW Forever: سلاسل المهام والمكافآت والزعماء والغنائم ومانحو المهام ودبابيس الخريطة ومداخل الزنزانات.|r
+## Notes-hiIN: |cFF33CCFFWoW Forever के सभी डंजन क्वेस्ट: क्वेस्ट श्रृंखलाएँ, इनाम, बॉस और लूट, क्वेस्ट देने वाले, मैप पिन और प्रवेश द्वार।|r
+## Notes-thTH: |cFF33CCFFเควสดันเจี้ยนทั้งหมดของ WoW Forever: สายเควส รางวัล บอสและของดรอป ผู้ให้เควส หมุดบนแผนที่ และทางเข้า|r
+## Notes-viVN: |cFF33CCFFMọi nhiệm vụ hầm ngục của WoW Forever: chuỗi nhiệm vụ, phần thưởng, trùm và vật phẩm rơi, người giao, ghim bản đồ và lối vào phó bản.|r
+
+## SavedVariables: DungeonQuestAtlasDB, DungeonQuestAtlasCollectorDB
+## SavedVariablesPerCharacter: DungeonQuestAtlasCharDB
+## OptionalDeps: TomTom, AtlasLoot, Questie, QuestieDB
+## X-License: MIT
+
+# Solo WoW Forever: el sufijo _Camelot es el game type que busca ese cliente, y
+# sin un .toc generico ningun otro cliente lista el addon.
+
+Libs/embeds.xml
+
+Locales/enUS.lua
+Locales/esES.lua
+Locales/deDE.lua
+Locales/frFR.lua
+Locales/itIT.lua
+Locales/ptBR.lua
+Locales/ruRU.lua
+Locales/koKR.lua
+Locales/zhCN.lua
+Locales/zhTW.lua
+Locales/plPL.lua
+Locales/svSE.lua
+Locales/noNO.lua
+Locales/trTR.lua
+Locales/jaJP.lua
+Locales/arSA.lua
+Locales/hiIN.lua
+Locales/thTH.lua
+Locales/viVN.lua
+Locales/csCZ.lua
+
+Data/Dungeons.lua
+Data/Quests.lua
+Data/Bosses.lua
+Data/Places.lua
+Data/QuestText.lua
+
+Core/Core.lua
+Core/QuestStatus.lua
+Core/Waypoints.lua
+Core/Journal.lua
+Core/Navigation.lua
+Core/Collector.lua
+Core/Integrations.lua
+
+UI/Theme.lua
+UI/List.lua
+UI/Items.lua
+UI/DungeonList.lua
+UI/QuestPanel.lua
+UI/BossPanel.lua
+UI/OverviewPanel.lua
+UI/MainFrame.lua
+UI/Minimap.lua
+UI/Arrow.lua
+UI/MapPins.lua
+UI/MapPins.xml
+UI/About.lua
+UI/Options.lua

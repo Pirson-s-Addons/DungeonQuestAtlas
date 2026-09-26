@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Pin de un marcador en el mapa del mundo (UI/MapPins.lua): solo la gema.
+	     Sin bloque de scripts: el mapa pone OnEnter/OnLeave/OnMouseUp y llama a OnLoad
+	     por su cuenta, y comprueba con assert que la plantilla no los traiga. -->
+	<Frame name="DungeonQuestAtlasPinTemplate" mixin="DungeonQuestAtlasPinMixin" enableMouse="true" virtual="true">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Gem" file="Interface\AddOns\DungeonQuestAtlas\img\pin_dqa" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

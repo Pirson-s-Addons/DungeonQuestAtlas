@@ -1,0 +1,352 @@
+-- Dungeon Quest Atlas Forever: todas las misiones de mazmorra de WoW Forever
+-- en una ventana estilo AtlasLoot, con su texto, el PNJ que las da, pines en el
+-- mapa y la entrada de cada instancia.
+--
+-- Este fichero: base de datos guardada, acceso a los datos, eventos y /dqa.
+-- Forever usa la API moderna (como Retail 12.x) y WOW_PROJECT_ID == 1, asi que
+-- nada se decide por WOW_PROJECT_ID: cada API se comprueba antes de usarla.
+
+local ADDON_NAME, ns = ...
+local L = ns.L
+
+DungeonQuestAtlas = ns -- objeto global del addon (para otros addons y /dump)
+
+local DB_VERSION = 2
+local DEFAULTS = {
+    minimap = { hide = false },
+    scale = 1,
+    hideCompleted = false,
+    autoFaction = true,
+    waypointMode = "own", -- "own" (flecha y marcadores del addon), "native" (pin del juego), "tomtom"
+    arrow = {},           -- posicion de la flecha
+    pinSize = 16,         -- tamano del marcador en el mapa y el minimapa (px)
+    wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
+    collect = false,
+    debug = false,
+    window = {},
+}
+local CHAR_DEFAULTS = { dungeon = nil, tab = "quests", markers = {}, target = nil }
+ns.DEFAULTS = DEFAULTS
+
+ns.PREFIX = "|cffd597ffDungeon Quest Atlas|r: "
+ns.LOCALE = GetLocale() == "esMX" and "esES" or GetLocale()
+
+function ns.Print(msg)
+    print(ns.PREFIX .. msg)
+end
+
+function ns.Debug(fmt, ...)
+    if ns.db and ns.db.debug then print("|cff888888[DQA]|r " .. fmt:format(...)) end
+end
+
+local function CopyDefaults(src, dst)
+    for k, v in pairs(src) do
+        if type(v) == "table" then
+            if type(dst[k]) ~= "table" then dst[k] = {} end
+            CopyDefaults(v, dst[k])
+        elseif dst[k] == nil then
+            dst[k] = v
+        end
+    end
+    return dst
+end
+
+-- Migraciones: cada salto de dbVersion anade aqui su paso
+function ns.MigrateDB(db, defaults)
+    db = db or {}
+    local v = db.dbVersion or DB_VERSION
+    if v < 2 and db.preferTomTom ~= nil then
+        -- v2: "Preferir TomTom" pasa a ser el modo de guia; por defecto, la propia
+        db.waypointMode = db.preferTomTom and "tomtom" or "own"
+        db.preferTomTom = nil
+    end
+    db = CopyDefaults(defaults, db)
+    db.dbVersion = DB_VERSION
+    return db
+end
+
+-- En su sitio: LibDBIcon guarda la referencia a db.minimap
+function ns.ResetOptions()
+    for k, v in pairs(DEFAULTS) do
+        if type(v) ~= "table" then ns.db[k] = v end
+    end
+    ns.db.minimap.hide = false
+end
+
+-- ==========================================
+-- DATOS
+-- ==========================================
+-- Mazmorras ordenadas por nivel minimo; cada mision sabe en que mazmorras esta.
+
+local function IndexData()
+    table.sort(ns.Dungeons, function(a, b)
+        if a.minLevel ~= b.minLevel then return a.minLevel < b.minLevel end
+        return a.maxLevel < b.maxLevel
+    end)
+    ns.DungeonByKey = {}
+    for _, d in ipairs(ns.Dungeons) do ns.DungeonByKey[d.key] = d end
+    -- chain = { paso1, paso2, ... } (Wowhead): los pasos de antes son requisitos
+    for id, q in pairs(ns.Quests) do
+        if type(q.chain) == "table" then
+            q.prereqs = {}
+            for _, step in ipairs(q.chain) do
+                if step == id then break end
+                q.prereqs[#q.prereqs + 1] = step
+            end
+        end
+    end
+end
+IndexData()
+
+local function Collected()
+    return DungeonQuestAtlasCollectorDB or {}
+end
+
+-- Nombre en el idioma del cliente: lo da el juego si se conoce la instancia
+function ns.DungeonName(d)
+    local name = d.instanceID and GetRealZoneText and GetRealZoneText(d.instanceID)
+    if not name or name == "" then return d.name end -- el ingles ya lleva "Lower"/"Upper"
+    if d.part then name = name .. " (" .. L[d.part] .. ")" end
+    return name
+end
+
+-- Texto de mision: lo recogido en este cliente, luego Data/QuestText.lua
+function ns.QuestText(id)
+    local mine = Collected().quests and Collected().quests[id]
+    mine = mine and mine.text and mine.text[ns.LOCALE]
+    return mine or ns.QuestTextData.active[id] or ns.QuestTextData.fallback[id] or {}
+end
+
+local requested = {}
+function ns.QuestTitle(id)
+    local text = ns.QuestText(id)
+    if text.title then return text.title end
+    local title = C_QuestLog and C_QuestLog.GetTitleForQuestID and C_QuestLog.GetTitleForQuestID(id)
+    if title and title ~= "" then return title end
+    -- El servidor aun no lo ha mandado: se pide y QUEST_DATA_LOAD_RESULT refresca
+    if not requested[id] and C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+        requested[id] = true
+        C_QuestLog.RequestLoadQuestByID(id)
+    end
+    return L.QUEST_FALLBACK:format(id)
+end
+
+-- Objetivos: lo recogido; si no, el tooltip de la mision que da el juego (en
+-- su idioma, sin la linea del titulo); si el juego aun no la tiene, nil.
+function ns.QuestObjective(id)
+    local text = ns.QuestText(id)
+    if text.obj then return text.obj end
+    local info = C_TooltipInfo and C_TooltipInfo.GetHyperlink and C_TooltipInfo.GetHyperlink("quest:" .. id)
+    local lines = {}
+    for i, line in ipairs(info and info.lines or {}) do
+        local left = ns.PlainText(line.leftText)
+        if i > 1 and left and left ~= "" then
+            lines[#lines + 1] = left
+        end
+    end
+    if #lines > 0 then return table.concat(lines, "\n") end
+end
+
+-- Recompensas: lo que diga el juego (ya ajustado a tu nivel) o lo observado en Forever
+function ns.QuestXP(q, id)
+    local xp = GetQuestLogRewardXP and GetQuestLogRewardXP(id)
+    if xp and xp > 0 then return xp end
+    return q.xp
+end
+
+function ns.QuestMoney(q, id)
+    local money = GetQuestLogRewardMoney and GetQuestLogRewardMoney(id)
+    if money and money > 0 then return money end
+    return q.money
+end
+
+function ns.QuestLevel(q, id)
+    if q.level then return q.level end
+    local level = C_QuestLog and C_QuestLog.GetQuestDifficultyLevel and C_QuestLog.GetQuestDifficultyLevel(id)
+    if level and level > 0 then return level end
+end
+
+-- PNJ u objeto con el que empieza ("starts") o termina ("ends") una mision.
+-- Lista de { name, mapID, x, y } (sin mapID: empieza con un objeto del inventario).
+-- Orden: lo recogido en el juego, Data/Places.lua (Wowhead Forever), Questie.
+function ns.QuestPlaces(id, which)
+    local mine = Collected().quests and Collected().quests[id]
+    mine = mine and mine[which == "starts" and "giver" or "ender"]
+    if mine then return { mine }, true end
+    local list = {}
+    for _, key in ipairs((ns.Quests[id] or {})[which] or {}) do
+        if ns.Places[key] then list[#list + 1] = ns.Places[key] end
+    end
+    if #list > 0 then return list, false end
+    local questie = ns.QuestiePlace and ns.QuestiePlace(id, which)
+    return { questie }, false
+end
+
+-- Nombre del PNJ en el idioma del cliente (tooltip del juego, si lo tiene en
+-- cache); si no, el ingles de Data/Places.lua.
+-- Texto del juego que se puede usar. Forever (como Retail 12) marca algunos
+-- como "secretos": ni se pueden comparar; se tratan como si no hubiera texto.
+function ns.PlainText(value)
+    if issecretvalue and issecretvalue(value) then return nil end -- antes de compararlo con nada
+    return value
+end
+
+local npcNames = {}
+function ns.PlaceName(p)
+    -- Misiones que empiezan con un objeto: su nombre lo da el juego
+    if p.itemID then
+        local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(p.itemID)
+        return name or p.name or L.UNKNOWN
+    end
+    if p.npcID and npcNames[p.npcID] == nil and C_TooltipInfo and C_TooltipInfo.GetHyperlink then
+        local info = C_TooltipInfo.GetHyperlink(("unit:Creature-0-0-0-0-%d-0000000000"):format(p.npcID))
+        local line = info and info.lines and info.lines[1]
+        local raw = line and line.leftText
+        -- Secreto: false, no se vuelve a pedir. Sin cargar aun: se pide otra vez luego.
+        if issecretvalue and issecretvalue(raw) then
+            npcNames[p.npcID] = false
+        elseif raw and raw ~= "" then
+            npcNames[p.npcID] = raw
+        end
+    end
+    return (p.npcID and npcNames[p.npcID]) or p.name or L.UNKNOWN
+end
+
+-- Donde esta la entrada: la del mapa del juego, lo recogido o Data/Dungeons.lua
+function ns.Entrance(d)
+    local game = ns.GameEntrance and ns.GameEntrance(d)
+    if game then return game, true end
+    local mine = Collected().entrances and Collected().entrances[d.key]
+    if mine then return mine, true end
+    return d.entrance, d.verified
+end
+
+-- Wowhead en el idioma del cliente (si lo tiene) o en ingles
+local WOWHEAD_LANG = { deDE = "de", esES = "es", esMX = "es", frFR = "fr", itIT = "it", ptBR = "pt",
+    ruRU = "ru", koKR = "ko", zhCN = "cn", zhTW = "tw" }
+function ns.WowheadURL(id)
+    local lang = ns.db.wowheadLang ~= "en" and WOWHEAD_LANG[GetLocale()]
+    return "https://www.wowhead.com/forever/" .. (lang and (lang .. "/") or "") .. "quest=" .. id
+end
+
+function ns.IsVerified(id)
+    local q = ns.Quests[id]
+    local mine = Collected().quests and Collected().quests[id]
+    return (q and q.verified) or mine ~= nil
+end
+
+-- ==========================================
+-- REFRESCO (con throttle)
+-- ==========================================
+-- QUEST_LOG_UPDATE llega a rafagas: se agrupan en un solo refresco.
+
+local pending = false
+function ns.RequestRefresh()
+    if pending then return end
+    pending = true
+    C_Timer.After(0.5, function()
+        pending = false
+        ns.Refresh()
+    end)
+end
+
+function ns.Refresh()
+    if ns.RefreshUI then ns.RefreshUI() end
+    if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end
+end
+
+-- ==========================================
+-- EVENTOS
+-- ==========================================
+
+local events = {}
+local frame = CreateFrame("Frame")
+frame:SetScript("OnEvent", function(_, event, ...) events[event](...) end)
+local function On(event, fn)
+    events[event] = fn
+    frame:RegisterEvent(event)
+end
+
+On("PLAYER_LOGIN", function()
+    ns.db = ns.MigrateDB(DungeonQuestAtlasDB, DEFAULTS)
+    DungeonQuestAtlasDB = ns.db
+    ns.char = ns.MigrateDB(DungeonQuestAtlasCharDB, CHAR_DEFAULTS)
+    DungeonQuestAtlasCharDB = ns.char
+    DungeonQuestAtlasCollectorDB = DungeonQuestAtlasCollectorDB or {}
+    DungeonQuestAtlasCollectorDB.quests = DungeonQuestAtlasCollectorDB.quests or {}
+    DungeonQuestAtlasCollectorDB.entrances = DungeonQuestAtlasCollectorDB.entrances or {}
+
+    if ns.CreateOptions then ns.CreateOptions() end
+    if ns.CreateMinimapButton then ns.CreateMinimapButton() end
+    if ns.SetupMapPins then ns.SetupMapPins() end
+    if ns.Target() and ns.OnMarkersChanged then ns.OnMarkersChanged() end
+end)
+
+for _, event in ipairs({ "QUEST_TURNED_IN", "QUEST_ACCEPTED", "QUEST_REMOVED", "QUEST_LOG_UPDATE",
+    "QUEST_DATA_LOAD_RESULT", "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP" }) do
+    On(event, ns.RequestRefresh)
+end
+
+On("QUEST_DETAIL", function()
+    if ns.db.collect then ns.CollectQuestDetail() end
+end)
+
+-- Ventana de entrega: el PNJ con el que termina
+On("QUEST_COMPLETE", function()
+    if ns.db.collect then ns.CollectQuestEnder() end
+end)
+
+-- ==========================================
+-- COMANDOS
+-- ==========================================
+
+local function Help()
+    ns.Print(L.COMMANDS)
+    for _, entry in ipairs(ns.CommandList()) do print("  |cffffff00" .. entry[1] .. "|r  " .. entry[2]) end
+end
+
+function ns.CommandList()
+    return {
+        { "/dqa", L.CMD_TOGGLE },
+        { "/dqa config", L.CMD_CONFIG },
+        { "/dqa collect on|off", L.CMD_COLLECT },
+        { "/dqa export", L.CMD_EXPORT },
+        { "/dqa entrance <key>", L.CMD_ENTRANCE },
+        { "/dqa clear", L.CMD_CLEAR },
+        { "/dqa debug", L.CMD_DEBUG },
+    }
+end
+
+function ns.HandleCommand(msg)
+    local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
+    cmd = cmd:lower()
+    if cmd == "" then
+        ns.ToggleMainFrame()
+    elseif cmd == "config" or cmd == "options" then
+        ns.OpenOptions()
+    elseif cmd == "collect" then
+        local arg = rest:lower()
+        if arg == "on" or arg == "off" then
+            ns.db.collect = arg == "on"
+        else
+            ns.db.collect = not ns.db.collect
+        end
+        ns.Print(ns.db.collect and L.COLLECT_ON or L.COLLECT_OFF)
+    elseif cmd == "export" then
+        ns.ShowExport()
+    elseif cmd == "entrance" then
+        ns.SaveEntrance((rest:gsub("[\"']", "")))
+    elseif cmd == "clear" then
+        ns.ClearMarkers()
+        ns.Print(L.MARKERS_CLEARED)
+    elseif cmd == "debug" then
+        ns.db.debug = not ns.db.debug
+        ns.Print(ns.db.debug and L.DEBUG_ON or L.DEBUG_OFF)
+    else
+        Help()
+    end
+end
+
+SLASH_DUNGEONQUESTATLAS1 = "/dqa"
+SLASH_DUNGEONQUESTATLAS2 = "/dungeonquest"
+SlashCmdList.DUNGEONQUESTATLAS = ns.HandleCommand
