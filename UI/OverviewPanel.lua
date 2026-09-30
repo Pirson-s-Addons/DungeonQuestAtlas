@@ -5,7 +5,7 @@ local L = ns.L
 -- MAZMORRA (en el libro)
 -- ==========================================
 -- Pagina izquierda: nivel, tipo, zona, progreso, jefes y los botones de la
--- entrada y AtlasLoot. Pagina derecha: la ilustracion y la historia de la
+-- entrada, el mapa y AtlasLoot. Pagina derecha: la ilustracion y la historia de la
 -- mazmorra, del Diario del juego (Core/Journal.lua), como la pagina de
 -- mazmorra del propio Diario.
 
@@ -33,9 +33,18 @@ function ns.CreateOverviewPanel(left, right)
         if not point then return L.NO_ENTRANCE:format(d and d.key or "") end
         return L.MARK_ENTRANCE_TOOLTIP .. "\n|cffffffff" .. ns.ZoneName(point.mapID) .. " " .. ns.FormatCoords(point) .. "|r"
     end)
+    local map = CreateFrame("Button", nil, left, "UIPanelButtonTemplate")
+    map:SetSize(200, 26)
+    map:SetPoint("TOPLEFT", entrance, "BOTTOMLEFT", 0, -6)
+    map:SetText(L.VIEW_MAP)
+    if map.SetMotionScriptsWhileDisabled then map:SetMotionScriptsWhileDisabled(true) end -- tooltip aunque no haya mapa
+    map:SetScript("OnClick", function() ns.ShowDungeonMap(panel.dungeon) end)
+    ns.AddTooltip(map, function()
+        return ns.DungeonMaps(panel.dungeon) and L.VIEW_MAP_TOOLTIP or L.NO_MAP
+    end)
     local loot = CreateFrame("Button", nil, left, "UIPanelButtonTemplate")
     loot:SetSize(200, 26)
-    loot:SetPoint("TOPLEFT", entrance, "BOTTOMLEFT", 0, -6)
+    loot:SetPoint("TOPLEFT", map, "BOTTOMLEFT", 0, -6)
     loot:SetText(L.VIEW_LOOT)
     loot:SetScript("OnClick", function() ns.OpenAtlasLoot(panel.dungeon) end)
     ns.AddTooltip(loot, L.VIEW_LOOT_TOOLTIP)
@@ -89,6 +98,7 @@ function ns.CreateOverviewPanel(left, right)
         if point then lines[#lines + 1] = PORTAL .. ns.ZoneName(point.mapID) .. " " .. ns.FormatCoords(point) end
         facts:SetText(table.concat(lines, "\n"))
         entrance:SetEnabled(point ~= nil)
+        map:SetEnabled(ns.DungeonMaps(d) ~= nil)
         loot:SetShown(ns.AtlasLootAvailable())
 
         ns.SetDungeonArt(art, d, "lore")

@@ -35,12 +35,13 @@
 - **Quest chains**: every step of the chain with its status, so you know what to do first. Click a step to jump to it.
 - **Objectives and rewards**: objectives in your game's language, reward cards with icon, quality color and the game's own tooltip (hold Shift to compare), the choice rewards and the ones you always get, XP and money. The new Forever rewards are included.
 - **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room.
-- **Dungeon Journal look**: the game's own journal book, side tabs, boss buttons and loot rows, with each dungeon's artwork and lore taken from your game client (nothing bundled).
+- **Dungeon Journal look**: the game's own journal book, side tabs, boss buttons and loot rows, with each dungeon's artwork and lore taken from your game client.
 - Scarlet Monastery, Dire Maul and Stratholme split into wings.
 - **Quest start and end**: the NPC or object that gives the quest and the one where you turn it in, with zone and coordinates, and **Mark start** / **Mark end** buttons. If the NPC is inside the dungeon, the entrance is marked.
 - **Instance entrance** of every dungeon, straight from the game's own world map, with a **Mark entrance on map** button (also the portal icon next to each dungeon).
 - **Built-in guidance arrow**, no TomTom needed: an on-screen arrow that turns as you move, with the distance, markers on the world map and on the minimap, and it clears itself when you arrive. You can also use the game's own map pin or **TomTom** instead.
 - **Wowhead link** for every quest, in the window's language, ready to copy with Ctrl+C.
+- **Dungeon maps** of the classic dungeons (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic, every floor, and each boss marked with its portrait. Click a boss to jump to its loot.
 - **AtlasLoot**: a "View loot" button when AtlasLoot is loaded. **Questie**: used as a fallback for quest givers the addon doesn't know yet.
 - Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde) and a search box (dungeon or boss name).
 - **Page-turn animation** with sound when you change dungeon or tab (can be turned off).
@@ -109,12 +110,13 @@ Quest descriptions are **collected in the game**:
 - **Cadenas de misiones**: todos los pasos de la cadena con su estado, para saber qué hacer antes. Clic en un paso para ir a él.
 - **Objetivos y recompensas**: objetivos en el idioma de tu juego, tarjetas de recompensa con icono, color de calidad y el tooltip del propio juego (Mayús para comparar), las que se eligen y las que se reciben siempre, experiencia y dinero. Incluye las recompensas nuevas de Forever.
 - **Jefes y botín** de todas las mazmorras: el modelo 3D del jefe (arrástralo para girarlo), nivel, raros y cada objeto con su probabilidad. Mayús+clic enlaza el objeto y Ctrl+clic abre el probador.
-- **Aspecto del Diario de mazmorras**: el libro del propio Diario, sus pestañas laterales, botones de jefe y filas de botín, con el arte y la historia de cada mazmorra sacados de tu cliente (nada empaquetado).
+- **Aspecto del Diario de mazmorras**: el libro del propio Diario, sus pestañas laterales, botones de jefe y filas de botín, con el arte y la historia de cada mazmorra sacados de tu cliente.
 - Monasterio Escarlata, La Masacre y Stratholme separados por alas.
 - **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona, coordenadas y botones **Marcar inicio** / **Marcar final**. Si el PNJ está dentro de la mazmorra, se marca la entrada.
 - **Entrada de cada mazmorra**, sacada del propio mapa del juego, con botón **Marcar entrada en el mapa** (también el icono de portal junto a cada mazmorra).
 - **Flecha de guía propia**, sin necesidad de TomTom: una flecha en pantalla que gira mientras te mueves, con la distancia, marcadores en el mapa del mundo y en el minimapa, y que se quita sola al llegar. También puedes usar el pin del mapa del juego o **TomTom**.
 - **Enlace de Wowhead** de cada misión, en el idioma de la ventana, listo para copiar con Ctrl+C.
+- **Mapas de mazmorra** de las mazmorras clásicas (WoW Forever no tiene): botón **Ver mapa** con los mapas de Blizzard de WoW Classic, cada planta y cada jefe marcado con su retrato. Clic en un jefe para ir a su botín.
 - **AtlasLoot**: botón "Ver botín" si está cargado. **Questie**: se usa de respaldo para los PNJ que el addon aún no conoce.
 - Filtros: mi nivel, clásicas / nuevas de Forever, **botones de facción** (ambas, Alianza, Horda) y buscador (por mazmorra o por jefe).
 - **Animación de pasar página** con sonido al cambiar de mazmorra o de pestaña (se puede desactivar).

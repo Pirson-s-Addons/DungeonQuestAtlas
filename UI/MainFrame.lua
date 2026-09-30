@@ -340,6 +340,15 @@ function ns.ShowQuest(id)
     ui.panels.quests:SelectQuest(id)
 end
 
+-- Salta a un jefe (chinchetas del mapa de la mazmorra)
+function ns.ShowBoss(d, index)
+    if not frame then CreateMainFrame() end
+    ns.char.dungeon = d.key
+    frame:Show()
+    ShowTab("bosses")
+    ui.panels.bosses:SelectBoss(index)
+end
+
 -- ==========================================
 -- CAJA PARA COPIAR (Wowhead y /dqa export)
 -- ==========================================
