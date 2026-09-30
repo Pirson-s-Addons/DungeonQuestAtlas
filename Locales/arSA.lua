@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- العربية (arSA)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "arSA" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("arSA")
 
 L["VERSION"] = "الإصدار:"
 L["AUTHOR"] = "المؤلف:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "وضع الجمع"
 L["COLLECT_TOOLTIP"] = "يحفظ نص ومانح وموقع كل مهمة تفتحها. صدّرها بـ /dqa export."
 L["DEBUG"] = "رسائل التصحيح"
 L["DEBUG_TOOLTIP"] = "يكتب في الدردشة ما تفعله الإضافة."
+L["SEARCH"] = "بحث"
 L["SEARCH_TOOLTIP"] = "يصفّي الزنزانات حسب الاسم أو الزعيم."
 L["MY_RANGE"] = "مستواي"
 L["MY_RANGE_TOOLTIP"] = "الزنزانات المناسبة لمستواك فقط."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "المستوى:"
 L["STATUS_COMPLETED"] = "مكتملة"
-L["STATUS_IN_LOG"] = "في سجل مهامك"
+L["STATUS_IN_LOG"] = "قيد التنفيذ"
 L["STATUS_AVAILABLE"] = "متاحة"
 L["STATUS_BLOCKED"] = "مقفلة"
+L["STATUS_READY"] = "جاهزة للتسليم"
+L["REQUIRES_LEVEL"] = "يتطلب المستوى %d"
+L["PAGE_TURN"] = "حركة تقليب الصفحة"
+L["PAGE_TURN_TOOLTIP"] = "يقلب الكتاب الصفحة مع صوتها عند تغيير الزنزانة أو التبويب."
+L["CLICK_DETAILS"] = "انقر لعرض التفاصيل"
+L["LANGUAGE_TOOLTIP"] = "لغة هذه النافذة. أسماء المهام والشخصيات والمناطق والأغراض تأتي من اللعبة وتبقى بلغتها."
 L["BLOCKED_LEVEL"] = "تتطلب المستوى %d"
 L["BLOCKED_PREREQ"] = "مهمة سابقة ناقصة"
 L["STARTS"] = "البداية:"

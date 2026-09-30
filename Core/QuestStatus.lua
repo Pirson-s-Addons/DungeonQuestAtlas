@@ -6,9 +6,12 @@ local L = ns.L
 -- ==========================================
 
 ns.STATUS_COMPLETED = "COMPLETED"
+ns.STATUS_READY = "READY" -- en el registro con los objetivos hechos: falta entregarla
 ns.STATUS_IN_LOG = "IN_LOG"
 ns.STATUS_AVAILABLE = "AVAILABLE"
 ns.STATUS_BLOCKED = "BLOCKED"
+-- Orden de la leyenda: el de una mision de principio a fin
+ns.STATUS_ORDER = { "AVAILABLE", "IN_LOG", "READY", "COMPLETED", "BLOCKED" }
 
 local function IsCompleted(id)
     return C_QuestLog.IsQuestFlaggedCompleted(id) and true or false
@@ -18,10 +21,14 @@ local function IsInLog(id)
     return C_QuestLog.GetLogIndexForQuestID(id) ~= nil
 end
 
+local function IsReady(id)
+    return C_QuestLog.IsComplete and C_QuestLog.IsComplete(id) and true or false
+end
+
 -- Devuelve el estado y, si esta bloqueada, el motivo
 function ns.QuestStatus(id)
     if IsCompleted(id) then return ns.STATUS_COMPLETED end
-    if IsInLog(id) then return ns.STATUS_IN_LOG end
+    if IsInLog(id) then return IsReady(id) and ns.STATUS_READY or ns.STATUS_IN_LOG end
     local q = ns.Quests[id] or {}
     for _, pre in ipairs(q.prereqs or {}) do
         if not IsCompleted(pre) then return ns.STATUS_BLOCKED, L.BLOCKED_PREREQ end

@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- हिन्दी (hiIN)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "hiIN" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("hiIN")
 
 L["VERSION"] = "संस्करण:"
 L["AUTHOR"] = "लेखक:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "संग्रह मोड"
 L["COLLECT_TOOLTIP"] = "हर खोले गए क्वेस्ट का पाठ, देने वाला और स्थिति सहेजता है। /dqa export से निर्यात करें।"
 L["DEBUG"] = "डीबग संदेश"
 L["DEBUG_TOOLTIP"] = "ऐडऑन क्या करता है, चैट में लिखता है।"
+L["SEARCH"] = "खोजें"
 L["SEARCH_TOOLTIP"] = "डंजन को नाम या बॉस के अनुसार छाँटता है।"
 L["MY_RANGE"] = "मेरा स्तर"
 L["MY_RANGE_TOOLTIP"] = "सिर्फ़ आपके स्तर के डंजन।"
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "स्तर:"
 L["STATUS_COMPLETED"] = "पूरा"
-L["STATUS_IN_LOG"] = "आपके क्वेस्ट लॉग में"
+L["STATUS_IN_LOG"] = "प्रगति में"
 L["STATUS_AVAILABLE"] = "उपलब्ध"
 L["STATUS_BLOCKED"] = "बंद"
+L["STATUS_READY"] = "जमा करने के लिए तैयार"
+L["REQUIRES_LEVEL"] = "स्तर %d आवश्यक"
+L["PAGE_TURN"] = "पन्ना पलटने का एनिमेशन"
+L["PAGE_TURN_TOOLTIP"] = "कालकोठरी या टैब बदलने पर किताब आवाज़ के साथ पन्ना पलटती है।"
+L["CLICK_DETAILS"] = "विवरण देखने के लिए क्लिक करें"
+L["LANGUAGE_TOOLTIP"] = "इस विंडो की भाषा। क्वेस्ट, NPC, ज़ोन और आइटम के नाम खेल से आते हैं और उसी की भाषा में रहते हैं।"
 L["BLOCKED_LEVEL"] = "स्तर %d चाहिए"
 L["BLOCKED_PREREQ"] = "पिछला क्वेस्ट बाकी"
 L["STARTS"] = "शुरुआत:"

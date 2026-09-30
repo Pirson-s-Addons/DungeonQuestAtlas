@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- 한국어 (koKR)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "koKR" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("koKR")
 
 L["VERSION"] = "버전:"
 L["AUTHOR"] = "제작자:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "수집 모드"
 L["COLLECT_TOOLTIP"] = "여는 모든 퀘스트의 내용, 제공자, 위치를 저장합니다. /dqa export로 내보냅니다."
 L["DEBUG"] = "디버그 메시지"
 L["DEBUG_TOOLTIP"] = "애드온이 하는 일을 대화창에 씁니다."
+L["SEARCH"] = "검색"
 L["SEARCH_TOOLTIP"] = "이름이나 우두머리로 던전을 거릅니다."
 L["MY_RANGE"] = "내 레벨"
 L["MY_RANGE_TOOLTIP"] = "내 레벨에 맞는 던전만 표시합니다."
@@ -67,9 +67,15 @@ L["LOWER"] = "하층"
 L["UPPER"] = "상층"
 L["LEVEL"] = "레벨:"
 L["STATUS_COMPLETED"] = "완료"
-L["STATUS_IN_LOG"] = "퀘스트 목록에 있음"
+L["STATUS_IN_LOG"] = "진행 중"
 L["STATUS_AVAILABLE"] = "수락 가능"
 L["STATUS_BLOCKED"] = "잠김"
+L["STATUS_READY"] = "완료 가능"
+L["REQUIRES_LEVEL"] = "%d 레벨 필요"
+L["PAGE_TURN"] = "책장 넘김 효과"
+L["PAGE_TURN_TOOLTIP"] = "던전이나 탭을 바꾸면 소리와 함께 책장이 넘어갑니다."
+L["CLICK_DETAILS"] = "클릭하여 자세히 보기"
+L["LANGUAGE_TOOLTIP"] = "이 창의 언어입니다. 퀘스트, NPC, 지역, 아이템 이름은 게임에서 가져오므로 게임 언어로 표시됩니다."
 L["BLOCKED_LEVEL"] = "레벨 %d 필요"
 L["BLOCKED_PREREQ"] = "선행 퀘스트 필요"
 L["STARTS"] = "시작:"

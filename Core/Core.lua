@@ -17,10 +17,12 @@ local DEFAULTS = {
     scale = 1,
     hideCompleted = false,
     autoFaction = true,
+    pageTurn = true,      -- animacion de pasar pagina al cambiar de mazmorra o de pestana
     waypointMode = "own", -- "own" (flecha y marcadores del addon), "native" (pin del juego), "tomtom"
     arrow = {},           -- posicion de la flecha
     pinSize = 16,         -- tamano del marcador en el mapa y el minimapa (px)
     wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
+    language = "auto",    -- idioma de la ventana: "auto" (el del juego) o "deDE", "enUS"...
     collect = false,
     debug = false,
     window = {},
@@ -30,6 +32,32 @@ ns.DEFAULTS = DEFAULTS
 
 ns.PREFIX = "|cffd597ffDungeon Quest Atlas|r: "
 ns.LOCALE = GetLocale() == "esMX" and "esES" or GetLocale()
+
+-- ==========================================
+-- IDIOMA DE LA VENTANA
+-- ==========================================
+-- Por defecto el del juego; se puede elegir otro desde la ventana. Solo cambian
+-- los textos del addon: nombres de misiones, PNJ, zonas y objetos los da el
+-- juego en su idioma. Cada idioma con su nombre en ese idioma.
+ns.LANGUAGES = {
+    { "enUS", "English" }, { "esES", "Español" }, { "deDE", "Deutsch" }, { "frFR", "Français" },
+    { "itIT", "Italiano" }, { "ptBR", "Português" }, { "ruRU", "Русский" }, { "plPL", "Polski" },
+    { "csCZ", "Čeština" }, { "svSE", "Svenska" }, { "noNO", "Norsk" }, { "trTR", "Türkçe" },
+    { "koKR", "한국어" }, { "zhCN", "简体中文" }, { "zhTW", "繁體中文" }, { "jaJP", "日本語" },
+    { "arSA", "العربية" }, { "hiIN", "हिन्दी" }, { "thTH", "ไทย" }, { "viVN", "Tiếng Việt" },
+}
+
+-- code: "enUS", "deDE"...; nil o "auto" = el del juego. Rellena L (la misma
+-- tabla que ya tienen todos los ficheros) con el ingles y encima ese idioma.
+function ns.ApplyLanguage(code)
+    if not (code and ns.LOCALES[code]) then code = GetLocale() end
+    -- Idioma de la ventana, como los guarda el addon (esMX -> esES, enGB -> enUS)
+    ns.UILANG = code == "esMX" and "esES" or code == "enGB" and "enUS" or code
+    for key in pairs(L) do L[key] = nil end
+    for key, text in pairs(ns.LOCALES.enUS) do L[key] = text end
+    for key, text in pairs(ns.LOCALES[code] or {}) do L[key] = text end
+end
+ns.ApplyLanguage() -- el del juego mientras no se lean las opciones guardadas
 
 function ns.Print(msg)
     print(ns.PREFIX .. msg)
@@ -102,8 +130,10 @@ local function Collected()
     return DungeonQuestAtlasCollectorDB or {}
 end
 
--- Nombre en el idioma del cliente: lo da el juego si se conoce la instancia
+-- Nombre en el idioma del cliente: lo da el juego si se conoce la instancia.
+-- Con la ventana en ingles, el de los datos (ya esta en ingles).
 function ns.DungeonName(d)
+    if ns.UILANG == "enUS" then return d.name end
     local name = d.instanceID and GetRealZoneText and GetRealZoneText(d.instanceID)
     if not name or name == "" then return d.name end -- el ingles ya lleva "Lower"/"Upper"
     if d.part then name = name .. " (" .. L[d.part] .. ")" end
@@ -113,8 +143,11 @@ end
 -- Texto de mision: lo recogido en este cliente, luego Data/QuestText.lua
 function ns.QuestText(id)
     local mine = Collected().quests and Collected().quests[id]
-    mine = mine and mine.text and mine.text[ns.LOCALE]
-    return mine or ns.QuestTextData.active[id] or ns.QuestTextData.fallback[id] or {}
+    local texts = mine and mine.text or {}
+    -- Primero en el idioma de la ventana (si se ha recogido), luego en el del juego
+    local chosen = ns.QuestTextData.byLocale[ns.UILANG or ns.LOCALE]
+    return texts[ns.UILANG] or (chosen and chosen[id]) or texts[ns.LOCALE] or ns.QuestTextData.active[id]
+        or ns.QuestTextData.fallback[id] or {}
 end
 
 local requested = {}
@@ -140,10 +173,13 @@ function ns.QuestObjective(id)
     local lines = {}
     for i, line in ipairs(info and info.lines or {}) do
         local left = ns.PlainText(line.leftText)
-        if i > 1 and left and left ~= "" then
+        -- " - 8 x": el juego aun no tiene el nombre del objetivo; mejor nada
+        if i > 1 and left and left ~= "" and not left:find("^%s*%-%s*%d*%s*x?%s*$") then
             lines[#lines + 1] = left
         end
     end
+    -- Sin objetivos debajo, "Requisitos:" sobra
+    while #lines > 0 and lines[#lines]:find(":%s*$") do lines[#lines] = nil end
     if #lines > 0 then return table.concat(lines, "\n") end
 end
 
@@ -225,7 +261,8 @@ end
 local WOWHEAD_LANG = { deDE = "de", esES = "es", esMX = "es", frFR = "fr", itIT = "it", ptBR = "pt",
     ruRU = "ru", koKR = "ko", zhCN = "cn", zhTW = "tw" }
 function ns.WowheadURL(id)
-    local lang = ns.db.wowheadLang ~= "en" and WOWHEAD_LANG[GetLocale()]
+    -- En el idioma de la ventana: si has elegido aleman, la pagina en aleman
+    local lang = ns.db.wowheadLang ~= "en" and WOWHEAD_LANG[ns.UILANG or GetLocale()]
     return "https://www.wowhead.com/forever/" .. (lang and (lang .. "/") or "") .. "quest=" .. id
 end
 
@@ -272,6 +309,7 @@ On("PLAYER_LOGIN", function()
     DungeonQuestAtlasDB = ns.db
     ns.char = ns.MigrateDB(DungeonQuestAtlasCharDB, CHAR_DEFAULTS)
     DungeonQuestAtlasCharDB = ns.char
+    ns.ApplyLanguage(ns.db.language)
     DungeonQuestAtlasCollectorDB = DungeonQuestAtlasCollectorDB or {}
     DungeonQuestAtlasCollectorDB.quests = DungeonQuestAtlasCollectorDB.quests or {}
     DungeonQuestAtlasCollectorDB.entrances = DungeonQuestAtlasCollectorDB.entrances or {}

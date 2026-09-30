@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- ITALIANO (itIT)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "itIT" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("itIT")
 
 L["VERSION"] = "Versione:"
 L["AUTHOR"] = "Autore:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Modalità raccolta"
 L["COLLECT_TOOLTIP"] = "Salva testo, PNG e posizione di ogni missione che apri. Esportali con /dqa export."
 L["DEBUG"] = "Messaggi di debug"
 L["DEBUG_TOOLTIP"] = "Scrive in chat ciò che fa l'addon."
+L["SEARCH"] = "Cerca"
 L["SEARCH_TOOLTIP"] = "Filtra le spedizioni per nome o per boss."
 L["MY_RANGE"] = "Il mio livello"
 L["MY_RANGE_TOOLTIP"] = "Solo le spedizioni per il tuo livello."
@@ -67,9 +67,15 @@ L["LOWER"] = "Inferiore"
 L["UPPER"] = "Superiore"
 L["LEVEL"] = "Livello:"
 L["STATUS_COMPLETED"] = "Completata"
-L["STATUS_IN_LOG"] = "Nel tuo registro"
+L["STATUS_IN_LOG"] = "In corso"
 L["STATUS_AVAILABLE"] = "Disponibile"
 L["STATUS_BLOCKED"] = "Bloccata"
+L["STATUS_READY"] = "Pronta da consegnare"
+L["REQUIRES_LEVEL"] = "Richiede livello %d"
+L["PAGE_TURN"] = "Animazione del voltare pagina"
+L["PAGE_TURN_TOOLTIP"] = "Il libro volta pagina, con il suo suono, quando cambi spedizione o scheda."
+L["CLICK_DETAILS"] = "Clicca per vedere i dettagli"
+L["LANGUAGE_TOOLTIP"] = "Lingua di questa finestra. I nomi di missioni, PNG, zone e oggetti vengono dal gioco e restano nella sua lingua."
 L["BLOCKED_LEVEL"] = "richiede il livello %d"
 L["BLOCKED_PREREQ"] = "manca una missione precedente"
 L["STARTS"] = "Inizia:"

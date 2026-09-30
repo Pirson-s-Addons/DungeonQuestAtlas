@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- TIẾNG VIỆT (viVN)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "viVN" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("viVN")
 
 L["VERSION"] = "Phiên bản:"
 L["AUTHOR"] = "Tác giả:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Chế độ thu thập"
 L["COLLECT_TOOLTIP"] = "Lưu nội dung, người giao và vị trí của mỗi nhiệm vụ bạn mở. Xuất bằng /dqa export."
 L["DEBUG"] = "Thông báo gỡ lỗi"
 L["DEBUG_TOOLTIP"] = "Ghi vào khung chat những gì addon làm."
+L["SEARCH"] = "Tìm kiếm"
 L["SEARCH_TOOLTIP"] = "Lọc hầm ngục theo tên hoặc theo trùm."
 L["MY_RANGE"] = "Cấp của tôi"
 L["MY_RANGE_TOOLTIP"] = "Chỉ các hầm ngục hợp cấp của bạn."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Cấp:"
 L["STATUS_COMPLETED"] = "Đã hoàn thành"
-L["STATUS_IN_LOG"] = "Trong sổ nhiệm vụ"
+L["STATUS_IN_LOG"] = "Đang làm"
 L["STATUS_AVAILABLE"] = "Có thể nhận"
 L["STATUS_BLOCKED"] = "Bị khóa"
+L["STATUS_READY"] = "Sẵn sàng trả"
+L["REQUIRES_LEVEL"] = "Yêu cầu cấp %d"
+L["PAGE_TURN"] = "Hiệu ứng lật trang"
+L["PAGE_TURN_TOOLTIP"] = "Cuốn sách lật trang, kèm âm thanh, khi bạn đổi hầm ngục hoặc thẻ."
+L["CLICK_DETAILS"] = "Nhấp để xem chi tiết"
+L["LANGUAGE_TOOLTIP"] = "Ngôn ngữ của cửa sổ này. Tên nhiệm vụ, NPC, khu vực và vật phẩm lấy từ trò chơi và giữ nguyên ngôn ngữ của nó."
 L["BLOCKED_LEVEL"] = "cần cấp %d"
 L["BLOCKED_PREREQ"] = "thiếu nhiệm vụ trước"
 L["STARTS"] = "Bắt đầu:"

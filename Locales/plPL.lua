@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- POLSKI (plPL)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "plPL" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("plPL")
 
 L["VERSION"] = "Wersja:"
 L["AUTHOR"] = "Autor:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Tryb zbierania"
 L["COLLECT_TOOLTIP"] = "Zapisuje treść, zleceniodawcę i pozycję każdego otwartego zadania. Eksport: /dqa export."
 L["DEBUG"] = "Komunikaty debugowania"
 L["DEBUG_TOOLTIP"] = "Wypisuje na czacie, co robi addon."
+L["SEARCH"] = "Szukaj"
 L["SEARCH_TOOLTIP"] = "Filtruje lochy według nazwy lub bossa."
 L["MY_RANGE"] = "Mój poziom"
 L["MY_RANGE_TOOLTIP"] = "Tylko lochy na twój poziom."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Poziom:"
 L["STATUS_COMPLETED"] = "Ukończone"
-L["STATUS_IN_LOG"] = "W dzienniku zadań"
+L["STATUS_IN_LOG"] = "W toku"
 L["STATUS_AVAILABLE"] = "Dostępne"
 L["STATUS_BLOCKED"] = "Zablokowane"
+L["STATUS_READY"] = "Gotowe do oddania"
+L["REQUIRES_LEVEL"] = "Wymaga poziomu %d"
+L["PAGE_TURN"] = "Animacja przewracania stron"
+L["PAGE_TURN_TOOLTIP"] = "Księga przewraca stronę z dźwiękiem, gdy zmieniasz loch lub kartę."
+L["CLICK_DETAILS"] = "Kliknij, aby zobaczyć szczegóły"
+L["LANGUAGE_TOOLTIP"] = "Język tego okna. Nazwy zadań, NPC, stref i przedmiotów pochodzą z gry i pozostają w jej języku."
 L["BLOCKED_LEVEL"] = "wymaga poziomu %d"
 L["BLOCKED_PREREQ"] = "brak wcześniejszego zadania"
 L["STARTS"] = "Początek:"

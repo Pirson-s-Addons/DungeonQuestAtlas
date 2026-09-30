@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- ไทย (thTH)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "thTH" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("thTH")
 
 L["VERSION"] = "เวอร์ชัน:"
 L["AUTHOR"] = "ผู้สร้าง:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "โหมดเก็บข้อมูล"
 L["COLLECT_TOOLTIP"] = "บันทึกข้อความ ผู้ให้เควส และตำแหน่งของทุกเควสที่คุณเปิด ส่งออกด้วย /dqa export"
 L["DEBUG"] = "ข้อความดีบัก"
 L["DEBUG_TOOLTIP"] = "เขียนสิ่งที่แอดออนทำลงในแชท"
+L["SEARCH"] = "ค้นหา"
 L["SEARCH_TOOLTIP"] = "กรองดันเจียนตามชื่อหรือบอส"
 L["MY_RANGE"] = "เลเวลของฉัน"
 L["MY_RANGE_TOOLTIP"] = "เฉพาะดันเจี้ยนสำหรับเลเวลของคุณ"
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "เลเวล:"
 L["STATUS_COMPLETED"] = "เสร็จแล้ว"
-L["STATUS_IN_LOG"] = "อยู่ในบันทึกเควส"
+L["STATUS_IN_LOG"] = "กำลังทำ"
 L["STATUS_AVAILABLE"] = "รับได้"
 L["STATUS_BLOCKED"] = "ถูกล็อก"
+L["STATUS_READY"] = "พร้อมส่ง"
+L["REQUIRES_LEVEL"] = "ต้องการเลเวล %d"
+L["PAGE_TURN"] = "แอนิเมชันพลิกหน้า"
+L["PAGE_TURN_TOOLTIP"] = "หนังสือจะพลิกหน้าพร้อมเสียงเมื่อเปลี่ยนดันเจี้ยนหรือแท็บ"
+L["CLICK_DETAILS"] = "คลิกเพื่อดูรายละเอียด"
+L["LANGUAGE_TOOLTIP"] = "ภาษาของหน้าต่างนี้ ชื่อเควส NPC โซน และไอเทมมาจากเกมและยังคงเป็นภาษาของเกม"
 L["BLOCKED_LEVEL"] = "ต้องเลเวล %d"
 L["BLOCKED_PREREQ"] = "ยังขาดเควสก่อนหน้า"
 L["STARTS"] = "เริ่ม:"

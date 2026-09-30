@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- ČEŠTINA (csCZ)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "csCZ" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("csCZ")
 
 L["VERSION"] = "Verze:"
 L["AUTHOR"] = "Autor:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Režim sběru"
 L["COLLECT_TOOLTIP"] = "Uloží text, zadavatele a pozici každého otevřeného úkolu. Export přes /dqa export."
 L["DEBUG"] = "Ladicí zprávy"
 L["DEBUG_TOOLTIP"] = "Vypisuje do chatu, co doplněk dělá."
+L["SEARCH"] = "Hledat"
 L["SEARCH_TOOLTIP"] = "Filtruje dungeony podle názvu nebo bosse."
 L["MY_RANGE"] = "Moje úroveň"
 L["MY_RANGE_TOOLTIP"] = "Jen dungeony pro tvou úroveň."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Úroveň:"
 L["STATUS_COMPLETED"] = "Splněno"
-L["STATUS_IN_LOG"] = "V deníku úkolů"
+L["STATUS_IN_LOG"] = "Probíhá"
 L["STATUS_AVAILABLE"] = "Dostupné"
 L["STATUS_BLOCKED"] = "Zamčené"
+L["STATUS_READY"] = "Připraveno k odevzdání"
+L["REQUIRES_LEVEL"] = "Vyžaduje úroveň %d"
+L["PAGE_TURN"] = "Animace otáčení stránek"
+L["PAGE_TURN_TOOLTIP"] = "Kniha při změně kobky nebo záložky otočí stránku i se zvukem."
+L["CLICK_DETAILS"] = "Klikněte pro zobrazení podrobností"
+L["LANGUAGE_TOOLTIP"] = "Jazyk tohoto okna. Názvy úkolů, NPC, zón a předmětů pocházejí ze hry a zůstávají v jejím jazyce."
 L["BLOCKED_LEVEL"] = "vyžaduje úroveň %d"
 L["BLOCKED_PREREQ"] = "chybí předchozí úkol"
 L["STARTS"] = "Začíná:"

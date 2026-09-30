@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- SVENSKA (svSE)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "svSE" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("svSE")
 
 L["VERSION"] = "Version:"
 L["AUTHOR"] = "Författare:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Insamlingsläge"
 L["COLLECT_TOOLTIP"] = "Sparar text, uppdragsgivare och position för varje uppdrag du öppnar. Exportera med /dqa export."
 L["DEBUG"] = "Felsökningsmeddelanden"
 L["DEBUG_TOOLTIP"] = "Skriver i chatten vad tillägget gör."
+L["SEARCH"] = "Sök"
 L["SEARCH_TOOLTIP"] = "Filtrerar dungeons efter namn eller boss."
 L["MY_RANGE"] = "Min nivå"
 L["MY_RANGE_TOOLTIP"] = "Bara dungeons för din nivå."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Nivå:"
 L["STATUS_COMPLETED"] = "Avklarat"
-L["STATUS_IN_LOG"] = "I din uppdragslogg"
+L["STATUS_IN_LOG"] = "Pågår"
 L["STATUS_AVAILABLE"] = "Tillgängligt"
 L["STATUS_BLOCKED"] = "Låst"
+L["STATUS_READY"] = "Redo att lämnas in"
+L["REQUIRES_LEVEL"] = "Kräver nivå %d"
+L["PAGE_TURN"] = "Sidvändningsanimation"
+L["PAGE_TURN_TOOLTIP"] = "Boken vänder blad, med ljud, när du byter dungeon eller flik."
+L["CLICK_DETAILS"] = "Klicka för att se detaljer"
+L["LANGUAGE_TOOLTIP"] = "Språket i det här fönstret. Namn på uppdrag, NPC:er, zoner och föremål kommer från spelet och stannar på dess språk."
 L["BLOCKED_LEVEL"] = "kräver nivå %d"
 L["BLOCKED_PREREQ"] = "tidigare uppdrag saknas"
 L["STARTS"] = "Börjar:"

@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- 简体中文 (zhCN)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "zhCN" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("zhCN")
 
 L["VERSION"] = "版本："
 L["AUTHOR"] = "作者："
@@ -49,6 +48,7 @@ L["COLLECT"] = "收集模式"
 L["COLLECT_TOOLTIP"] = "保存你打开的每个任务的文本、发布者和位置。用 /dqa export 导出。"
 L["DEBUG"] = "调试信息"
 L["DEBUG_TOOLTIP"] = "在聊天框中显示插件的操作。"
+L["SEARCH"] = "搜索"
 L["SEARCH_TOOLTIP"] = "按名称或首领筛选地下城。"
 L["MY_RANGE"] = "我的等级"
 L["MY_RANGE_TOOLTIP"] = "只显示适合你等级的地下城。"
@@ -67,9 +67,15 @@ L["LOWER"] = "下层"
 L["UPPER"] = "上层"
 L["LEVEL"] = "等级："
 L["STATUS_COMPLETED"] = "已完成"
-L["STATUS_IN_LOG"] = "在任务日志中"
+L["STATUS_IN_LOG"] = "进行中"
 L["STATUS_AVAILABLE"] = "可接受"
 L["STATUS_BLOCKED"] = "未解锁"
+L["STATUS_READY"] = "可以交付"
+L["REQUIRES_LEVEL"] = "需要等级%d"
+L["PAGE_TURN"] = "翻页动画"
+L["PAGE_TURN_TOOLTIP"] = "切换地下城或标签页时，书本会带着音效翻页。"
+L["CLICK_DETAILS"] = "点击查看详情"
+L["LANGUAGE_TOOLTIP"] = "此窗口的语言。任务、NPC、区域和物品的名称来自游戏，仍使用游戏的语言。"
 L["BLOCKED_LEVEL"] = "需要等级 %d"
 L["BLOCKED_PREREQ"] = "缺少前置任务"
 L["STARTS"] = "开始："

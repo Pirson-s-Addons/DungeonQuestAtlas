@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- РУССКИЙ (ruRU)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "ruRU" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("ruRU")
 
 L["VERSION"] = "Версия:"
 L["AUTHOR"] = "Автор:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Режим сборщика"
 L["COLLECT_TOOLTIP"] = "Сохраняет текст, персонажа и позицию каждого открытого задания. Экспорт: /dqa export."
 L["DEBUG"] = "Отладочные сообщения"
 L["DEBUG_TOOLTIP"] = "Пишет в чат, что делает аддон."
+L["SEARCH"] = "Поиск"
 L["SEARCH_TOOLTIP"] = "Фильтрует подземелья по названию или по боссу."
 L["MY_RANGE"] = "Мой уровень"
 L["MY_RANGE_TOOLTIP"] = "Только подземелья для вашего уровня."
@@ -67,9 +67,15 @@ L["LOWER"] = "Нижняя"
 L["UPPER"] = "Верхняя"
 L["LEVEL"] = "Уровень:"
 L["STATUS_COMPLETED"] = "Выполнено"
-L["STATUS_IN_LOG"] = "В вашем журнале"
+L["STATUS_IN_LOG"] = "В процессе"
 L["STATUS_AVAILABLE"] = "Доступно"
 L["STATUS_BLOCKED"] = "Недоступно"
+L["STATUS_READY"] = "Можно сдать"
+L["REQUIRES_LEVEL"] = "Требуется уровень %d"
+L["PAGE_TURN"] = "Анимация перелистывания"
+L["PAGE_TURN_TOOLTIP"] = "Книга перелистывает страницу со звуком при смене подземелья или вкладки."
+L["CLICK_DETAILS"] = "Щёлкните, чтобы увидеть подробности"
+L["LANGUAGE_TOOLTIP"] = "Язык этого окна. Названия заданий, НИП, зон и предметов берутся из игры и остаются на её языке."
 L["BLOCKED_LEVEL"] = "нужен уровень %d"
 L["BLOCKED_PREREQ"] = "не выполнено предыдущее задание"
 L["STARTS"] = "Начало:"

@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- TÜRKÇE (trTR)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "trTR" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("trTR")
 
 L["VERSION"] = "Sürüm:"
 L["AUTHOR"] = "Yazar:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Toplayıcı modu"
 L["COLLECT_TOOLTIP"] = "Açtığın her görevin metnini, görevi vereni ve konumunu kaydeder. /dqa export ile dışa aktar."
 L["DEBUG"] = "Hata ayıklama mesajları"
 L["DEBUG_TOOLTIP"] = "Eklentinin yaptıklarını sohbete yazar."
+L["SEARCH"] = "Ara"
 L["SEARCH_TOOLTIP"] = "Zindanları ada veya bossa göre süzer."
 L["MY_RANGE"] = "Seviyem"
 L["MY_RANGE_TOOLTIP"] = "Yalnızca seviyene uygun zindanlar."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Seviye:"
 L["STATUS_COMPLETED"] = "Tamamlandı"
-L["STATUS_IN_LOG"] = "Görev kayıtlarında"
+L["STATUS_IN_LOG"] = "Devam ediyor"
 L["STATUS_AVAILABLE"] = "Alınabilir"
 L["STATUS_BLOCKED"] = "Kilitli"
+L["STATUS_READY"] = "Teslim edilmeye hazır"
+L["REQUIRES_LEVEL"] = "Seviye %d gerekir"
+L["PAGE_TURN"] = "Sayfa çevirme animasyonu"
+L["PAGE_TURN_TOOLTIP"] = "Zindan veya sekme değiştirdiğinde kitap sesiyle birlikte sayfa çevirir."
+L["CLICK_DETAILS"] = "Ayrıntılar için tıkla"
+L["LANGUAGE_TOOLTIP"] = "Bu pencerenin dili. Görev, NPC, bölge ve eşya adları oyundan gelir ve oyunun dilinde kalır."
 L["BLOCKED_LEVEL"] = "%d. seviye gerekir"
 L["BLOCKED_PREREQ"] = "önceki görev eksik"
 L["STARTS"] = "Başlangıç:"

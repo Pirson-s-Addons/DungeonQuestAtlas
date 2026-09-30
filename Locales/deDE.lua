@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- DEUTSCH (deDE)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "deDE" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("deDE")
 
 L["VERSION"] = "Version:"
 L["AUTHOR"] = "Autor:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Sammelmodus"
 L["COLLECT_TOOLTIP"] = "Speichert Text, Questgeber und Position jeder Quest, die du öffnest. Exportieren mit /dqa export."
 L["DEBUG"] = "Debug-Meldungen"
 L["DEBUG_TOOLTIP"] = "Schreibt in den Chat, was das Addon tut."
+L["SEARCH"] = "Suchen"
 L["SEARCH_TOOLTIP"] = "Filtert die Dungeons nach Name oder Boss."
 L["MY_RANGE"] = "Meine Stufe"
 L["MY_RANGE_TOOLTIP"] = "Nur Dungeons für deine Stufe."
@@ -67,9 +67,15 @@ L["LOWER"] = "Untere"
 L["UPPER"] = "Obere"
 L["LEVEL"] = "Stufe:"
 L["STATUS_COMPLETED"] = "Abgeschlossen"
-L["STATUS_IN_LOG"] = "In deinem Questlog"
+L["STATUS_IN_LOG"] = "In Arbeit"
 L["STATUS_AVAILABLE"] = "Verfügbar"
 L["STATUS_BLOCKED"] = "Gesperrt"
+L["STATUS_READY"] = "Bereit zur Abgabe"
+L["REQUIRES_LEVEL"] = "Benötigt Stufe %d"
+L["PAGE_TURN"] = "Umblätter-Animation"
+L["PAGE_TURN_TOOLTIP"] = "Das Buch blättert mit Geräusch um, wenn du den Dungeon oder den Reiter wechselst."
+L["CLICK_DETAILS"] = "Klicken für Details"
+L["LANGUAGE_TOOLTIP"] = "Sprache dieses Fensters. Namen von Quests, NSCs, Gebieten und Gegenständen stammen aus dem Spiel und bleiben in dessen Sprache."
 L["BLOCKED_LEVEL"] = "benötigt Stufe %d"
 L["BLOCKED_PREREQ"] = "vorherige Quest fehlt"
 L["STARTS"] = "Beginnt:"

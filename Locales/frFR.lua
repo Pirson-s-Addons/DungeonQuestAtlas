@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- FRANÇAIS (frFR)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "frFR" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("frFR")
 
 L["VERSION"] = "Version :"
 L["AUTHOR"] = "Auteur :"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Mode collecteur"
 L["COLLECT_TOOLTIP"] = "Enregistre le texte, le donneur et la position de chaque quête ouverte. Exportez avec /dqa export."
 L["DEBUG"] = "Messages de débogage"
 L["DEBUG_TOOLTIP"] = "Écrit dans la discussion ce que fait l'addon."
+L["SEARCH"] = "Rechercher"
 L["SEARCH_TOOLTIP"] = "Filtre les donjons par nom ou par boss."
 L["MY_RANGE"] = "Mon niveau"
 L["MY_RANGE_TOOLTIP"] = "Seulement les donjons de votre niveau."
@@ -67,9 +67,15 @@ L["LOWER"] = "inférieur"
 L["UPPER"] = "supérieur"
 L["LEVEL"] = "Niveau :"
 L["STATUS_COMPLETED"] = "Terminée"
-L["STATUS_IN_LOG"] = "Dans votre journal"
+L["STATUS_IN_LOG"] = "En cours"
 L["STATUS_AVAILABLE"] = "Disponible"
 L["STATUS_BLOCKED"] = "Bloquée"
+L["STATUS_READY"] = "Prête à rendre"
+L["REQUIRES_LEVEL"] = "Niveau %d requis"
+L["PAGE_TURN"] = "Animation de page tournée"
+L["PAGE_TURN_TOOLTIP"] = "Le livre tourne une page, avec son bruit, quand vous changez de donjon ou d'onglet."
+L["CLICK_DETAILS"] = "Cliquez pour voir les détails"
+L["LANGUAGE_TOOLTIP"] = "Langue de cette fenêtre. Les noms des quêtes, PNJ, zones et objets viennent du jeu et restent dans sa langue."
 L["BLOCKED_LEVEL"] = "niveau %d requis"
 L["BLOCKED_PREREQ"] = "quête précédente manquante"
 L["STARTS"] = "Début :"

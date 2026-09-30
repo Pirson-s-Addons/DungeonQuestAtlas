@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- 繁體中文 (zhTW)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "zhTW" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("zhTW")
 
 L["VERSION"] = "版本："
 L["AUTHOR"] = "作者："
@@ -49,6 +48,7 @@ L["COLLECT"] = "收集模式"
 L["COLLECT_TOOLTIP"] = "儲存你開啟的每個任務的內容、發布者與位置。用 /dqa export 匯出。"
 L["DEBUG"] = "除錯訊息"
 L["DEBUG_TOOLTIP"] = "在聊天框顯示插件的動作。"
+L["SEARCH"] = "搜尋"
 L["SEARCH_TOOLTIP"] = "依名稱或首領篩選地城。"
 L["MY_RANGE"] = "我的等級"
 L["MY_RANGE_TOOLTIP"] = "只顯示適合你等級的地城。"
@@ -67,9 +67,15 @@ L["LOWER"] = "下層"
 L["UPPER"] = "上層"
 L["LEVEL"] = "等級："
 L["STATUS_COMPLETED"] = "已完成"
-L["STATUS_IN_LOG"] = "在任務日誌中"
+L["STATUS_IN_LOG"] = "進行中"
 L["STATUS_AVAILABLE"] = "可接受"
 L["STATUS_BLOCKED"] = "未解鎖"
+L["STATUS_READY"] = "可以交付"
+L["REQUIRES_LEVEL"] = "需要等級%d"
+L["PAGE_TURN"] = "翻頁動畫"
+L["PAGE_TURN_TOOLTIP"] = "切換地城或分頁時，書本會帶著音效翻頁。"
+L["CLICK_DETAILS"] = "點擊查看詳情"
+L["LANGUAGE_TOOLTIP"] = "此視窗的語言。任務、NPC、區域和物品的名稱來自遊戲，仍使用遊戲的語言。"
 L["BLOCKED_LEVEL"] = "需要等級 %d"
 L["BLOCKED_PREREQ"] = "缺少前置任務"
 L["STARTS"] = "開始："

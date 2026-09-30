@@ -56,7 +56,10 @@ function ns.CreateDungeonList(parent, onSelect)
         if d.isForever then info = info .. "  |cffd597ff" .. L.NEW_TAG .. "|r" end
         row.info:SetText(info)
         local done, total = ns.DungeonProgress(d, ns.FactionFilter())
-        row.progress:SetText(total == 0 and "" or ((done == total and GREEN or "|cffffffff") .. done .. "/" .. total .. "|r"))
+        -- Todas hechas: en verde y con la marca del rastreador
+        local progress = total == 0 and "" or ((done == total and GREEN or "|cffffffff") .. done .. "/" .. total .. "|r")
+        if total > 0 and done == total then progress = ns.StatusMarkup(ns.STATUS_COMPLETED, 14) .. " " .. progress end
+        row.progress:SetText(progress)
         local selected = d.key == selectedKey
         row.border:SetBackdropBorderColor(selected and 1 or 0.55, selected and 0.82 or 0.5, selected and 0 or 0.45)
         row.label:SetTextColor(selected and 1 or 1, selected and 1 or 0.82, selected and 1 or 0)

@@ -68,6 +68,7 @@ local function CreateGeneral()
     Header(panel, -56, L.HEADER_WINDOW)
     Checkbox("hideCompleted", L.HIDE_COMPLETED, L.HIDE_COMPLETED_TOOLTIP, -81, ns.RefreshUI)
     Checkbox("autoFaction", L.AUTO_FACTION, L.AUTO_FACTION_TOOLTIP, -111)
+    Checkbox("pageTurn", L.PAGE_TURN, L.PAGE_TURN_TOOLTIP, -141)
 
     -- "Etiqueta: valor", con el minimo y el maximo debajo
     local function Slider(key, label, tooltip, y, min, max, step, format, onChange)
@@ -97,13 +98,13 @@ local function CreateGeneral()
         return slider
     end
 
-    Slider("scale", L.SCALE, L.SCALE_TOOLTIP, -165, 0.6, 1.5, 0.05,
+    Slider("scale", L.SCALE, L.SCALE_TOOLTIP, -195, 0.6, 1.5, 0.05,
         function(v) return ("%d%%"):format(math.floor(v * 100 + 0.5)) end, ns.ApplyScale)
-    Separator(panel, -205)
+    Separator(panel, -235)
 
     -- Mapa y enlaces ------------------------------------------------------------
-    Header(panel, -225, L.HEADER_MAP)
-    Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -250, ns.UpdateMinimapButton,
+    Header(panel, -255, L.HEADER_MAP)
+    Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -280, ns.UpdateMinimapButton,
         function() return not db.minimap.hide end, function(v) db.minimap.hide = not v end)
     -- Desplegable con etiqueta a la izquierda: options = { { valor, texto }, ... }
     local function Dropdown(key, label, tooltip, y, options)
@@ -136,24 +137,24 @@ local function CreateGeneral()
     end
 
     -- Sin TomTom cargado, su opcion sale desactivada en la lista
-    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -287, {
+    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -317, {
         { "own", L.GUIDE_OWN },
         { "native", L.GUIDE_NATIVE },
         { "tomtom", L.GUIDE_TOMTOM, disabled = function() return not TomTomLoaded() end },
     })
-    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -322, {
+    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -352, {
         { "auto", L.LANG_AUTO },
         { "en", L.LANG_ENGLISH },
     })
-    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -375, 10, 32, 1,
+    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -405, 10, 32, 1,
         function(v) return tostring(math.floor(v + 0.5)) end, ns.ApplyPinSize)
-    Separator(panel, -415)
+    Separator(panel, -445)
 
     -- Recolector ----------------------------------------------------------------
-    Header(panel, -435, L.HEADER_COLLECTOR)
-    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -460)
-    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -490)
-    Separator(panel, -530)
+    Header(panel, -465, L.HEADER_COLLECTOR)
+    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -490)
+    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -520)
+    Separator(panel, -560)
 
     local function Refresh()
         for _, widget in ipairs(widgets) do widget:Refresh() end
@@ -162,13 +163,14 @@ local function CreateGeneral()
 
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -550)
+    reset:SetPoint("TOPLEFT", X, -580)
     reset:SetText(L.DEFAULTS)
     reset:SetScript("OnClick", function()
         ns.ResetOptions()
         ns.ApplyScale()
         ns.ApplyPinSize()
         ns.UpdateMinimapButton()
+        ns.SetLanguage(ns.db.language) -- vuelve al idioma del juego
         ns.RefreshUI()
         Refresh()
     end)
@@ -182,7 +184,7 @@ function ns.CreateOptions()
         listName = "Dungeon Quest Atlas",
         logo = ns.LOGO,
         github = "https://github.com/Pirson-s-Addons/DungeonQuestAtlas",
-        curseforge = "https://www.curseforge.com/wow/addons/dungeon-quest-atlas-forever",
+        curseforge = "https://www.curseforge.com/wow/addons/dungeon-quest-atlas",
         commands = ns.CommandList(),
     })
     general = Settings.RegisterCanvasLayoutSubcategory(root, CreateGeneral(), L.GENERAL)

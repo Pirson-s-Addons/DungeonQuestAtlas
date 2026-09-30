@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- 日本語 (jaJP)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "jaJP" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("jaJP")
 
 L["VERSION"] = "バージョン："
 L["AUTHOR"] = "作者："
@@ -49,6 +48,7 @@ L["COLLECT"] = "収集モード"
 L["COLLECT_TOOLTIP"] = "開いたクエストの本文、NPC、位置を保存します。/dqa export で書き出します。"
 L["DEBUG"] = "デバッグメッセージ"
 L["DEBUG_TOOLTIP"] = "アドオンの動作をチャットに表示します。"
+L["SEARCH"] = "検索"
 L["SEARCH_TOOLTIP"] = "名前またはボスでダンジョンを絞り込みます。"
 L["MY_RANGE"] = "自分のレベル"
 L["MY_RANGE_TOOLTIP"] = "自分のレベルに合うダンジョンだけ。"
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "レベル："
 L["STATUS_COMPLETED"] = "完了"
-L["STATUS_IN_LOG"] = "クエストログにあり"
+L["STATUS_IN_LOG"] = "進行中"
 L["STATUS_AVAILABLE"] = "受注可能"
 L["STATUS_BLOCKED"] = "ロック中"
+L["STATUS_READY"] = "報告可能"
+L["REQUIRES_LEVEL"] = "レベル%dが必要"
+L["PAGE_TURN"] = "ページめくりアニメーション"
+L["PAGE_TURN_TOOLTIP"] = "ダンジョンやタブを切り替えると、本が音とともにページをめくります。"
+L["CLICK_DETAILS"] = "クリックで詳細を表示"
+L["LANGUAGE_TOOLTIP"] = "このウィンドウの言語。クエスト、NPC、ゾーン、アイテムの名前はゲームから取得するため、ゲームの言語のままです。"
 L["BLOCKED_LEVEL"] = "レベル %d が必要"
 L["BLOCKED_PREREQ"] = "前のクエストが未完了"
 L["STARTS"] = "開始："

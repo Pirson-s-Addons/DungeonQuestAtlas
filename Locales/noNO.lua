@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- NORSK (noNO)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "noNO" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("noNO")
 
 L["VERSION"] = "Versjon:"
 L["AUTHOR"] = "Forfatter:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Innsamlingsmodus"
 L["COLLECT_TOOLTIP"] = "Lagrer tekst, oppdragsgiver og posisjon for hvert oppdrag du åpner. Eksporter med /dqa export."
 L["DEBUG"] = "Feilsøkingsmeldinger"
 L["DEBUG_TOOLTIP"] = "Skriver i chatten hva tillegget gjør."
+L["SEARCH"] = "Søk"
 L["SEARCH_TOOLTIP"] = "Filtrerer dungeons etter navn eller boss."
 L["MY_RANGE"] = "Mitt nivå"
 L["MY_RANGE_TOOLTIP"] = "Bare dungeons for ditt nivå."
@@ -67,9 +67,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Nivå:"
 L["STATUS_COMPLETED"] = "Fullført"
-L["STATUS_IN_LOG"] = "I oppdragsloggen din"
+L["STATUS_IN_LOG"] = "Pågår"
 L["STATUS_AVAILABLE"] = "Tilgjengelig"
 L["STATUS_BLOCKED"] = "Låst"
+L["STATUS_READY"] = "Klar til innlevering"
+L["REQUIRES_LEVEL"] = "Krever nivå %d"
+L["PAGE_TURN"] = "Animasjon for å bla om"
+L["PAGE_TURN_TOOLTIP"] = "Boka blar om, med lyd, når du bytter dungeon eller fane."
+L["CLICK_DETAILS"] = "Klikk for å se detaljer"
+L["LANGUAGE_TOOLTIP"] = "Språket i dette vinduet. Navn på oppdrag, NPC-er, soner og gjenstander kommer fra spillet og forblir på dets språk."
 L["BLOCKED_LEVEL"] = "krever nivå %d"
 L["BLOCKED_PREREQ"] = "mangler tidligere oppdrag"
 L["STARTS"] = "Starter:"

@@ -67,13 +67,14 @@ function ns.CreateBossPanel(left, right)
     -- Jefes (pagina izquierda) ------------------------------------------------
     local bosses = ns.CreateScrollList(left, 54, function(row)
         ns.SetupJournalButton(row)
+        -- Imagen del Diario: donde la pone Blizzard (sale un poco por arriba)
         row.creature = row:CreateTexture(nil, "OVERLAY")
-        row.creature:SetSize(96, 48)
-        row.creature:SetPoint("BOTTOMLEFT", 0, 4)
-        -- En el hueco redondo de la izquierda del boton del Diario
+        row.creature:SetSize(128, 64)
+        row.creature:SetPoint("TOPLEFT", -4, 13)
+        -- Sin ella, la cara del jefe, redonda, en el centro del hueco
         row.portrait = row:CreateTexture(nil, "ARTWORK")
-        row.portrait:SetSize(44, 44)
-        row.portrait:SetPoint("LEFT", 5, 0)
+        ns.PlaceInHole(row.portrait, row)
+        row.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask")
         row.label = row:CreateFontString(nil, "OVERLAY", "GameFontNormalMed3")
         row.label:SetPoint("TOPLEFT", 72, -11) -- fuera del borde curvo del hueco
         row.label:SetPoint("RIGHT", -12, 0)

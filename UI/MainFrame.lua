@@ -28,7 +28,13 @@ end
 
 function ns.SetFilter(key, value)
     filters[key] = value
+    if key == "faction" and ui and ui.faction then ui.faction:SetValue(value or "Both") end
     ns.RefreshUI()
+end
+
+-- Pasa la pagina del libro (si la opcion esta puesta y la ventana se ve)
+local function TurnPage(forward)
+    if ns.db.pageTurn and ui and ui.turner and frame:IsVisible() then ui.turner:Turn(forward) end
 end
 
 local function SelectedDungeon()
@@ -52,7 +58,7 @@ function ns.RefreshUI()
     end
     local list = ns.FilterDungeons(filters)
     ui.dungeons:Refresh(list, d and d.key)
-    ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "   |cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
+    ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "\n|cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
     ui.book:SetShown(d ~= nil)
     if not d then return end
 
@@ -72,13 +78,25 @@ function ns.RefreshUI()
     ui.panels[tab]:SetDungeon(d)
 end
 
+local function IndexOf(list, value)
+    for i, v in ipairs(list) do if v == value then return i end end
+    return 0
+end
+
+-- Hacia delante si la pestana nueva va despues (Misiones, Jefes, Mazmorra)
 local function ShowTab(name)
     if not tContains(PANELS, name) then name = "quests" end
+    if name ~= ns.char.tab then TurnPage(IndexOf(PANELS, name) > IndexOf(PANELS, ns.char.tab)) end
     ns.char.tab = name
     ns.RefreshUI()
 end
 
+-- Hacia delante si la mazmorra nueva va despues en la lista
 function ns.SelectDungeon(d)
+    local old = SelectedDungeon()
+    if d and d ~= old then
+        TurnPage(IndexOf(ns.Dungeons, d) > IndexOf(ns.Dungeons, old))
+    end
     ns.char.dungeon = d and d.key
     ns.RefreshUI()
 end
@@ -114,32 +132,64 @@ end
 
 local function CreateToolbar()
     local search = CreateFrame("EditBox", nil, frame, "SearchBoxTemplate")
-    search:SetSize(LIST_W - 70, 20)
+    search:SetSize(LIST_W - 80, 20)
     search:SetPoint("TOPLEFT", 70, -33)
     search:SetAutoFocus(false)
+    search:SetText(filters.search) -- al rehacer la ventana (otro idioma) sigue el filtro
+    if search.Instructions then search.Instructions:SetText(L.SEARCH) end -- "Buscar" del juego, en el idioma elegido
     search:HookScript("OnTextChanged", function(self) ns.SetFilter("search", self:GetText()) end)
     ns.AddTooltip(search, L.SEARCH_TOOLTIP)
 
     local range = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
     range:SetSize(26, 26)
-    range:SetPoint("LEFT", search, "RIGHT", 14, 0)
+    range:SetPoint("LEFT", search, "RIGHT", 12, 0)
+    range:SetChecked(filters.myRange)
     range:SetScript("OnClick", function(self) ns.SetFilter("myRange", self:GetChecked() and true or false) end)
     ns.AddTooltip(range, L.MY_RANGE_TOOLTIP)
     local rangeLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     rangeLabel:SetPoint("LEFT", range, "RIGHT", 0, 1)
     rangeLabel:SetText(L.MY_RANGE)
 
-    local kind = FilterDropdown(170, { { "all", L.KIND_ALL }, { "classic", L.KIND_CLASSIC }, { "forever", L.KIND_FOREVER } },
+    local kind = FilterDropdown(140, { { "all", L.KIND_ALL }, { "classic", L.KIND_CLASSIC }, { "forever", L.KIND_FOREVER } },
         "kind")
-    kind:SetPoint("LEFT", rangeLabel, "RIGHT", 14, -1)
-    if ns.db.autoFaction then filters.faction = UnitFactionGroup("player") end
-    local faction = FilterDropdown(150, { { nil, L.FACTION_ALL }, { "Alliance", L.FACTION_ALLIANCE }, { "Horde", L.FACTION_HORDE } },
-        "faction")
-    faction:SetPoint("LEFT", kind, "RIGHT", 8, 0)
+    kind:SetPoint("LEFT", rangeLabel, "RIGHT", 12, -1)
+    -- Faccion: tres botones con los emblemas del juego (ambas, Alianza, Horda).
+    -- La de tu personaje solo al abrir por primera vez, no al cambiar de idioma.
+    if ns.db.autoFaction and not filters.started then filters.faction = UnitFactionGroup("player") end
+    filters.started = true
+    local A, H = ns.FACTION_CREST.Alliance, ns.FACTION_CREST.Horde
+    local faction = ns.CreateIconToggleGroup(frame, 24, {
+        { value = "Both", tooltip = L.FACTION_ALL, crests = { A, H } },
+        { value = "Alliance", tooltip = L.FACTION_ALLIANCE, crests = { A } },
+        { value = "Horde", tooltip = L.FACTION_HORDE, crests = { H } },
+    }, function(value) ns.SetFilter("faction", value ~= "Both" and value or nil) end)
+    faction:SetPoint("LEFT", kind, "RIGHT", 12, 1)
+    faction:SetValue(filters.faction or "Both")
 
+    -- Idioma de la ventana, a la derecha: el del juego o cualquiera de los 20
+    local language = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
+    language:SetWidth(150)
+    language:SetPoint("TOPRIGHT", -12, -30)
+    if language.SetupMenu then
+        language:SetupMenu(function(_, root)
+            if root.SetScrollMode then root:SetScrollMode(22 * 16) end
+            local function Radio(code, text)
+                root:CreateRadio(text, function() return (ns.db.language or "auto") == code end,
+                    function() ns.SetLanguage(code) end)
+            end
+            Radio("auto", L.LANG_AUTO)
+            for _, lang in ipairs(ns.LANGUAGES) do Radio(lang[1], lang[2]) end
+        end)
+    end
+    ns.AddTooltip(language, L.LANGUAGE_TOOLTIP)
+
+    -- "34 mazmorras" / "7 misiones pendientes...", en dos lineas entre medias
     ui.pending = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    ui.pending:SetPoint("TOPRIGHT", -14, -38)
-    ui.range, ui.kind, ui.faction, ui.search = range, kind, faction, search
+    ui.pending:SetPoint("LEFT", faction, "RIGHT", 12, 0)
+    ui.pending:SetPoint("RIGHT", language, "LEFT", -10, 0)
+    ui.pending:SetJustifyH("RIGHT")
+    ui.pending:SetMaxLines(2)
+    ui.range, ui.kind, ui.faction, ui.search, ui.language = range, kind, faction, search, language
 end
 
 local function CreateBook()
@@ -195,6 +245,9 @@ local function CreateBook()
         bosses = ns.CreateBossPanel(Page(leftPage), Page(rightPage)),
         overview = ns.CreateOverviewPanel(Page(leftPage), Page(rightPage)),
     }
+
+    -- Hoja que pasa: el lomo en x=392, el pergamino dentro de las tapas
+    ui.turner = ns.CreatePageTurner(book, 392, { left = 12, right = BOOK.width - 14, top = 8, bottom = BOOK.height - 10 })
 
     -- Pestanas laterales, en el borde derecho del libro
     ui.tabs = {}
@@ -253,6 +306,19 @@ local function CreateMainFrame()
     CreateBook()
     ns.ui = ui
     ShowTab(ns.char.tab)
+end
+
+-- Cambia el idioma de la ventana ("auto" = el del juego). Los textos se ponen
+-- al construirla, asi que se rehace: la vieja se esconde y no se vuelve a usar
+-- (una ventana suelta por cambio de idioma, que se hace muy de vez en cuando).
+function ns.SetLanguage(code)
+    ns.db.language = code
+    ns.ApplyLanguage(code)
+    if not frame then return end
+    local shown = frame:IsShown()
+    frame:Hide()
+    CreateMainFrame()
+    frame:SetShown(shown)
 end
 
 function ns.ToggleMainFrame()

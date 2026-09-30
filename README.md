@@ -31,7 +31,7 @@
 ## Features
 
 - **Every dungeon** of WoW Forever, the classic ones and the new ones (Hall of Thanes, Ruins of Lordaeron, Excavation Site, City of Dalaran, The Drowned City, Krol'dok Stronghold, Alcaz Prison, Blackmaw Hold, Shaper's Terrace), sorted by level and colored by difficulty for your character.
-- **300+ dungeon quests** with level, faction and status: **Completed**, **In your quest log**, **Available** or **Locked** (level or previous quest). A "3/7 completed" counter per dungeon.
+- **300+ dungeon quests** with level, faction and status, shown with the game's own quest icons: **Available** (!), **In progress** (…), **Ready to turn in** (?), **Completed** (✓) or **Locked** (padlock, by level or previous quest). A legend under the list and a tooltip on every quest. A "3/7 completed" counter per dungeon.
 - **Quest chains**: every step of the chain with its status, so you know what to do first. Click a step to jump to it.
 - **Objectives and rewards**: objectives in your game's language, reward cards with icon, quality color and the game's own tooltip (hold Shift to compare), the choice rewards and the ones you always get, XP and money. The new Forever rewards are included.
 - **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room.
@@ -40,11 +40,12 @@
 - **Quest start and end**: the NPC or object that gives the quest and the one where you turn it in, with zone and coordinates, and **Mark start** / **Mark end** buttons. If the NPC is inside the dungeon, the entrance is marked.
 - **Instance entrance** of every dungeon, straight from the game's own world map, with a **Mark entrance on map** button (also the portal icon next to each dungeon).
 - **Built-in guidance arrow**, no TomTom needed: an on-screen arrow that turns as you move, with the distance, markers on the world map and on the minimap, and it clears itself when you arrive. You can also use the game's own map pin or **TomTom** instead.
-- **Wowhead link** for every quest, in your game's language, ready to copy with Ctrl+C.
+- **Wowhead link** for every quest, in the window's language, ready to copy with Ctrl+C.
 - **AtlasLoot**: a "View loot" button when AtlasLoot is loaded. **Questie**: used as a fallback for quest givers the addon doesn't know yet.
-- Filters: my level, classic / new in Forever, faction and a search box (dungeon or boss name).
+- Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde) and a search box (dungeon or boss name).
+- **Page-turn animation** with sound when you change dungeon or tab (can be turned off).
 - Minimap button (LibDBIcon, works with minimap button collectors), window scale, Esc to close.
-- Translated into 20 languages. Dungeon and zone names come from the game itself, in your language.
+- Translated into 20 languages, with a **language selector** in the window: show it in any of them without changing your game's language. Quest, NPC, zone and item names come from the game itself, in its language.
 
 ## Where the data comes from
 
@@ -92,7 +93,7 @@ Quest descriptions are **collected in the game**:
 
 ## Compatibility
 
-- **WoW Forever (Classic+)**: 1.60.1 (beta). It only loads on WoW Forever: the only TOC is `DungeonQuestAtlas_Camelot.toc` (`Camelot` is Forever's game type).
+- **WoW Forever (Classic+)**: 1.60.1 (beta). It only loads on WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` is Forever's game type) and `DungeonQuestAtlas.toc`, an identical copy the CurseForge app needs to detect the addon.
 - Optional: TomTom, AtlasLoot, Questie.
 
 ---
@@ -104,7 +105,7 @@ Quest descriptions are **collected in the game**:
 ### Funciones
 
 - **Todas las mazmorras** de WoW Forever, las clásicas y las nuevas, ordenadas por nivel y coloreadas según la dificultad para tu personaje.
-- **Más de 300 misiones de mazmorra** con nivel, facción y estado: **Completada**, **En tu registro**, **Disponible** o **Bloqueada** (por nivel o misión previa). Contador "3/7 completadas" por mazmorra.
+- **Más de 300 misiones de mazmorra** con nivel, facción y estado, con los iconos de misión del propio juego: **Disponible** (!), **En curso** (…), **Lista para entregar** (?), **Completada** (✓) o **Bloqueada** (candado, por nivel o misión previa). Leyenda bajo la lista y tooltip en cada misión. Contador "3/7 completadas" por mazmorra.
 - **Cadenas de misiones**: todos los pasos de la cadena con su estado, para saber qué hacer antes. Clic en un paso para ir a él.
 - **Objetivos y recompensas**: objetivos en el idioma de tu juego, tarjetas de recompensa con icono, color de calidad y el tooltip del propio juego (Mayús para comparar), las que se eligen y las que se reciben siempre, experiencia y dinero. Incluye las recompensas nuevas de Forever.
 - **Jefes y botín** de todas las mazmorras: el modelo 3D del jefe (arrástralo para girarlo), nivel, raros y cada objeto con su probabilidad. Mayús+clic enlaza el objeto y Ctrl+clic abre el probador.
@@ -113,11 +114,12 @@ Quest descriptions are **collected in the game**:
 - **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona, coordenadas y botones **Marcar inicio** / **Marcar final**. Si el PNJ está dentro de la mazmorra, se marca la entrada.
 - **Entrada de cada mazmorra**, sacada del propio mapa del juego, con botón **Marcar entrada en el mapa** (también el icono de portal junto a cada mazmorra).
 - **Flecha de guía propia**, sin necesidad de TomTom: una flecha en pantalla que gira mientras te mueves, con la distancia, marcadores en el mapa del mundo y en el minimapa, y que se quita sola al llegar. También puedes usar el pin del mapa del juego o **TomTom**.
-- **Enlace de Wowhead** de cada misión, en el idioma de tu juego, listo para copiar con Ctrl+C.
+- **Enlace de Wowhead** de cada misión, en el idioma de la ventana, listo para copiar con Ctrl+C.
 - **AtlasLoot**: botón "Ver botín" si está cargado. **Questie**: se usa de respaldo para los PNJ que el addon aún no conoce.
-- Filtros: mi nivel, clásicas / nuevas de Forever, facción y buscador (por mazmorra o por jefe).
+- Filtros: mi nivel, clásicas / nuevas de Forever, **botones de facción** (ambas, Alianza, Horda) y buscador (por mazmorra o por jefe).
+- **Animación de pasar página** con sonido al cambiar de mazmorra o de pestaña (se puede desactivar).
 - Botón de minimapa (LibDBIcon, compatible con recolectores de botones), escala de la ventana, Esc para cerrar.
-- Traducido a 20 idiomas. Los nombres de mazmorras y zonas los da el propio juego, en tu idioma.
+- Traducido a 20 idiomas, con **selector de idioma** en la ventana: se puede ver en cualquiera sin cambiar el idioma del juego. Los nombres de misiones, PNJ, zonas y objetos los da el propio juego, en su idioma.
 
 ### De dónde salen los datos
 
@@ -165,7 +167,7 @@ Las descripciones de las misiones se **recogen en el juego**:
 
 ### Compatibilidad
 
-- **WoW Forever (Classic+)**: 1.60.1 (beta). Solo se carga en WoW Forever: su único `.toc` es `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever).
+- **WoW Forever (Classic+)**: 1.60.1 (beta). Solo se carga en WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever) y `DungeonQuestAtlas.toc`, una copia idéntica que la app de CurseForge necesita para detectar el addon.
 - Opcionales: TomTom, AtlasLoot, Questie.
 
 ---

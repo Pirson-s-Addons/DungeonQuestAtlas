@@ -9,6 +9,16 @@ local ADDON_NAME, ns = ...
 local L = ns.L or {}
 ns.L = L
 
+-- Los demas idiomas no pisan L: cada uno rellena su tabla y ns.ApplyLanguage
+-- (Core/Core.lua) copia en L el elegido, sobre el ingles. Asi la ventana se
+-- puede ver en cualquier idioma sin cambiar el del juego.
+ns.LOCALES = {}
+function ns.NewLocale(...)
+    local texts = {}
+    for _, code in ipairs({ ... }) do ns.LOCALES[code] = texts end
+    return texts
+end
+
 L["VERSION"] = "Version:"
 L["AUTHOR"] = "Author:"
 L["LINKS"] = "Links"
@@ -51,6 +61,7 @@ L["COLLECT"] = "Collector mode"
 L["COLLECT_TOOLTIP"] = "Saves the text, quest giver and position of every quest you open. Export it with /dqa export."
 L["DEBUG"] = "Debug messages"
 L["DEBUG_TOOLTIP"] = "Prints in the chat what the addon does."
+L["SEARCH"] = "Search"
 L["SEARCH_TOOLTIP"] = "Filters the dungeons by name or by boss."
 L["MY_RANGE"] = "My level"
 L["MY_RANGE_TOOLTIP"] = "Only the dungeons for your level."
@@ -69,9 +80,15 @@ L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "Level:"
 L["STATUS_COMPLETED"] = "Completed"
-L["STATUS_IN_LOG"] = "In your quest log"
+L["STATUS_IN_LOG"] = "In progress"
 L["STATUS_AVAILABLE"] = "Available"
 L["STATUS_BLOCKED"] = "Locked"
+L["STATUS_READY"] = "Ready to turn in"
+L["REQUIRES_LEVEL"] = "Requires level %d"
+L["PAGE_TURN"] = "Page-turn animation"
+L["PAGE_TURN_TOOLTIP"] = "The book turns a page, with its sound, when you change dungeon or tab."
+L["CLICK_DETAILS"] = "Click to see the details"
+L["LANGUAGE_TOOLTIP"] = "Language of this window. Quest, NPC, zone and item names come from the game and stay in its language."
 L["BLOCKED_LEVEL"] = "requires level %d"
 L["BLOCKED_PREREQ"] = "previous quest missing"
 L["STARTS"] = "Starts:"
@@ -146,3 +163,8 @@ L["MARK_ENTRANCE"] = "Mark entrance on map"
 L["TAB_OVERVIEW"] = "Dungeon"
 L["BOSS_COUNT"] = "%d bosses"
 L["NO_LORE"] = "The game's Dungeon Journal has no entry for this dungeon yet."
+
+-- Copia del ingles: la base sobre la que se pone cualquier otro idioma
+local english = {}
+for key, text in pairs(L) do english[key] = text end
+ns.LOCALES.enUS, ns.LOCALES.enGB = english, english

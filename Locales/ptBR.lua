@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- PORTUGUÊS (ptBR)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "ptBR" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("ptBR")
 
 L["VERSION"] = "Versão:"
 L["AUTHOR"] = "Autor:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Modo coletor"
 L["COLLECT_TOOLTIP"] = "Salva o texto, quem entrega e a posição de cada missão que você abre. Exporte com /dqa export."
 L["DEBUG"] = "Mensagens de depuração"
 L["DEBUG_TOOLTIP"] = "Escreve no chat o que o addon faz."
+L["SEARCH"] = "Buscar"
 L["SEARCH_TOOLTIP"] = "Filtra as masmorras por nome ou por chefe."
 L["MY_RANGE"] = "Meu nível"
 L["MY_RANGE_TOOLTIP"] = "Só as masmorras do seu nível."
@@ -67,9 +67,15 @@ L["LOWER"] = "Inferior"
 L["UPPER"] = "Superior"
 L["LEVEL"] = "Nível:"
 L["STATUS_COMPLETED"] = "Concluída"
-L["STATUS_IN_LOG"] = "No seu registro"
+L["STATUS_IN_LOG"] = "Em andamento"
 L["STATUS_AVAILABLE"] = "Disponível"
 L["STATUS_BLOCKED"] = "Bloqueada"
+L["STATUS_READY"] = "Pronta para entregar"
+L["REQUIRES_LEVEL"] = "Requer nível %d"
+L["PAGE_TURN"] = "Animação de virar página"
+L["PAGE_TURN_TOOLTIP"] = "O livro vira a página, com som, ao mudar de masmorra ou de aba."
+L["CLICK_DETAILS"] = "Clique para ver os detalhes"
+L["LANGUAGE_TOOLTIP"] = "Idioma desta janela. Os nomes de missões, PNJs, zonas e itens vêm do jogo e continuam no idioma dele."
 L["BLOCKED_LEVEL"] = "requer nível %d"
 L["BLOCKED_PREREQ"] = "falta uma missão anterior"
 L["STARTS"] = "Começa:"

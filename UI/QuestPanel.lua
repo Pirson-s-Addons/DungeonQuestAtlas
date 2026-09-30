@@ -8,36 +8,40 @@ local L = ns.L
 -- Pagina derecha: el detalle en pergamino, con la fuente de las misiones del
 -- juego: donde empieza y termina, cadena, objetivos, recompensas, descripcion.
 
-local ICON = {
-    COMPLETED = "Interface\\RaidFrame\\ReadyCheck-Ready",
-    IN_LOG = "Interface\\GossipFrame\\ActiveQuestIcon",
-    AVAILABLE = "Interface\\GossipFrame\\AvailableQuestIcon",
-    BLOCKED = "Interface\\RaidFrame\\ReadyCheck-NotReady",
-    UNVERIFIED = "Interface\\RaidFrame\\ReadyCheck-Waiting",
-}
--- Colores del estado, legibles sobre papel
-local STATUS = {
-    COMPLETED = { "STATUS_COMPLETED", "|cff1a6b12" },
-    IN_LOG = { "STATUS_IN_LOG", "|cff7a4d00" },
-    AVAILABLE = { "STATUS_AVAILABLE", "|cff402608" },
-    BLOCKED = { "STATUS_BLOCKED", "|cff8c1a0d" },
-}
-local FACTION_TEXTURE = {
-    Alliance = "Interface\\FriendsFrame\\PlusManz-Alliance",
-    Horde = "Interface\\FriendsFrame\\PlusManz-Horde",
-}
-local FACTION_ICON = {
-    Alliance = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:16|t",
-    Horde = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:16|t",
-}
+local UNVERIFIED = "Interface\\RaidFrame\\ReadyCheck-Waiting"
 local FACTION_NAME = { Alliance = "FACTION_ALLIANCE", Horde = "FACTION_HORDE", Both = "FACTION_ALL" }
 local SEP = "  ·  "
 local LINK = "|cff5c1d00" -- enlaces sobre papel
-local QUEST_ICON = "Interface\\Icons\\INV_Misc_Note_01" -- el pergamino de mision
 local MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+local LEGEND_H = 30
 
 local function Icon(path, size)
     return ("|T%s:%d|t"):format(path, size or 14)
+end
+
+-- "Completada", "Bloqueada: requiere nivel 14"... en el color del estado
+local function StatusText(status, reason, where)
+    return ns.STATUS_COLOR[status][where] .. L["STATUS_" .. status] .. (reason and (": " .. reason) or "") .. "|r"
+end
+
+-- Tooltip de una fila: titulo, estado, nivel, faccion y que hace el clic
+local function QuestTooltip(row)
+    local id = row.questID
+    local q = ns.Quests[id] or {}
+    local status, reason = ns.QuestStatus(id)
+    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+    GameTooltip:SetText(ns.QuestTitle(id), 1, 0.82, 0)
+    GameTooltip:AddLine(ns.StatusMarkup(status, 16) .. " " .. StatusText(status, reason, "light"))
+    local level = ns.QuestLevel(q, id)
+    if level then GameTooltip:AddLine(L.LEVEL .. " " .. level, 1, 1, 1) end
+    if q.minLevel then GameTooltip:AddLine(L.REQUIRES_LEVEL:format(q.minLevel), 1, 1, 1) end
+    if ns.FACTION_ATLAS[q.faction or ""] then
+        GameTooltip:AddLine(ns.FactionMarkup(q.faction) .. " " .. L[FACTION_NAME[q.faction]], 1, 1, 1)
+    end
+    if not ns.IsVerified(id) then GameTooltip:AddLine(Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED, 0.6, 0.6, 0.6, true) end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(L.CLICK_DETAILS, 0.5, 0.8, 1)
+    GameTooltip:Show()
 end
 
 -- ------------------------------------------
@@ -47,18 +51,16 @@ end
 local function CreateQuestList(parent, onSelect)
     local selected
 
-    -- Como los botones de jefe: en el hueco redondo, el pergamino de mision;
-    -- el estado, en una insignia en su esquina; la faccion, junto al nivel
+    -- Como los botones de jefe: en el hueco redondo, el icono de estado del
+    -- juego (! ... ? marca candado) sobre fondo oscuro; la faccion, junto al nivel
     local function Setup(row)
         ns.SetupJournalButton(row)
-        row.icon = row:CreateTexture(nil, "ARTWORK")
-        row.icon:SetSize(44, 44)
-        row.icon:SetPoint("LEFT", 5, 0)
-        row.icon:SetMask(MASK)
-        row.icon:SetTexture(QUEST_ICON)
+        row.hole = row:CreateTexture(nil, "ARTWORK")
+        ns.PlaceInHole(row.hole, row)
+        row.hole:SetTexture(MASK) -- un circulo blanco: tenido de oscuro
+        row.hole:SetVertexColor(0.05, 0.03, 0.01, 0.85)
         row.status = row:CreateTexture(nil, "OVERLAY")
-        row.status:SetSize(20, 20)
-        row.status:SetPoint("BOTTOMRIGHT", row.icon, "BOTTOMRIGHT", 5, -3)
+        ns.PlaceInHole(row.status, row, 30)
         row.level = row:CreateFontString(nil, "ARTWORK", "GameFontNormalMed3")
         row.level:SetPoint("RIGHT", -16, 0)
         row.faction = row:CreateTexture(nil, "ARTWORK")
@@ -69,7 +71,12 @@ local function CreateQuestList(parent, onSelect)
         row.label:SetPoint("RIGHT", row.faction, "LEFT", -6, 0)
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
-        row:SetScript("OnClick", function(self) onSelect(self.questID) end)
+        row:SetScript("OnClick", function(self)
+            if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT) end
+            onSelect(self.questID)
+        end)
+        row:SetScript("OnEnter", QuestTooltip)
+        row:SetScript("OnLeave", function() GameTooltip:Hide() end)
     end
 
     local function Update(row, item)
@@ -77,13 +84,15 @@ local function CreateQuestList(parent, onSelect)
         local q = ns.Quests[id] or {}
         local status = ns.QuestStatus(id)
         row.questID = id
-        row.status:SetTexture(ICON[status])
+        ns.SetStatusIcon(row.status, status)
+        -- Hecha: se apaga, como las misiones grises del juego
         local done = status == ns.STATUS_COMPLETED
-        row.icon:SetDesaturated(done)
-        row.faction:SetTexture(q.faction and FACTION_TEXTURE[q.faction])
-        row.faction:SetShown(FACTION_TEXTURE[q.faction or ""] ~= nil)
-        row.label:SetText(ns.QuestTitle(id) .. (ns.IsVerified(id) and "" or (" " .. Icon(ICON.UNVERIFIED, 12))))
+        local faction = ns.FACTION_ATLAS[q.faction or ""]
+        if faction then row.faction:SetAtlas(faction) end
+        row.faction:SetShown(faction ~= nil)
+        row.label:SetText(ns.QuestTitle(id))
         row.label:SetTextColor(ns.PARCHMENT_GOLD[1], ns.PARCHMENT_GOLD[2], ns.PARCHMENT_GOLD[3], done and 0.55 or 1)
+        row.status:SetAlpha(status == ns.STATUS_BLOCKED and 0.8 or 1)
         local level = ns.QuestLevel(q, id)
         row.level:SetText(level and ("|c%s%d|r"):format(ns.LevelColor(level, level, UnitLevel("player")), level) or "?")
         ns.SetJournalButtonSelected(row, id == selected)
@@ -133,6 +142,7 @@ local function CreateDetail(parent)
     local detail = { questID = nil }
     local title = Text("QuestTitleFont", 0)
     local meta = Text("GameFontBlack", 6)
+    local statusLine = Text("GameFontNormal", 6) -- el estado, destacado en su linea
     local unverified = Text("GameFontBlack", 4, ns.INK_LIGHT)
 
     -- Donde ---------------------------------------------------------------
@@ -141,13 +151,15 @@ local function CreateDetail(parent)
     local ends = Text("QuestFont", 4)
     local buttons = Add(CreateFrame("Frame", nil, content), 10)
     buttons:SetHeight(24)
+    local row = {}
     local function Button(text, anchor, tooltip, onClick)
         local b = CreateFrame("Button", nil, buttons, "UIPanelButtonTemplate")
-        b:SetSize(108, 24)
+        b:SetHeight(24)
         if anchor then b:SetPoint("LEFT", anchor, "RIGHT", 4, 0) else b:SetPoint("LEFT") end
         b:SetText(text)
         b:SetScript("OnClick", onClick)
         ns.AddTooltip(b, tooltip)
+        row[#row + 1] = b
         return b
     end
     -- El primero con coordenadas; sin ninguno, MarkPlace marca la entrada
@@ -265,6 +277,8 @@ local function CreateDetail(parent)
     local function Layout()
         local width = math.max(100, scroll:GetWidth() - 10)
         content:SetWidth(width)
+        -- Los tres botones caben siempre en la pagina
+        for _, b in ipairs(row) do b:SetWidth(math.floor((width - 4 * (#row - 1)) / #row)) end
         local previous, height = nil, 6
         for _, block in ipairs(blocks) do
             block:ClearAllPoints()
@@ -319,14 +333,16 @@ local function CreateDetail(parent)
 
         title:SetText(ns.QuestTitle(id))
         local level = ns.QuestLevel(q, id)
-        local parts = { ("%s %s"):format(L.LEVEL, level or "?") .. (q.minLevel and (" (" .. q.minLevel .. ")") or "") }
+        -- "Nivel: 15 · Requiere nivel 9 · (A) Alianza"
+        local parts = { ("%s %s"):format(L.LEVEL, level or "?") }
+        if q.minLevel then parts[#parts + 1] = L.REQUIRES_LEVEL:format(q.minLevel) end
         if q.faction then
-            parts[#parts + 1] = (FACTION_ICON[q.faction] and (FACTION_ICON[q.faction] .. " ") or "") .. L[FACTION_NAME[q.faction]]
+            local mark = ns.FactionMarkup(q.faction)
+            parts[#parts + 1] = (mark ~= "" and (mark .. " ") or "") .. L[FACTION_NAME[q.faction]]
         end
-        parts[#parts + 1] = Icon(ICON[status]) .. " " .. STATUS[status][2] .. L[STATUS[status][1]]
-            .. (reason and (": " .. reason) or "") .. "|r"
         meta:SetText(table.concat(parts, SEP))
-        Set(unverified, not ns.IsVerified(id) and (Icon(ICON.UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
+        statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "paper"))
+        Set(unverified, not ns.IsVerified(id) and (Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
 
         local startList, endList = ns.QuestPlaces(id, "starts"), ns.QuestPlaces(id, "ends")
         starts:SetText(Describe(L.STARTS, startList))
@@ -348,7 +364,7 @@ local function CreateDetail(parent)
             link.questID = stepID
             local label = ns.QuestTitle(stepID)
             label = stepID == id and ("|cff000000" .. label .. "|r") or (LINK .. label .. "|r")
-            link:SetText("|cff402608" .. i .. ".|r " .. Icon(ICON[ns.QuestStatus(stepID)]) .. " " .. label)
+            link:SetText("|cff402608" .. i .. ".|r " .. ns.StatusMarkup((ns.QuestStatus(stepID))) .. " " .. label)
             link:Show()
         end
         Set(chainNote, q.chain == true and L.CHAIN_UNKNOWN or nil)
@@ -385,7 +401,26 @@ function ns.CreateQuestPanel(left, right)
     local panel = { dungeon = nil, questID = nil }
 
     local listArea = CreateFrame("Frame", nil, left)
-    listArea:SetAllPoints()
+    listArea:SetPoint("TOPLEFT")
+    listArea:SetPoint("BOTTOMRIGHT", 0, LEGEND_H)
+
+    -- Leyenda: que significa cada icono, siempre a la vista bajo la lista
+    local line = left:CreateTexture(nil, "ARTWORK")
+    line:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.3)
+    line:SetHeight(1)
+    line:SetPoint("BOTTOMLEFT", 0, LEGEND_H - 4)
+    line:SetPoint("BOTTOMRIGHT", -18, LEGEND_H - 4)
+    local legend = ns.PaperText(left, "GameFontBlackSmall")
+    legend:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 0, -3)
+    legend:SetPoint("RIGHT", line, "RIGHT")
+    legend:SetJustifyH("CENTER")
+    legend:SetSpacing(2)
+    local keys = {}
+    for _, status in ipairs(ns.STATUS_ORDER) do
+        keys[#keys + 1] = ns.StatusMarkup(status, 14) .. " " .. L["STATUS_" .. status]
+    end
+    legend:SetText(table.concat(keys, "   "))
+
     local empty = ns.PaperText(left, "QuestFont")
     empty:SetPoint("TOP", 0, -30)
     empty:SetText(L.NO_QUESTS)
@@ -403,9 +438,15 @@ function ns.CreateQuestPanel(left, right)
         if self.dungeon then
             ids = ns.DungeonQuests(self.dungeon, ns.FactionFilter(), ns.db.hideCompleted)
         end
-        -- Sin mision elegida: la primera. Una elegida que los filtros ocultan
-        -- (un paso ya completado de su cadena) se sigue viendo.
-        self.questID = self.questID or ids[1]
+        -- Sin mision elegida: la primera que te queda por hacer (o la primera).
+        -- Una elegida que los filtros ocultan (un paso ya completado de su
+        -- cadena) se sigue viendo.
+        if not self.questID then
+            for _, id in ipairs(ids) do
+                if ns.QuestStatus(id) ~= ns.STATUS_COMPLETED then self.questID = id break end
+            end
+            self.questID = self.questID or ids[1]
+        end
         empty:SetShown(#ids == 0)
         list:Refresh(ids, self.questID)
         detail.dungeon = self.dungeon

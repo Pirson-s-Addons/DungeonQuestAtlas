@@ -3,9 +3,8 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- ESPAÑOL (esES / esMX)
 -- ==========================================
-local locale = GetLocale()
-if locale ~= "esES" and locale ~= "esMX" then return end
-local L = ns.L
+-- Se cargan todos: la ventana puede mostrarse en cualquier idioma (ns.SetLanguage)
+local L = ns.NewLocale("esES", "esMX")
 
 L["VERSION"] = "Versión:"
 L["AUTHOR"] = "Autor:"
@@ -49,6 +48,7 @@ L["COLLECT"] = "Modo recolector"
 L["COLLECT_TOOLTIP"] = "Guarda el texto, el PNJ y la posición de cada misión que abres. Expórtalo con /dqa export."
 L["DEBUG"] = "Mensajes de depuración"
 L["DEBUG_TOOLTIP"] = "Escribe en el chat lo que hace el addon."
+L["SEARCH"] = "Buscar"
 L["SEARCH_TOOLTIP"] = "Filtra las mazmorras por nombre o por jefe."
 L["MY_RANGE"] = "Mi nivel"
 L["MY_RANGE_TOOLTIP"] = "Solo las mazmorras de tu nivel."
@@ -67,9 +67,15 @@ L["LOWER"] = "Inferior"
 L["UPPER"] = "Superior"
 L["LEVEL"] = "Nivel:"
 L["STATUS_COMPLETED"] = "Completada"
-L["STATUS_IN_LOG"] = "En tu registro"
+L["STATUS_IN_LOG"] = "En curso"
 L["STATUS_AVAILABLE"] = "Disponible"
 L["STATUS_BLOCKED"] = "Bloqueada"
+L["STATUS_READY"] = "Lista para entregar"
+L["REQUIRES_LEVEL"] = "Requiere nivel %d"
+L["PAGE_TURN"] = "Animación de pasar página"
+L["PAGE_TURN_TOOLTIP"] = "El libro pasa la página, con su sonido, al cambiar de mazmorra o de pestaña."
+L["CLICK_DETAILS"] = "Clic para ver los detalles"
+L["LANGUAGE_TOOLTIP"] = "Idioma de esta ventana. Los nombres de misiones, PNJ, zonas y objetos los da el juego y siguen en su idioma."
 L["BLOCKED_LEVEL"] = "requiere nivel %d"
 L["BLOCKED_PREREQ"] = "falta una misión previa"
 L["STARTS"] = "Empieza:"
