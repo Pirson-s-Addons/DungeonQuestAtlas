@@ -119,8 +119,21 @@ function ns.SetWaypoint(point, title, kind)
     return "own"
 end
 
+-- Abre el mapa del mundo en ese mapa, para ver el pin recien puesto.
+-- C_Map.OpenWorldMap tiene restricciones (en combate puede no abrir): con pcall.
+function ns.OpenMapAt(mapID)
+    if not (mapID and WorldMapFrame) then return end
+    if C_Map.OpenWorldMap then
+        pcall(C_Map.OpenWorldMap, mapID)
+    elseif ShowUIPanel then
+        pcall(ShowUIPanel, WorldMapFrame)
+    end
+    if WorldMapFrame:IsShown() and WorldMapFrame.SetMapID then pcall(WorldMapFrame.SetMapID, WorldMapFrame, mapID) end
+end
+
 -- PNJ u objeto de una mision. Si esta dentro de la mazmorra (sin coordenadas,
--- o en un mapa que no admite pin), se marca la entrada.
+-- o en un mapa que no admite pin), se marca la entrada. Devuelve el modo de
+-- SetWaypoint y el punto que se ha marcado.
 function ns.MarkPlace(place, title, d, kind)
     local noPin = place and (not place.mapID
         or (C_Map.CanSetUserWaypointOnMap and not C_Map.CanSetUserWaypointOnMap(place.mapID)))
@@ -128,8 +141,57 @@ function ns.MarkPlace(place, title, d, kind)
         local entrance = ns.Entrance(d)
         if entrance then
             ns.Print(L.WP_INSIDE:format(title, ns.DungeonName(d)))
-            return ns.SetWaypoint(entrance, ns.DungeonName(d), "entrance")
+            return ns.SetWaypoint(entrance, ns.DungeonName(d), "entrance"), entrance
         end
     end
-    return ns.SetWaypoint(place, title, kind)
+    return ns.SetWaypoint(place, title, kind), place
+end
+
+-- ==========================================
+-- GUIA POR LA CADENA
+-- ==========================================
+-- Al entregar un paso de una cadena, se marca el inicio del siguiente y se
+-- avisa en el chat (opcion "chainGuide"). Si el siguiente lo da el mismo PNJ
+-- con el que acabas de entregar, solo se avisa: ya estas alli.
+
+local function DungeonOfQuest(id)
+    for _, d in ipairs(ns.Dungeons) do
+        if tContains(d.quests, id) then return d end
+    end
+end
+
+function ns.GuideNextStep(questID)
+    if not ns.db.chainGuide then return end
+    local q = ns.Quests[questID]
+    local chain = q and type(q.chain) == "table" and q.chain or {}
+    for i, id in ipairs(chain) do
+        local nextID = chain[i + 1]
+        if id == questID and nextID and not C_QuestLog.IsQuestFlaggedCompleted(nextID) then
+            local place = ns.QuestPlaces(nextID, "starts")[1]
+            local who = place and ns.PlaceName(place) or L.UNKNOWN
+            ns.Print(L.NEXT_STEP:format(ns.QuestTitle(nextID), who))
+            local sameNpc = place and place.npcID and tContains(q.ends or {}, "npc:" .. place.npcID)
+            if place and not sameNpc then ns.MarkPlace(place, who, DungeonOfQuest(nextID), "start") end
+            return
+        end
+    end
+end
+
+-- ==========================================
+-- RUTA HASTA LA ENTRADA
+-- ==========================================
+-- Las paradas de ns.Route y la entrada, como marcadores de la guia propia (el
+-- pin del juego y TomTom no encadenan puntos). Se anaden al reves: la flecha
+-- va a la ultima anadida (la parada 1) y, al llegar, RemoveMarker pasa a la
+-- ultima que queda (la 2), y asi hasta la entrada.
+function ns.StartRoute(d)
+    local stops = d and ns.Route(d)
+    if not stops then return end
+    local name = ns.DungeonName(d)
+    local entrance = ns.Entrance(d)
+    if entrance then ns.AddMarker(entrance, name, "entrance") end
+    for i = #stops, 1, -1 do
+        ns.AddMarker(stops[i], L.ROUTE_STOP:format(name, i, #stops), "route")
+    end
+    ns.Print(L.ROUTE_STARTED:format(name, #stops))
 end

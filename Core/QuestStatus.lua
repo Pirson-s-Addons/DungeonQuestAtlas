@@ -25,11 +25,33 @@ local function IsReady(id)
     return C_QuestLog.IsComplete and C_QuestLog.IsComplete(id) and true or false
 end
 
+-- Misiones de clase: q.classes = { "WARLOCK", ... } (fichas de UnitClass).
+-- Nombres en el idioma del cliente y, si color, en el de la clase.
+function ns.ClassNames(q, color)
+    local names = {}
+    for _, token in ipairs(q.classes or {}) do
+        local name = LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[token] or token
+        local c = color and RAID_CLASS_COLORS and RAID_CLASS_COLORS[token]
+        names[#names + 1] = c and c.colorStr and ("|c%s%s|r"):format(c.colorStr, name) or name
+    end
+    return #names > 0 and table.concat(names, ", ") or nil
+end
+
+function ns.IsMyClass(q)
+    if not q.classes then return true end
+    local _, mine = UnitClass("player")
+    for _, token in ipairs(q.classes) do
+        if token == mine then return true end
+    end
+    return false
+end
+
 -- Devuelve el estado y, si esta bloqueada, el motivo
 function ns.QuestStatus(id)
     if IsCompleted(id) then return ns.STATUS_COMPLETED end
     if IsInLog(id) then return IsReady(id) and ns.STATUS_READY or ns.STATUS_IN_LOG end
     local q = ns.Quests[id] or {}
+    if not ns.IsMyClass(q) then return ns.STATUS_BLOCKED, L.BLOCKED_CLASS:format(ns.ClassNames(q)) end
     for _, pre in ipairs(q.prereqs or {}) do
         if not IsCompleted(pre) then return ns.STATUS_BLOCKED, L.BLOCKED_PREREQ end
     end
@@ -49,7 +71,8 @@ function ns.DungeonQuests(d, faction, hideCompleted)
     local list = {}
     for _, id in ipairs(d.quests) do
         local q = ns.Quests[id] or {}
-        if ns.MatchesFaction(q, faction) and not (hideCompleted and IsCompleted(id)) then
+        if ns.MatchesFaction(q, faction) and not (hideCompleted and IsCompleted(id))
+            and not (ns.db.hideOtherClasses and not ns.IsMyClass(q)) then
             list[#list + 1] = id
         end
     end
@@ -61,11 +84,14 @@ function ns.DungeonQuests(d, faction, hideCompleted)
     return list
 end
 
--- "3/7 completadas", contando solo las de la faccion
+-- "3/7 completadas", contando solo las de la faccion y las de tu clase (una de
+-- brujo no cuenta si no eres brujo: no la puedes hacer). Lo usan la lista, la
+-- cabecera del libro y el "pendientes" del minimapa.
 function ns.DungeonProgress(d, faction)
     local done, total = 0, 0
     for _, id in ipairs(d.quests) do
-        if ns.MatchesFaction(ns.Quests[id] or {}, faction) then
+        local q = ns.Quests[id] or {}
+        if ns.MatchesFaction(q, faction) and ns.IsMyClass(q) then
             total = total + 1
             if IsCompleted(id) then done = done + 1 end
         end

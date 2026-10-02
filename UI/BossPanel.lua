@@ -29,17 +29,20 @@ function ns.SetBossPortrait(texture, boss)
     texture:SetTexture(ICON[boss.kind] or ICON.unknown)
 end
 
--- Nombre en el idioma del cliente si el Diario conoce al jefe
+-- Nombre en el idioma del cliente: el del Diario si conoce al jefe; si no, el
+-- del tooltip del juego por su npcID (como los PNJ de las misiones)
 function ns.BossName(boss, d)
     if boss.kind == "trash" then return L.TRASH end
     local journal = d and ns.JournalBoss(d, boss)
-    return journal and journal.name or boss.name
+    if journal then return journal.name end
+    return boss.npcID and ns.PlaceName(boss) or boss.name
 end
 
 -- "Nivel 19 · Raro · 3 objetos"
-local function BossInfo(boss)
+function ns.BossInfo(boss)
     local info = {}
-    if boss.level then info[#info + 1] = L.LEVEL .. " " .. boss.level end
+    local level = type(boss.level) == "table" and table.concat(boss.level, "-") or boss.level
+    if level then info[#info + 1] = L.LEVEL .. " " .. level end
     if boss.kind == "rare" then info[#info + 1] = L.RARE end
     info[#info + 1] = L.ITEMS:format(#boss.loot)
     return table.concat(info, SEP)
@@ -90,7 +93,7 @@ function ns.CreateBossPanel(left, right)
         row.index = item.index
         SetBossImage(row.creature, row.portrait, boss, d)
         row.label:SetText((boss.kind == "rare" and "|cffc0c0ff" or "") .. ns.BossName(boss, d) .. "|r")
-        row.info:SetText(BossInfo(boss))
+        row.info:SetText(ns.BossInfo(boss))
         ns.SetJournalButtonSelected(row, item.index == panel.index)
     end)
 
@@ -181,7 +184,7 @@ function ns.CreateBossPanel(left, right)
             ns.SetBossPortrait(icon, boss)
         end
         title:SetText(ns.BossName(boss, d))
-        info:SetText((boss.kind == "rare" and RARE or "") .. BossInfo(boss) .. "|r")
+        info:SetText((boss.kind == "rare" and RARE or "") .. ns.BossInfo(boss) .. "|r")
         local journal = ns.JournalBoss(d, boss)
         lore:SetText(journal and journal.description or "")
         loot:SetItems(boss.loot)

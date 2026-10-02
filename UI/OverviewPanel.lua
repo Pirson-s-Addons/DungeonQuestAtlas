@@ -25,7 +25,8 @@ function ns.CreateOverviewPanel(left, right)
     entrance:SetPoint("TOPLEFT", facts, "BOTTOMLEFT", 0, -18)
     entrance:SetText(L.MARK_ENTRANCE)
     entrance:SetScript("OnClick", function()
-        ns.SetWaypoint(ns.Entrance(panel.dungeon), ns.DungeonName(panel.dungeon), "entrance")
+        local point = ns.Entrance(panel.dungeon)
+        if ns.SetWaypoint(point, ns.DungeonName(panel.dungeon), "entrance") then ns.OpenMapAt(point.mapID) end
     end)
     ns.AddTooltip(entrance, function()
         local d = panel.dungeon
@@ -42,9 +43,20 @@ function ns.CreateOverviewPanel(left, right)
     ns.AddTooltip(map, function()
         return ns.DungeonMaps(panel.dungeon) and L.VIEW_MAP_TOOLTIP or L.NO_MAP
     end)
+    -- Ruta hasta la entrada, parada a parada (grabada con /dqa route)
+    local route = CreateFrame("Button", nil, left, "UIPanelButtonTemplate")
+    route:SetSize(200, 26)
+    route:SetPoint("TOPLEFT", map, "BOTTOMLEFT", 0, -6)
+    route:SetText(L.ROUTE)
+    if route.SetMotionScriptsWhileDisabled then route:SetMotionScriptsWhileDisabled(true) end
+    route:SetScript("OnClick", function() ns.StartRoute(panel.dungeon) end)
+    ns.AddTooltip(route, function()
+        local d = panel.dungeon
+        return d and ns.Route(d) and L.ROUTE_TOOLTIP or L.ROUTE_NONE:format(d and d.key or "")
+    end)
     local loot = CreateFrame("Button", nil, left, "UIPanelButtonTemplate")
     loot:SetSize(200, 26)
-    loot:SetPoint("TOPLEFT", map, "BOTTOMLEFT", 0, -6)
+    loot:SetPoint("TOPLEFT", route, "BOTTOMLEFT", 0, -6)
     loot:SetText(L.VIEW_LOOT)
     loot:SetScript("OnClick", function() ns.OpenAtlasLoot(panel.dungeon) end)
     ns.AddTooltip(loot, L.VIEW_LOOT_TOOLTIP)
@@ -87,6 +99,7 @@ function ns.CreateOverviewPanel(left, right)
     end
 
     function panel:SetDungeon(d)
+        local changed = d ~= self.dungeon
         self.dungeon = d
         if not d then return end
         local journal = ns.Journal(d)
@@ -99,13 +112,15 @@ function ns.CreateOverviewPanel(left, right)
         facts:SetText(table.concat(lines, "\n"))
         entrance:SetEnabled(point ~= nil)
         map:SetEnabled(ns.DungeonMaps(d) ~= nil)
+        route:SetEnabled(ns.Route(d) ~= nil)
         loot:SetShown(ns.AtlasLootAvailable())
 
         ns.SetDungeonArt(art, d, "lore")
         title:SetText(ns.DungeonName(d))
         lore:SetText(journal.description or L.NO_LORE)
         Fit()
-        scroll:SetVerticalScroll(0)
+        -- Se refresca con cada QUEST_LOG_UPDATE: arriba solo al cambiar de mazmorra
+        if changed then scroll:SetVerticalScroll(0) end
     end
 
     return panel

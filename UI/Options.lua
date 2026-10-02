@@ -69,6 +69,7 @@ local function CreateGeneral()
     Checkbox("hideCompleted", L.HIDE_COMPLETED, L.HIDE_COMPLETED_TOOLTIP, -81, ns.RefreshUI)
     Checkbox("autoFaction", L.AUTO_FACTION, L.AUTO_FACTION_TOOLTIP, -111)
     Checkbox("pageTurn", L.PAGE_TURN, L.PAGE_TURN_TOOLTIP, -141)
+    Checkbox("hideOtherClasses", L.HIDE_OTHER_CLASSES, L.HIDE_OTHER_CLASSES_TOOLTIP, -171, ns.RefreshUI)
 
     -- "Etiqueta: valor", con el minimo y el maximo debajo
     local function Slider(key, label, tooltip, y, min, max, step, format, onChange)
@@ -98,14 +99,15 @@ local function CreateGeneral()
         return slider
     end
 
-    Slider("scale", L.SCALE, L.SCALE_TOOLTIP, -195, 0.6, 1.5, 0.05,
+    Slider("scale", L.SCALE, L.SCALE_TOOLTIP, -225, 0.6, 1.5, 0.05,
         function(v) return ("%d%%"):format(math.floor(v * 100 + 0.5)) end, ns.ApplyScale)
-    Separator(panel, -235)
+    Separator(panel, -265)
 
     -- Mapa y enlaces ------------------------------------------------------------
-    Header(panel, -255, L.HEADER_MAP)
-    Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -280, ns.UpdateMinimapButton,
+    Header(panel, -285, L.HEADER_MAP)
+    Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -310, ns.UpdateMinimapButton,
         function() return not db.minimap.hide end, function(v) db.minimap.hide = not v end)
+    Checkbox("chainGuide", L.CHAIN_GUIDE, L.CHAIN_GUIDE_TOOLTIP, -340)
     -- Desplegable con etiqueta a la izquierda: options = { { valor, texto }, ... }
     local function Dropdown(key, label, tooltip, y, options)
         local fs = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -137,24 +139,24 @@ local function CreateGeneral()
     end
 
     -- Sin TomTom cargado, su opcion sale desactivada en la lista
-    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -317, {
+    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -377, {
         { "own", L.GUIDE_OWN },
         { "native", L.GUIDE_NATIVE },
         { "tomtom", L.GUIDE_TOMTOM, disabled = function() return not TomTomLoaded() end },
     })
-    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -352, {
+    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -412, {
         { "auto", L.LANG_AUTO },
         { "en", L.LANG_ENGLISH },
     })
-    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -405, 10, 32, 1,
+    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -465, 10, 32, 1,
         function(v) return tostring(math.floor(v + 0.5)) end, ns.ApplyPinSize)
-    Separator(panel, -445)
+    Separator(panel, -505)
 
     -- Recolector ----------------------------------------------------------------
-    Header(panel, -465, L.HEADER_COLLECTOR)
-    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -490)
-    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -520)
-    Separator(panel, -560)
+    Header(panel, -525, L.HEADER_COLLECTOR)
+    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -550)
+    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -580)
+    Separator(panel, -620)
 
     local function Refresh()
         for _, widget in ipairs(widgets) do widget:Refresh() end
@@ -163,7 +165,7 @@ local function CreateGeneral()
 
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -580)
+    reset:SetPoint("TOPLEFT", X, -640)
     reset:SetText(L.DEFAULTS)
     reset:SetScript("OnClick", function()
         ns.ResetOptions()

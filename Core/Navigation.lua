@@ -9,10 +9,17 @@ local L = ns.L
 -- marcador pasada de su zona al continente (GetMapRectOnMap) y el tamano del
 -- continente en yardas (GetMapWorldSize). Asi no hacen falta tablas de mapas.
 --
--- marker = { mapID, x, y (0-100), title, kind = "start"|"end"|"entrance" }
+-- marker = { mapID, x, y (0-100), title, kind = "start"|"end"|"entrance",
+--            npcID, under }
 -- Se guardan por personaje (sobreviven a /reload). Uno es el objetivo de la flecha.
+-- npcID: el marcador es un PNJ; tambien se quita al hablar con el. under: esta
+-- bajo tierra (cueva, sotano): estar encima a 10 m no es haber llegado, asi que
+-- solo se quita al hablar con el (o a mano).
 
 local ARRIVAL_YARDS = 10
+-- Hablar con un PNJ cuyo GUID no se puede leer (valor secreto) cuenta como
+-- llegar a un marcador de PNJ que este a menos de esto
+local TALK_YARDS = 40
 local CONTINENT = Enum and Enum.UIMapType and Enum.UIMapType.Continent or 2
 local atan2 = math.atan2 or math.atan
 
@@ -43,11 +50,13 @@ function ns.AddMarker(point, title, kind)
     for _, m in ipairs(Markers()) do
         if m.mapID == point.mapID and m.x == point.x and m.y == point.y then
             m.title, m.kind = title, kind or m.kind
+            m.npcID, m.under = point.npcID, point.under
             ns.SetTarget(m)
             return m
         end
     end
-    local marker = { mapID = point.mapID, x = point.x, y = point.y, title = title, kind = kind }
+    local marker = { mapID = point.mapID, x = point.x, y = point.y, title = title, kind = kind,
+        npcID = point.npcID, under = point.under }
     table.insert(Markers(), marker)
     ns.SetTarget(marker)
     return marker
@@ -123,12 +132,46 @@ function ns.ArrowAngle(dx, dy)
     return ns.Bearing(dx, dy) - facing
 end
 
+local function Arrive(marker)
+    ns.Print(L.ARRIVED:format(marker.title or "?"))
+    ns.RemoveMarker(marker)
+end
+
+-- Estas en el mapa del marcador (o en uno dentro de el). Entranas esta bajo
+-- las Ruinas de Lordaeron: arriba, en Tirisfal, la distancia sale casi 0.
+-- Los marcados sobre un continente (cuevas) no se comprueban.
+local function OnMarkerMap(marker)
+    local info = C_Map.GetMapInfo(marker.mapID)
+    if not info or (info.mapType or 0) <= CONTINENT then return true end
+    local mapID = C_Map.GetBestMapForUnit("player")
+    while mapID and mapID ~= 0 do
+        if mapID == marker.mapID then return true end
+        local parent = C_Map.GetMapInfo(mapID)
+        mapID = parent and parent.parentMapID
+    end
+    return false
+end
+
 -- Llamado por la flecha en cada actualizacion: al llegar se quita el marcador
 function ns.CheckArrival(marker, distance)
-    if distance and distance <= ARRIVAL_YARDS then
-        ns.Print(L.ARRIVED:format(marker.title or "?"))
-        ns.RemoveMarker(marker)
+    if distance and distance <= ARRIVAL_YARDS and not marker.under and OnMarkerMap(marker) then
+        Arrive(marker)
         return true
     end
     return false
+end
+
+-- Al abrir la ventana de un PNJ (charla o mision): si es el de un marcador,
+-- has llegado. Es lo unico que quita los de bajo tierra.
+function ns.CheckTalkArrival()
+    local npcID = ns.NpcIDFromGUID(UnitGUID("npc"))
+    for _, marker in ipairs(Markers()) do
+        if marker.npcID then
+            local near = not npcID and select(3, ns.NavigationVector(marker))
+            if marker.npcID == npcID or (near and near <= TALK_YARDS) then
+                Arrive(marker)
+                return
+            end
+        end
+    end
 end

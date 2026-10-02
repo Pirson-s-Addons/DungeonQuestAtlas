@@ -16,6 +16,8 @@ local DEFAULTS = {
     minimap = { hide = false },
     scale = 1,
     hideCompleted = false,
+    hideOtherClasses = false, -- ocultar las misiones de clase que no son de la tuya
+    chainGuide = true,    -- al entregar un paso de una cadena, marcar el inicio del siguiente
     autoFaction = true,
     pageTurn = true,      -- animacion de pasar pagina al cambiar de mazmorra o de pestana
     waypointMode = "own", -- "own" (flecha y marcadores del addon), "native" (pin del juego), "tomtom"
@@ -257,6 +259,15 @@ function ns.Entrance(d)
     return d.entrance, d.verified
 end
 
+-- Ruta hasta la entrada para tu faccion: la grabada con /dqa route o la de
+-- Data/Dungeons.lua (routes = { Alliance = { { mapID, x, y }, ... } }). O nil.
+function ns.Route(d)
+    local faction = UnitFactionGroup("player")
+    local mine = Collected().routes and Collected().routes[d.key]
+    local stops = (mine and mine[faction]) or (d.routes and d.routes[faction])
+    return stops and #stops > 0 and stops or nil
+end
+
 -- Wowhead en el idioma del cliente (si lo tiene) o en ingles
 local WOWHEAD_LANG = { deDE = "de", esES = "es", esMX = "es", frFR = "fr", itIT = "it", ptBR = "pt",
     ruRU = "ru", koKR = "ko", zhCN = "cn", zhTW = "tw" }
@@ -313,6 +324,7 @@ On("PLAYER_LOGIN", function()
     DungeonQuestAtlasCollectorDB = DungeonQuestAtlasCollectorDB or {}
     DungeonQuestAtlasCollectorDB.quests = DungeonQuestAtlasCollectorDB.quests or {}
     DungeonQuestAtlasCollectorDB.entrances = DungeonQuestAtlasCollectorDB.entrances or {}
+    DungeonQuestAtlasCollectorDB.routes = DungeonQuestAtlasCollectorDB.routes or {}
 
     if ns.CreateOptions then ns.CreateOptions() end
     if ns.CreateMinimapButton then ns.CreateMinimapButton() end
@@ -320,19 +332,32 @@ On("PLAYER_LOGIN", function()
     if ns.Target() and ns.OnMarkersChanged then ns.OnMarkersChanged() end
 end)
 
-for _, event in ipairs({ "QUEST_TURNED_IN", "QUEST_ACCEPTED", "QUEST_REMOVED", "QUEST_LOG_UPDATE",
-    "QUEST_DATA_LOAD_RESULT", "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP" }) do
+for _, event in ipairs({ "QUEST_ACCEPTED", "QUEST_REMOVED", "QUEST_LOG_UPDATE",
+    "QUEST_DATA_LOAD_RESULT", "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP", "GROUP_ROSTER_UPDATE" }) do
     On(event, ns.RequestRefresh)
 end
 
+-- Entregar un paso de una cadena: el inicio del siguiente (Core/Waypoints.lua)
+On("QUEST_TURNED_IN", function(questID)
+    ns.RequestRefresh()
+    ns.GuideNextStep(questID)
+end)
+
 On("QUEST_DETAIL", function()
     if ns.db.collect then ns.CollectQuestDetail() end
+    ns.CheckTalkArrival()
 end)
 
 -- Ventana de entrega: el PNJ con el que termina
 On("QUEST_COMPLETE", function()
     if ns.db.collect then ns.CollectQuestEnder() end
+    ns.CheckTalkArrival()
 end)
+
+-- Hablar con el PNJ de un marcador lo quita (los de bajo tierra, solo asi)
+for _, event in ipairs({ "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_PROGRESS" }) do
+    On(event, function() ns.CheckTalkArrival() end) -- Navigation.lua carga despues
+end
 
 -- ==========================================
 -- COMANDOS
@@ -350,6 +375,7 @@ function ns.CommandList()
         { "/dqa collect on|off", L.CMD_COLLECT },
         { "/dqa export", L.CMD_EXPORT },
         { "/dqa entrance <key>", L.CMD_ENTRANCE },
+        { "/dqa route <key> [clear]", L.CMD_ROUTE },
         { "/dqa clear", L.CMD_CLEAR },
         { "/dqa debug", L.CMD_DEBUG },
     }
@@ -374,6 +400,8 @@ function ns.HandleCommand(msg)
         ns.ShowExport()
     elseif cmd == "entrance" then
         ns.SaveEntrance((rest:gsub("[\"']", "")))
+    elseif cmd == "route" then
+        ns.SaveRouteStop(rest)
     elseif cmd == "clear" then
         ns.ClearMarkers()
         ns.Print(L.MARKERS_CLEARED)

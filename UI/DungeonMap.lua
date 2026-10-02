@@ -99,7 +99,15 @@ local function CreateWindow()
         local floors = self.floors
         self.index = index
         local floor = floors[index]
-        for n, tile in ipairs(tiles) do tile:SetTexture(ART .. floor.id .. "_" .. n) end
+        -- Primero la pieza del cliente (floor.tex); si no la tiene, la del addon
+        local fallback = 0
+        for n, tile in ipairs(tiles) do
+            if not (floor.tex and tile:SetTexture(floor.tex:format(n)) ~= false) then
+                tile:SetTexture(ART .. floor.id .. "_" .. n)
+                fallback = fallback + 1
+            end
+        end
+        if fallback > 0 then ns.Debug("mapa %d: %d piezas del addon (el cliente no las tiene)", floor.id, fallback) end
         for _, pin in ipairs(pins) do pin:Hide() end
         for k, p in ipairs(floor.pins) do
             local pin = pins[k] or CreatePin(canvas)

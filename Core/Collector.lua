@@ -112,6 +112,39 @@ function ns.SaveEntrance(key)
     ns.RequestRefresh()
 end
 
+-- /dqa route <clave>: tu posicion es la siguiente parada de la ruta a esa
+-- mazmorra (para tu faccion). /dqa route <clave> clear la borra. Las rutas se
+-- graban andando: no se inventan caminos.
+function ns.SaveRouteStop(arg)
+    local key, clear = (arg or ""):match("^(%S*)%s*(%S*)")
+    local d = ns.DungeonByKey[key:upper()]
+    if not d then
+        local keys = {}
+        for _, dungeon in ipairs(ns.Dungeons) do keys[#keys + 1] = dungeon.key end
+        ns.Print(L.ENTRANCE_UNKNOWN_KEY:format(key, table.concat(keys, ", ")))
+        return
+    end
+    local faction = UnitFactionGroup("player")
+    local routes = DungeonQuestAtlasCollectorDB.routes
+    routes[d.key] = routes[d.key] or {}
+    if clear:lower() == "clear" then
+        routes[d.key][faction] = nil
+        ns.Print(L.ROUTE_CLEARED:format(ns.DungeonName(d)))
+        ns.RequestRefresh()
+        return
+    end
+    local pos = ns.PlayerPosition()
+    if not pos then
+        ns.Print(L.ENTRANCE_NO_POS)
+        return
+    end
+    local stops = routes[d.key][faction] or {}
+    routes[d.key][faction] = stops
+    stops[#stops + 1] = pos
+    ns.Print(L.ROUTE_SAVED:format(#stops, ns.DungeonName(d), ns.ZoneName(pos.mapID) .. " " .. ns.FormatCoords(pos)))
+    ns.RequestRefresh()
+end
+
 -- ==========================================
 -- EXPORTAR
 -- ==========================================
@@ -139,12 +172,12 @@ function ns.Serialize(value, indent)
 end
 
 -- quests[id].giver -> Data/Quests.lua, quests[id].text[locale] -> Data/QuestText.lua,
--- entrances[key] -> Data/Dungeons.lua
+-- entrances[key] y routes[key][faccion] -> Data/Dungeons.lua
 function ns.BuildExport()
     local db = DungeonQuestAtlasCollectorDB
-    if not (next(db.quests) or next(db.entrances)) then return nil end
+    if not (next(db.quests) or next(db.entrances) or next(db.routes or {})) then return nil end
     return "-- Dungeon Quest Atlas: " .. date("%Y-%m-%d") .. " " .. GetLocale() .. "\n"
-        .. "return " .. ns.Serialize({ quests = db.quests, entrances = db.entrances })
+        .. "return " .. ns.Serialize({ quests = db.quests, entrances = db.entrances, routes = db.routes })
 end
 
 function ns.ShowExport()

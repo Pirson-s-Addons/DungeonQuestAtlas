@@ -19,6 +19,14 @@ local function Icon(path, size)
     return ("|T%s:%d|t"):format(path, size or 14)
 end
 
+-- Paso de la mision en su cadena: 2, 5 (nil si no es de una cadena conocida)
+local function ChainStep(q, id)
+    local steps = type(q.chain) == "table" and q.chain or {}
+    for i, stepID in ipairs(steps) do
+        if stepID == id and #steps > 1 then return i, #steps end
+    end
+end
+
 -- "Completada", "Bloqueada: requiere nivel 14"... en el color del estado
 local function StatusText(status, reason, where)
     return ns.STATUS_COLOR[status][where] .. L["STATUS_" .. status] .. (reason and (": " .. reason) or "") .. "|r"
@@ -38,6 +46,7 @@ local function QuestTooltip(row)
     if ns.FACTION_ATLAS[q.faction or ""] then
         GameTooltip:AddLine(ns.FactionMarkup(q.faction) .. " " .. L[FACTION_NAME[q.faction]], 1, 1, 1)
     end
+    if q.classes then GameTooltip:AddLine(L.CLASS_ONLY:format(ns.ClassNames(q, true)), 1, 1, 1) end
     if not ns.IsVerified(id) then GameTooltip:AddLine(Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED, 0.6, 0.6, 0.6, true) end
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(L.CLICK_DETAILS, 0.5, 0.8, 1)
@@ -66,9 +75,14 @@ local function CreateQuestList(parent, onSelect)
         row.faction = row:CreateTexture(nil, "ARTWORK")
         row.faction:SetSize(18, 18)
         row.faction:SetPoint("RIGHT", row.level, "LEFT", -4, 0)
+        -- Mision de clase: el circulo de su clase (el del marco de objetivo)
+        row.class = row:CreateTexture(nil, "ARTWORK")
+        row.class:SetSize(18, 18)
+        row.class:SetPoint("RIGHT", row.faction, "LEFT", -2, 0)
+        row.class:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
         row.label = row:CreateFontString(nil, "ARTWORK", "GameFontNormalMed3")
         row.label:SetPoint("LEFT", 72, 0) -- fuera del borde curvo del hueco
-        row.label:SetPoint("RIGHT", row.faction, "LEFT", -6, 0)
+        row.label:SetPoint("RIGHT", row.class, "LEFT", -4, 0)
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
         row:SetScript("OnClick", function(self)
@@ -90,7 +104,12 @@ local function CreateQuestList(parent, onSelect)
         local faction = ns.FACTION_ATLAS[q.faction or ""]
         if faction then row.faction:SetAtlas(faction) end
         row.faction:SetShown(faction ~= nil)
-        row.label:SetText(ns.QuestTitle(id))
+        local coords = q.classes and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[q.classes[1]]
+        if coords then row.class:SetTexCoord(unpack(coords)) end
+        row.class:SetShown(coords ~= nil)
+        -- De una cadena: "Titulo (2/5)", como el "paso N" del detalle
+        local step, total = ChainStep(q, id)
+        row.label:SetText(ns.QuestTitle(id) .. (step and ("  |cff8c7a5a(%d/%d)|r"):format(step, total) or ""))
         row.label:SetTextColor(ns.PARCHMENT_GOLD[1], ns.PARCHMENT_GOLD[2], ns.PARCHMENT_GOLD[3], done and 0.55 or 1)
         row.status:SetAlpha(status == ns.STATUS_BLOCKED and 0.8 or 1)
         local level = ns.QuestLevel(q, id)
@@ -149,18 +168,25 @@ local function CreateDetail(parent)
     Section(L.WHERE)
     local starts = Text("QuestFont")
     local ends = Text("QuestFont", 4)
+    -- Botones en filas de dos (cuatro en una no caben: "Marcar inicio" se salia)
+    local PER_ROW, BUTTON_H, GAP = 2, 24, 4
     local buttons = Add(CreateFrame("Frame", nil, content), 10)
-    buttons:SetHeight(24)
+    buttons:SetHeight(BUTTON_H)
     local row = {}
-    local function Button(text, anchor, tooltip, onClick)
+    local function Button(text, tooltip, onClick)
         local b = CreateFrame("Button", nil, buttons, "UIPanelButtonTemplate")
         b:SetHeight(24)
-        if anchor then b:SetPoint("LEFT", anchor, "RIGHT", 4, 0) else b:SetPoint("LEFT") end
         b:SetText(text)
         b:SetScript("OnClick", onClick)
         ns.AddTooltip(b, tooltip)
         row[#row + 1] = b
         return b
+    end
+    -- Los pasos de cadena de fuera no estan en la lista de la mazmorra: su PNJ
+    -- sin coordenadas no esta dentro, asi que no se marca la entrada
+    local function Dungeon()
+        local d = detail.dungeon
+        return d and tContains(d.quests, detail.questID) and d or nil
     end
     -- El primero con coordenadas; sin ninguno, MarkPlace marca la entrada
     local function Mark(which)
@@ -169,17 +195,28 @@ local function CreateDetail(parent)
         for _, p in ipairs(list) do
             if p.mapID then place = p break end
         end
-        ns.MarkPlace(place, place and ns.PlaceName(place) or ns.QuestTitle(detail.questID), detail.dungeon,
-            which == "starts" and "start" or "end")
+        local mode, point = ns.MarkPlace(place, place and ns.PlaceName(place) or ns.QuestTitle(detail.questID),
+            Dungeon(), which == "starts" and "start" or "end")
+        -- Y el mapa abierto donde esta el pin
+        if mode and point then ns.OpenMapAt(point.mapID) end
     end
-    local markStart = Button(L.MARK_START, nil, L.MARK_START_TOOLTIP, function() Mark("starts") end)
-    local markEnd = Button(L.MARK_END, markStart, L.MARK_END_TOOLTIP, function() Mark("ends") end)
-    Button(L.WOWHEAD, markEnd, L.WOWHEAD_TOOLTIP, function()
+    local markStart = Button(L.MARK_START, L.MARK_START_TOOLTIP, function() Mark("starts") end)
+    local markEnd = Button(L.MARK_END, L.MARK_END_TOOLTIP, function() Mark("ends") end)
+    Button(L.WOWHEAD, L.WOWHEAD_TOOLTIP, function()
         ns.ShowCopyDialog(ns.QuestTitle(detail.questID), ns.WowheadURL(detail.questID))
     end)
+    -- Compartir con el grupo, como el boton del registro de misiones del juego:
+    -- hace falta llevarla, que se pueda compartir y estar en grupo
+    local share = Button(L.SHARE, L.SHARE_TOOLTIP, function()
+        local index = C_QuestLog.GetLogIndexForQuestID(detail.questID)
+        if index and QuestLogPushQuest then
+            QuestLogPushQuest(index)
+            if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN) end
+        end
+    end)
+    share:SetMotionScriptsWhileDisabled(true) -- el tooltip explica por que esta apagado
 
-    -- Cadena: un boton por paso, reutilizados. Los pasos de mazmorra saltan a
-    -- su mision; los demas dan su enlace de Wowhead.
+    -- Cadena: un boton por paso, reutilizados. Cada paso abre su hoja.
     local chainHeader = Section(L.CHAIN)
     local chain = Add(CreateFrame("Frame", nil, content))
     local links = {}
@@ -197,13 +234,9 @@ local function CreateDetail(parent)
             local hl = b:CreateTexture(nil, "HIGHLIGHT")
             hl:SetAllPoints()
             hl:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.12)
-            b:SetScript("OnClick", function(self)
-                if ns.Quests[self.questID] then
-                    ns.ShowQuest(self.questID)
-                else
-                    ns.ShowCopyDialog(ns.QuestTitle(self.questID), ns.WowheadURL(self.questID))
-                end
-            end)
+            -- Cualquier paso abre su hoja, tambien los de fuera de la mazmorra
+            -- (Data/Quests.lua los trae con su inicio y final para marcarlos)
+            b:SetScript("OnClick", function(self) ns.ShowQuest(self.questID) end)
             links[i] = b
         end
         return links[i]
@@ -277,8 +310,15 @@ local function CreateDetail(parent)
     local function Layout()
         local width = math.max(100, scroll:GetWidth() - 10)
         content:SetWidth(width)
-        -- Los tres botones caben siempre en la pagina
-        for _, b in ipairs(row) do b:SetWidth(math.floor((width - 4 * (#row - 1)) / #row)) end
+        -- Los cuatro botones caben siempre en la pagina
+        local bw = math.floor((width - GAP * (PER_ROW - 1)) / PER_ROW)
+        for i, b in ipairs(row) do
+            local col, line = (i - 1) % PER_ROW, math.floor((i - 1) / PER_ROW)
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", col * (bw + GAP), -line * (BUTTON_H + GAP))
+            b:SetWidth(bw)
+        end
+        buttons:SetHeight(math.ceil(#row / PER_ROW) * (BUTTON_H + GAP) - GAP)
         local previous, height = nil, 6
         for _, block in ipairs(blocks) do
             block:ClearAllPoints()
@@ -306,7 +346,8 @@ local function CreateDetail(parent)
             if p.itemID then
                 where = " " .. Icon(ns.ItemInfo(p.itemID).icon)
             elseif p.mapID then
-                where = " (" .. ns.ZoneName(p.mapID) .. " " .. ns.FormatCoords(p) .. ")"
+                where = " (" .. ns.ZoneName(p.mapID) .. " " .. ns.FormatCoords(p)
+                    .. (p.under and (", " .. L.UNDERGROUND) or "") .. ")"
             elseif p.inside and detail.dungeon then
                 where = " (" .. L.INSIDE:format(ns.DungeonName(detail.dungeon)) .. ")"
             end
@@ -324,6 +365,7 @@ local function CreateDetail(parent)
     end
 
     function detail:Show(id)
+        local changed = id ~= self.questID
         self.questID = id
         scroll:SetShown(id ~= nil)
         if not id then return end
@@ -340,6 +382,7 @@ local function CreateDetail(parent)
             local mark = ns.FactionMarkup(q.faction)
             parts[#parts + 1] = (mark ~= "" and (mark .. " ") or "") .. L[FACTION_NAME[q.faction]]
         end
+        if q.classes then parts[#parts + 1] = L.CLASS_ONLY:format(ns.ClassNames(q, true)) end
         meta:SetText(table.concat(parts, SEP))
         statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "paper"))
         Set(unverified, not ns.IsVerified(id) and (Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
@@ -347,13 +390,15 @@ local function CreateDetail(parent)
         local startList, endList = ns.QuestPlaces(id, "starts"), ns.QuestPlaces(id, "ends")
         starts:SetText(Describe(L.STARTS, startList))
         ends:SetText(Describe(L.ENDS, endList))
-        local entrance = self.dungeon and ns.Entrance(self.dungeon)
+        local d = Dungeon()
+        local entrance = d and ns.Entrance(d)
         markStart:SetEnabled(#startList > 0 and (startList[1].mapID or entrance) and true or false)
         markEnd:SetEnabled(#endList > 0 and (endList[1].mapID or entrance) and true or false)
+        share:SetEnabled(C_QuestLog.GetLogIndexForQuestID(id) ~= nil and C_QuestLog.IsPushableQuest
+            and C_QuestLog.IsPushableQuest(id) and IsInGroup() and true or false)
 
         local steps = type(q.chain) == "table" and q.chain or {}
-        local current = 0
-        for i, stepID in ipairs(steps) do if stepID == id then current = i end end
+        local current = ChainStep(q, id) or 0
         chainHeader.text:SetText(L.CHAIN:format(math.max(current, 1), math.max(#steps, 1)))
         chainHeader:SetShown(#steps > 1 or q.chain == true)
         chain:SetHeight(20 * #steps)
@@ -370,6 +415,19 @@ local function CreateDetail(parent)
         Set(chainNote, q.chain == true and L.CHAIN_UNKNOWN or nil)
 
         local objective = ns.QuestObjective(id)
+        -- La llevas: el progreso de cada objetivo ("Cabeza de Arugal: 0/1"), del juego
+        local progress = {}
+        if C_QuestLog.GetLogIndexForQuestID(id) and C_QuestLog.GetQuestObjectives then
+            for _, o in ipairs(C_QuestLog.GetQuestObjectives(id) or {}) do
+                local line = ns.PlainText(o.text)
+                if line and line ~= "" then
+                    progress[#progress + 1] = (o.finished and "|cff1a6b1a" or LINK) .. "- " .. line .. "|r"
+                end
+            end
+        end
+        if #progress > 0 then
+            objective = L.OBJ_PROGRESS .. "\n" .. table.concat(progress, "\n") .. (objective and ("\n\n" .. objective) or "")
+        end
         if not objective and q.need then
             -- El juego aun no tiene la mision: lo que hay que conseguir, con sus nombres del juego
             local need = {}
@@ -387,7 +445,9 @@ local function CreateDetail(parent)
         Set(desc, text.desc or L.NO_TEXT)
 
         Layout()
-        scroll:SetVerticalScroll(0)
+        -- Se refresca con cada QUEST_LOG_UPDATE o dato de objeto que llega:
+        -- volver arriba solo al cambiar de mision, no mientras la lees
+        if changed then scroll:SetVerticalScroll(0) end
     end
 
     return detail
