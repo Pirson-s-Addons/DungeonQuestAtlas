@@ -84,6 +84,11 @@ ns.Bosses = {
         { name = "Shen'dralar Provisioner", kind = "object", display = 14412, level = 52, loot = { { 18487 } } },
         { name = "Lord Hel'nurath", kind = "object", display = 14556, level = 62, loot = { { 18757, 22.2 }, { 18754, 23.6 }, { 18755, 25.7 }, { 18756, 24.9 } } },
     },
+    EXCAVATION = {
+        { name = "Saltspine", npcID = 260322, level = 28, loot = { { 273024 }, { 273022 }, { 273023 } } },
+        { name = "Shadetooth", npcID = 260325, level = 29, loot = { { 273025 }, { 273027 } } },
+        { name = "Relic Guardian", npcID = 260326, level = 31, loot = { { 273028 }, { 273029 }, { 273030 }, { 270866 } } },
+    },
     GNOMER = {
         { name = "Techbot", npcID = 6231, display = 7288, level = 26, loot = { { 9444, 47.6 } } },
         { name = "Grubbis", npcID = 7361, display = 6533, level = 32, loot = { { 9445, 8.8 } } },
