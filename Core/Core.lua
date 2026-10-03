@@ -324,13 +324,15 @@ On("PLAYER_LOGIN", function()
     DungeonQuestAtlasDB = ns.db
     ns.char = ns.MigrateDB(DungeonQuestAtlasCharDB, CHAR_DEFAULTS)
     DungeonQuestAtlasCharDB = ns.char
-    ns.ApplyLanguage(ns.db.language)
     DungeonQuestAtlasCollectorDB = DungeonQuestAtlasCollectorDB or {}
     DungeonQuestAtlasCollectorDB.quests = DungeonQuestAtlasCollectorDB.quests or {}
     DungeonQuestAtlasCollectorDB.entrances = DungeonQuestAtlasCollectorDB.entrances or {}
     DungeonQuestAtlasCollectorDB.routes = DungeonQuestAtlasCollectorDB.routes or {}
 
+    -- Las opciones del juego, en el idioma del juego (L sigue en el del cliente
+    -- aqui); el selector de idioma solo cambia la ventana del addon
     if ns.CreateOptions then ns.CreateOptions() end
+    ns.ApplyLanguage(ns.db.language)
     if ns.CreateMinimapButton then ns.CreateMinimapButton() end
     if ns.SetupMapPins then ns.SetupMapPins() end
     if ns.Target() and ns.OnMarkersChanged then ns.OnMarkersChanged() end
