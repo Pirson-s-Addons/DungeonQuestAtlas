@@ -4,7 +4,7 @@
 ## Version: 1.05
 ## Author: Pirson
 ## IconTexture: Interface\AddOns\DungeonQuestAtlas\img\logo_dqa
-## Title: Dungeon Quest Atlas |cff00ccffForever|r
+## Title: |cffd597ffDungeon Quest Atlas Forever|r
 
 # https://warcraft.wiki.gg/wiki/Addon_Categories
 ## Category: Quests & Leveling
