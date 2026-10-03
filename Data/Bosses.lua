@@ -85,9 +85,9 @@ ns.Bosses = {
         { name = "Lord Hel'nurath", kind = "object", display = 14556, level = 62, loot = { { 18757, 22.2 }, { 18754, 23.6 }, { 18755, 25.7 }, { 18756, 24.9 } } },
     },
     EXCAVATION = {
-        { name = "Saltspine", npcID = 260322, level = 28, loot = { { 273024 }, { 273022 }, { 273023 } } },
-        { name = "Shadetooth", npcID = 260325, level = 29, loot = { { 273025 }, { 273027 } } },
-        { name = "Relic Guardian", npcID = 260326, level = 31, loot = { { 273028 }, { 273029 }, { 273030 }, { 270866 } } },
+        { name = "Saltspine", npcID = 260322, display = 144209, level = 28, loot = { { 273024 }, { 273022 }, { 273023 } } },
+        { name = "Shadetooth", npcID = 260325, display = 144210, level = 29, loot = { { 273025 }, { 273027 } } },
+        { name = "Relic Guardian", npcID = 260326, display = 144224, level = 31, loot = { { 273028 }, { 273029 }, { 273030 }, { 270866 } } },
     },
     GNOMER = {
         { name = "Techbot", npcID = 6231, display = 7288, level = 26, loot = { { 9444, 47.6 } } },
@@ -293,9 +293,9 @@ ns.Bosses = {
     STOCKS = {
         { name = "Kam Deepfury", npcID = 1666, display = 825, level = 27, loot = { { 2280, 0.9 }, { 273808 } } },
         { name = "Bruegal Ironknuckle", npcID = 1720, kind = "rare", display = 2142, level = 26, loot = { { 3228, 56.2 }, { 2941, 19 }, { 2942, 17.5 } } },
-        { name = "Targorr the Dread", npcID = 1696, loot = { { 273804 }, { 273805 }, { 273806 }, { 273820 } } },
-        { name = "Hamhock", npcID = 1717, loot = { { 273809 }, { 273810 }, { 273811 } } },
-        { name = "Bazil Thredd", npcID = 1716, loot = { { 273824 }, { 273825 }, { 273827 }, { 273829 } } },
+        { name = "Targorr the Dread", npcID = 1696, display = 517, loot = { { 273804 }, { 273805 }, { 273806 }, { 273820 } } },
+        { name = "Hamhock", npcID = 1717, display = 3250, loot = { { 273809 }, { 273810 }, { 273811 } } },
+        { name = "Bazil Thredd", npcID = 1716, display = 1621, loot = { { 273824 }, { 273825 }, { 273827 }, { 273829 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 1076 }, { 274092 } } },
     },
     ULDA = {

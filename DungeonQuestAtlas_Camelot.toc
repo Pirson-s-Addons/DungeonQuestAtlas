@@ -1,7 +1,7 @@
 ## Interface: 16001
 # Interfaz de la beta 1.60.1 de WoW Forever. Comprobar en el cliente con
 # /dump select(4, GetBuildInfo()) y actualizar si cambia en el lanzamiento.
-## Version: 1.04
+## Version: 1.05
 ## Author: Pirson
 ## IconTexture: Interface\AddOns\DungeonQuestAtlas\img\logo_dqa
 ## Title: Dungeon Quest Atlas |cff00ccffForever|r
@@ -100,7 +100,7 @@
 ## SavedVariables: DungeonQuestAtlasDB, DungeonQuestAtlasCollectorDB
 ## SavedVariablesPerCharacter: DungeonQuestAtlasCharDB
 ## OptionalDeps: TomTom, AtlasLoot, Questie, QuestieDB
-## X-License: MIT
+## X-License: All Rights Reserved
 
 # Solo WoW Forever: el sufijo _Camelot es el game type que busca ese cliente, y
 # sin un .toc generico ningun otro cliente lista el addon.

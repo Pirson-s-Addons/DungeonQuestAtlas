@@ -322,6 +322,19 @@ ns.Quests = {
     [96403] = { level = 15, minLevel = 10, faction = "Both", choice = { 279898, 280096 }, need = { { 274289, 8 } }, xp = 4590, money = 700, starts = { "npc:265003" }, ends = { "npc:265003" }, verified = true },
     [97288] = { level = 21, minLevel = 16, faction = "Horde", chain = { 97288, 97289, 97290, 97291, 97292 }, xp = 5280, starts = { "name:Abominable Head" }, ends = { "npc:2055" }, verified = true },
     [98423] = { level = 16, minLevel = 9, faction = "Alliance", money = 1600, starts = { "name:Treaty of Understanding" }, ends = { "npc:2784" }, verified = true },
+    -- Excavacion: Los Humedales (Wowhead Forever y foreverchanges.pro, 03-10-2026)
+    [95646] = { level = 31, minLevel = 24, faction = "Alliance", choice = { 271667, 271670, 271664 }, need = { { 270180, 1 } }, xp = 3150, starts = { "npc:1244" }, ends = { "npc:1244" }, verified = true },
+    [95647] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95647, 95809 }, xp = 2500, starts = { "npc:1480" }, verified = false },
+    [95664] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95664, 98823 }, need = { { 270866, 1 } }, xp = 630, starts = { "name:Titan Relic" }, ends = { "npc:9087" }, verified = true },
+    [95682] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95663, 95682 }, choice = { 271740, 271732 }, rewards = { 271745 }, need = { { 284844, 1 } }, xp = 3150, starts = { "npc:13155" }, ends = { "npc:13155" }, verified = true },
+    [95697] = { level = 31, minLevel = 24, faction = "Horde", choice = { 280766, 280805 }, rewards = { 250185, 250077 }, counts = { [250077] = 5 }, need = { { 271100, 4 } }, xp = 3150, starts = { "npc:3368" }, ends = { "npc:3368" }, verified = true },
+    [95772] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95772, 95795 }, xp = 3150, starts = { "npc:956" }, verified = false },
+    [95795] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95772, 95795 }, choice = { 271769, 271768 }, xp = 3150, ends = { "npc:956" }, verified = true },
+    [95809] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95647, 95809 }, choice = { 1710, 3827 }, rewards = { 2459, 280766 }, counts = { [1710] = 4, [3827] = 4 }, xp = 3150, ends = { "npc:1480" }, verified = false },
+    [95810] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95810, 98824 }, need = { { 270865, 1 } }, xp = 630, starts = { "name:Titan Relic" }, ends = { "npc:1077" }, verified = true },
+    [98815] = { level = 28, minLevel = 24, faction = "Alliance", chain = { 469, 98815 }, need = { { 284845, 4 } }, xp = 1150, money = 1200, starts = { "npc:2094" }, ends = { "npc:2094" }, verified = false },
+    [98823] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95664, 98823 }, choice = { 271766, 271767, 271719 }, need = { { 270866, 1 } }, xp = 3150, money = 6000, starts = { "npc:9087" }, ends = { "npc:259118" }, verified = true },
+    [98824] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95810, 98824 }, choice = { 271716, 271767, 271766 }, need = { { 270865, 1 } }, xp = 3150, money = 6000, starts = { "npc:1077" }, ends = { "npc:5387" }, verified = true },
     -- Pasos de cadena de fuera de la mazmorra (Wowhead Forever, 02-10-2026):
     -- no salen en ninguna lista; se abren desde la cadena para ver y marcar
     -- su inicio y su final. chain: la de la mision de mazmorra que los pide.
@@ -501,4 +514,6 @@ ns.Quests = {
     [97290] = { level = 21, minLevel = 16, faction = "Horde", chain = { 97288, 97289, 97290, 97291, 97292 }, starts = { "npc:271613" }, ends = { "npc:2055" } },
     [97291] = { level = 21, minLevel = 16, faction = "Horde", chain = { 97288, 97289, 97290, 97291, 97292 }, starts = { "npc:2055" }, ends = { "npc:2055" } },
     [97292] = { level = 21, minLevel = 16, faction = "Horde", chain = { 97288, 97289, 97290, 97291, 97292 }, starts = { "npc:2055" }, ends = { "npc:2055" } },
+    [469] = { level = 21, minLevel = 18, faction = "Alliance", chain = { 469, 98815 }, starts = { "npc:2093" }, ends = { "npc:2094" } },
+    [95663] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95663, 95682 }, starts = { "npc:2787" }, ends = { "npc:13155" } },
 }

@@ -110,6 +110,23 @@ function ns.SetJournalButtonSelected(button, on)
     SetButtonPiece(button.body, name, false)
 end
 
+-- Icono a la izquierda de un boton rojo (UIPanelButtonTemplate), con el texto
+-- corrido a su derecha; gris cuando el boton esta apagado. Llamar tras SetText.
+function ns.SetButtonIcon(button, icon)
+    local size = button:GetHeight() - 8
+    local tex = button:CreateTexture(nil, "ARTWORK")
+    tex:SetSize(size, size)
+    tex:SetPoint("LEFT", 6, 0)
+    tex:SetTexture(icon)
+    if icon:find("Icons") then tex:SetTexCoord(0.08, 0.92, 0.08, 0.92) end -- sin el borde
+    local text = button:GetFontString()
+    text:ClearAllPoints()
+    text:SetPoint("CENTER", size / 2 + 2, 0)
+    button:HookScript("OnEnable", function() tex:SetDesaturated(false) end)
+    button:HookScript("OnDisable", function() tex:SetDesaturated(true) end)
+    button.icon = tex
+end
+
 -- Pone una textura en el centro del hueco redondo del boton
 function ns.PlaceInHole(texture, button, size)
     texture:SetSize(size or ns.JOURNAL_HOLE_SIZE, size or ns.JOURNAL_HOLE_SIZE)

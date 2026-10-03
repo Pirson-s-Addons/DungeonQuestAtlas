@@ -10,7 +10,7 @@
 </a>
 <img src="https://img.shields.io/badge/WoW_Forever-1.60.1-C4B5FD?style=for-the-badge">
 <a href="LICENSE">
-<img src="https://img.shields.io/badge/License-MIT-E9D5FF?style=for-the-badge">
+<img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-E9D5FF?style=for-the-badge">
 </a>
 </p>
 
@@ -40,10 +40,10 @@
 - **Dungeon Journal look**: the game's own journal book, side tabs, boss buttons and loot rows, with each dungeon's artwork and lore taken from your game client.
 - Scarlet Monastery, Dire Maul and Stratholme split into wings.
 - **Quest start and end**: the NPC or object that gives the quest and the one where you turn it in, with zone and coordinates, and **Mark start** / **Mark end** buttons that also open the world map on the pin. If the NPC is inside the dungeon, the entrance is marked.
-- **Instance entrance** of every dungeon, straight from the game's own world map, with a **Mark entrance on map** button (also the portal icon next to each dungeon).
+- **Exact instance entrance** of every dungeon (the real portal, or the cave mouth when the portal is underground), with a **Mark entrance on map** button (also the portal icon next to each dungeon), and a **Route** button that takes you to the closest flight master of your faction and then to the entrance.
 - **Built-in guidance arrow**, no TomTom needed: an on-screen arrow that turns as you move, with the distance, markers on the world map and on the minimap, and it clears itself when you arrive. Left click it to **target the NPC and put a star on them**. NPCs underground (caves, cellars) keep their marker until you talk to them. You can also use the game's own map pin or **TomTom** instead.
 - **Wowhead link** for every quest, in the window's language, ready to copy with Ctrl+C.
-- **Dungeon maps** of the classic dungeons (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic, every floor, and each boss marked with its portrait. Click a boss to jump to its loot.
+- **Dungeon maps** (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic for the classic dungeons, and maps drawn for this addon for Hall of Thanes, Ruins of Lordaeron and Excavation Site: Wetlands. Every floor, each boss marked with its portrait (click it to jump to its loot), mouse-wheel zoom and drag to move around.
 - **AtlasLoot**: a "View loot" button when AtlasLoot is loaded. **Questie**: used as a fallback for quest givers the addon doesn't know yet.
 - Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde) and a search box (dungeon or boss name).
 - **Page-turn animation** with sound when you change dungeon or tab (can be turned off).
@@ -118,10 +118,10 @@ Quest descriptions are **collected in the game**:
 - **Aspecto del Diario de mazmorras**: el libro del propio Diario, sus pestañas laterales, botones de jefe y filas de botín, con el arte y la historia de cada mazmorra sacados de tu cliente.
 - Monasterio Escarlata, La Masacre y Stratholme separados por alas.
 - **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona, coordenadas y botones **Marcar inicio** / **Marcar final**, que además abren el mapa del mundo en el pin. Si el PNJ está dentro de la mazmorra, se marca la entrada.
-- **Entrada de cada mazmorra**, sacada del propio mapa del juego, con botón **Marcar entrada en el mapa** (también el icono de portal junto a cada mazmorra).
+- **Entrada exacta de cada mazmorra** (el portal real, o la boca de la cueva cuando el portal está bajo tierra), con botón **Marcar entrada en el mapa** (también el icono de portal junto a cada mazmorra) y botón **Ruta**, que te lleva al maestro de vuelo de tu facción más cercano y luego a la entrada.
 - **Flecha de guía propia**, sin necesidad de TomTom: una flecha en pantalla que gira mientras te mueves, con la distancia, marcadores en el mapa del mundo y en el minimapa, y que se quita sola al llegar. Con clic izquierdo **selecciona al PNJ y le pone una estrella**. Los PNJ bajo tierra (cuevas, sótanos) conservan su marcador hasta que hablas con ellos. También puedes usar el pin del mapa del juego o **TomTom**.
 - **Enlace de Wowhead** de cada misión, en el idioma de la ventana, listo para copiar con Ctrl+C.
-- **Mapas de mazmorra** de las mazmorras clásicas (WoW Forever no tiene): botón **Ver mapa** con los mapas de Blizzard de WoW Classic, cada planta y cada jefe marcado con su retrato. Clic en un jefe para ir a su botín.
+- **Mapas de mazmorra** (WoW Forever no tiene): botón **Ver mapa** con los mapas de Blizzard de WoW Classic para las clásicas, y mapas dibujados para este addon para Salas de los Thanes, Ruinas de Lordaeron y Excavación: Los Humedales. Cada planta, cada jefe marcado con su retrato (clic para ir a su botín), zoom con la rueda y arrastrar para moverte.
 - **AtlasLoot**: botón "Ver botín" si está cargado. **Questie**: se usa de respaldo para los PNJ que el addon aún no conoce.
 - Filtros: mi nivel, clásicas / nuevas de Forever, **botones de facción** (ambas, Alianza, Horda) y buscador (por mazmorra o por jefe).
 - **Animación de pasar página** con sonido al cambiar de mazmorra o de pestaña (se puede desactivar).
@@ -180,4 +180,4 @@ Las descripciones de las misiones se **recogen en el juego**:
 
 ---
 
-**Author**: Pirson · [GitHub](https://github.com/Pirson-s-Addons) · [CurseForge](https://www.curseforge.com/members/pirson/projects) · MIT License
+**Author**: Pirson · [GitHub](https://github.com/Pirson-s-Addons) · [CurseForge](https://www.curseforge.com/members/pirson/projects) · All rights reserved

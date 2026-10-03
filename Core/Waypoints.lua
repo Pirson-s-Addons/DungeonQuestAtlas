@@ -180,6 +180,34 @@ end
 -- ==========================================
 -- RUTA HASTA LA ENTRADA
 -- ==========================================
+-- Sin ruta grabada, la de cualquier mazmorra: el punto de vuelo de tu faccion
+-- (o neutral) mas cercano a la entrada, segun el propio mapa del juego
+-- (C_TaxiMap.GetTaxiNodesForMap del continente), y luego la entrada.
+-- ponytail: el mas cercano en linea recta; montanas o rios no cuentan.
+local FLIGHT_FACTION = { Horde = 1, Alliance = 2 } -- Enum.FlightPathFaction; 0 = neutral
+function ns.FlightRoute(d)
+    local entrance = d and ns.Entrance(d)
+    if not (entrance and C_TaxiMap and C_TaxiMap.GetTaxiNodesForMap) then return nil end
+    local continent = ns.ContinentOf(entrance.mapID)
+    local ex, ey = ns.TranslatePoint(entrance.mapID, entrance.x / 100, entrance.y / 100, continent)
+    local ok, nodes = pcall(C_TaxiMap.GetTaxiNodesForMap, continent)
+    if not (ex and ok and type(nodes) == "table") then return nil end
+    local width, height = C_Map.GetMapWorldSize(continent)
+    local mine = FLIGHT_FACTION[UnitFactionGroup("player")]
+    local best, bestDist, bx, by
+    for _, node in ipairs(nodes) do
+        local pos = node.position
+        if pos and node.name and (node.faction == 0 or node.faction == mine) then
+            local px, py = pos:GetXY()
+            local dx, dy = (px - ex) * (width or 1), (py - ey) * (height or 1)
+            local dist = dx * dx + dy * dy
+            if not bestDist or dist < bestDist then best, bestDist, bx, by = node, dist, px, py end
+        end
+    end
+    if not best then return nil end
+    return { { mapID = continent, x = bx * 100, y = by * 100, title = L.ROUTE_FLY:format(best.name) } }
+end
+
 -- Las paradas de ns.Route y la entrada, como marcadores de la guia propia (el
 -- pin del juego y TomTom no encadenan puntos). Se anaden al reves: la flecha
 -- va a la ultima anadida (la parada 1) y, al llegar, RemoveMarker pasa a la
@@ -191,7 +219,7 @@ function ns.StartRoute(d)
     local entrance = ns.Entrance(d)
     if entrance then ns.AddMarker(entrance, name, "entrance") end
     for i = #stops, 1, -1 do
-        ns.AddMarker(stops[i], L.ROUTE_STOP:format(name, i, #stops), "route")
+        ns.AddMarker(stops[i], stops[i].title or L.ROUTE_STOP:format(name, i, #stops), "route")
     end
     ns.Print(L.ROUTE_STARTED:format(name, #stops))
 end

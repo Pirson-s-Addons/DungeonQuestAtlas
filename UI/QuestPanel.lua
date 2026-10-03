@@ -173,10 +173,11 @@ local function CreateDetail(parent)
     local buttons = Add(CreateFrame("Frame", nil, content), 10)
     buttons:SetHeight(BUTTON_H)
     local row = {}
-    local function Button(text, tooltip, onClick)
+    local function Button(text, tooltip, icon, onClick)
         local b = CreateFrame("Button", nil, buttons, "UIPanelButtonTemplate")
         b:SetHeight(24)
         b:SetText(text)
+        ns.SetButtonIcon(b, icon)
         b:SetScript("OnClick", onClick)
         ns.AddTooltip(b, tooltip)
         row[#row + 1] = b
@@ -200,14 +201,14 @@ local function CreateDetail(parent)
         -- Y el mapa abierto donde esta el pin
         if mode and point then ns.OpenMapAt(point.mapID) end
     end
-    local markStart = Button(L.MARK_START, L.MARK_START_TOOLTIP, function() Mark("starts") end)
-    local markEnd = Button(L.MARK_END, L.MARK_END_TOOLTIP, function() Mark("ends") end)
-    Button(L.WOWHEAD, L.WOWHEAD_TOOLTIP, function()
+    local markStart = Button(L.MARK_START, L.MARK_START_TOOLTIP, "Interface\\GossipFrame\\AvailableQuestIcon", function() Mark("starts") end)
+    local markEnd = Button(L.MARK_END, L.MARK_END_TOOLTIP, "Interface\\GossipFrame\\ActiveQuestIcon", function() Mark("ends") end)
+    Button(L.WOWHEAD, L.WOWHEAD_TOOLTIP, "Interface\\Icons\\INV_Misc_Note_01", function()
         ns.ShowCopyDialog(ns.QuestTitle(detail.questID), ns.WowheadURL(detail.questID))
     end)
     -- Compartir con el grupo, como el boton del registro de misiones del juego:
     -- hace falta llevarla, que se pueda compartir y estar en grupo
-    local share = Button(L.SHARE, L.SHARE_TOOLTIP, function()
+    local share = Button(L.SHARE, L.SHARE_TOOLTIP, "Interface\\Icons\\INV_Letter_15", function()
         local index = C_QuestLog.GetLogIndexForQuestID(detail.questID)
         if index and QuestLogPushQuest then
             QuestLogPushQuest(index)

@@ -324,4 +324,17 @@ ns.Places = {
     ["object:176192"] = { objectID = 176192, name = "Catalogue of the Wayward", mapID = 1422, x = 39.4, y = 66.7 },
     ["object:2868"] = { objectID = 2868, name = "Crumpled Map", mapID = 1418, x = 53, y = 34.1 },
     ["object:2875"] = { objectID = 2875, name = "Battered Dwarven Skeleton", mapID = 1418, x = 51, y = 62.5 },
+    -- Excavacion: Los Humedales (Wowhead Forever, 03-10-2026)
+    ["npc:1077"] = { npcID = 1077, name = "Prospector Whelgar", mapID = 1437, x = 38.8, y = 52.2 },
+    ["npc:1244"] = { npcID = 1244, name = "Rethiel the Greenwarden", mapID = 1437, x = 56.2, y = 40.4 },
+    ["npc:1480"] = { npcID = 1480, name = "Caitlin Grassman", mapID = 1437, x = 11.6, y = 58.4 },
+    ["npc:13155"] = { npcID = 13155, name = "Deathstalker Agent", mapID = 1437, x = 51.4, y = 59.2 },
+    ["npc:2093"] = { npcID = 2093, name = "Einar Stonegrip", mapID = 1437, x = 49.8, y = 39.4 },
+    ["npc:2094"] = { npcID = 2094, name = "James Halloran", mapID = 1437, x = 8.4, y = 55.8 },
+    ["npc:259118"] = { npcID = 259118, name = "Muln Earthfury", mapID = 1412, x = 33.4, y = 22.4 },
+    ["npc:2787"] = { npcID = 2787, name = "Zaruk", mapID = 1417, x = 74.4, y = 35.4 },
+    ["npc:3368"] = { npcID = 3368, name = "Borstan", mapID = 1454, x = 57.4, y = 53.4 },
+    ["npc:5387"] = { npcID = 5387, name = "High Explorer Magellas", mapID = 1455, x = 69.8, y = 18.4 },
+    ["npc:956"] = { npcID = 956, name = "Dorin Songblade", mapID = 1433, x = 30.8, y = 46.6 },
+    ["name:Titan Relic"] = { name = "Titan Relic", inside = true },
 }

@@ -116,4 +116,11 @@ ns.Maps = {
     STRAT_UD = {
         { id = 318, tex = "interface\\worldmap\\stratholme\\stratholme2_%d", pins = { { 1, 0.653, 0.755 }, { 2, 0.62, 0.251 }, { 3, 0.749, 0.469 }, { 4, 0.727, 0.524 }, { 5, 0.564, 0.469 }, { 6, 0.682, 0.199 }, { 7, 0.451, 0.197 }, { 8, 0.372, 0.199 } } },
     },
+    -- Mazmorras nuevas de Forever: mapas propios del autor (una planta; jefes
+    -- pasados a ojo desde las capturas con su sitio que dio el autor).
+    -- id = clave: Art/Maps/<CLAVE>_<1-12>.tga, generadas con
+    -- _project/tools/dqa_maps/forever_maps.py.
+    EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
+    LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
+    THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },
 }

@@ -15,6 +15,7 @@ local WIDTH = 780              -- ancho del plano en la ventana
 local SCALE = WIDTH / MAP_W
 local FOOTER = 36              -- barra de abajo: plantas
 local PIN = 24                 -- la cara; con el aro, la chincheta mide ~1,5 veces
+local MAX_ZOOM, ZOOM_STEP = 4, 1.25 -- rueda del raton: zoom hacia el cursor
 
 -- Planos de una mazmorra (o nil)
 function ns.DungeonMaps(d)
@@ -72,21 +73,53 @@ local function CreateWindow()
     window.title = window:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     window.title:SetPoint("TOP", 0, -5)
 
-    -- Plano: 12 piezas; la ultima columna y la ultima fila se recortan
-    local canvas = CreateFrame("Frame", nil, window)
-    canvas:SetSize(WIDTH, MAP_H * SCALE)
-    canvas:SetPoint("TOP", 0, -28)
+    -- Plano: 12 piezas; la ultima columna y la ultima fila se recortan.
+    -- viewport recorta; canvas es el plano a zoom * SCALE, desplazado (ox, oy).
+    local viewport = CreateFrame("Frame", nil, window)
+    viewport:SetSize(WIDTH, MAP_H * SCALE)
+    viewport:SetPoint("TOP", 0, -28)
+    viewport:SetClipsChildren(true)
+    local canvas = CreateFrame("Frame", nil, viewport)
     local tiles = {}
-    for row = 0, 2 do
-        for col = 0, 3 do
-            local w, h = math.min(256, MAP_W - col * 256), math.min(256, MAP_H - row * 256)
-            local tile = canvas:CreateTexture(nil, "BACKGROUND")
-            tile:SetSize(w * SCALE, h * SCALE)
-            tile:SetPoint("TOPLEFT", col * 256 * SCALE, -row * 256 * SCALE)
-            tile:SetTexCoord(0, w / 256, 0, h / 256)
-            tiles[row * 4 + col + 1] = tile
+    for n = 1, 12 do
+        tiles[n] = canvas:CreateTexture(nil, "BACKGROUND")
+        local w, h = math.min(256, MAP_W - (n - 1) % 4 * 256), math.min(256, MAP_H - math.floor((n - 1) / 4) * 256)
+        tiles[n]:SetTexCoord(0, w / 256, 0, h / 256)
+    end
+    local pins = {}
+    local zoom, ox, oy = 1, 0, 0
+
+    -- Coloca piezas y chinchetas para el zoom y el desplazamiento actuales
+    -- (las chinchetas no crecen: siguen siendo botones del mismo tamano)
+    local function Layout()
+        local s = SCALE * zoom
+        ox = math.max(0, math.min(ox, MAP_W * s - WIDTH))
+        oy = math.max(0, math.min(oy, MAP_H * s - MAP_H * SCALE))
+        canvas:SetSize(MAP_W * s, MAP_H * s)
+        canvas:ClearAllPoints()
+        canvas:SetPoint("TOPLEFT", -ox, oy)
+        for n, tile in ipairs(tiles) do
+            local col, row = (n - 1) % 4, math.floor((n - 1) / 4)
+            tile:SetSize(math.min(256, MAP_W - col * 256) * s, math.min(256, MAP_H - row * 256) * s)
+            tile:SetPoint("TOPLEFT", col * 256 * s, -row * 256 * s)
+        end
+        for _, pin in ipairs(pins) do
+            if pin.x then
+                pin:ClearAllPoints()
+                pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * MAP_W * s, -pin.y * MAP_H * s)
+            end
         end
     end
+
+    -- Zoom con la rueda; (cx, cy): el cursor dentro del plano, que no se mueve
+    function window:Zoom(delta, cx, cy)
+        local old = zoom
+        zoom = math.max(1, math.min(MAX_ZOOM, zoom * ZOOM_STEP ^ delta))
+        ox = (cx + ox) * zoom / old - cx
+        oy = (cy + oy) * zoom / old - cy
+        Layout()
+    end
+    function window:GetZoom() return zoom end
 
     local page = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     page:SetPoint("BOTTOM", 0, 18)
@@ -94,7 +127,6 @@ local function CreateWindow()
     prev:SetPoint("RIGHT", page, "LEFT", -6, 0)
     nextPage:SetPoint("LEFT", page, "RIGHT", 6, 0)
 
-    local pins = {}
     function window:ShowFloor(index)
         local floors = self.floors
         self.index = index
@@ -107,7 +139,7 @@ local function CreateWindow()
                 fallback = fallback + 1
             end
         end
-        if fallback > 0 then ns.Debug("mapa %d: %d piezas del addon (el cliente no las tiene)", floor.id, fallback) end
+        if fallback > 0 then ns.Debug("mapa %s: %d piezas del addon (el cliente no las tiene)", floor.id, fallback) end
         for _, pin in ipairs(pins) do pin:Hide() end
         for k, p in ipairs(floor.pins) do
             local pin = pins[k] or CreatePin(canvas)
@@ -115,10 +147,12 @@ local function CreateWindow()
             local boss = ns.Bosses[self.dungeon.key][p[1]]
             pin.dungeon, pin.index, pin.boss = self.dungeon, p[1], boss
             ns.SetBossPortrait(pin.portrait, boss)
-            pin:ClearAllPoints()
-            pin:SetPoint("CENTER", canvas, "TOPLEFT", p[2] * WIDTH, -p[3] * MAP_H * SCALE)
+            pin.x, pin.y = p[2], p[3]
             pin:Show()
         end
+        for k = #floor.pins + 1, #pins do pins[k].x = nil end
+        zoom, ox, oy = 1, 0, 0
+        Layout()
         page:SetText(#floors > 1 and L.MAP_FLOOR:format(index, #floors) or "")
         prev:SetShown(#floors > 1)
         nextPage:SetShown(#floors > 1)
@@ -128,10 +162,28 @@ local function CreateWindow()
 
     prev:SetScript("OnClick", function() window:ShowFloor(window.index - 1) end)
     nextPage:SetScript("OnClick", function() window:ShowFloor(window.index + 1) end)
-    canvas:EnableMouseWheel(true)
-    canvas:SetScript("OnMouseWheel", function(_, delta)
-        local i = window.index - delta
-        if i >= 1 and i <= #window.floors then window:ShowFloor(i) end
+    viewport:EnableMouseWheel(true)
+    viewport:SetScript("OnMouseWheel", function(self, delta)
+        local x, y = GetCursorPosition()
+        local scale = self:GetEffectiveScale()
+        window:Zoom(delta, x / scale - self:GetLeft(), self:GetTop() - y / scale)
+    end)
+    -- Arrastrar: con zoom mueve el plano; sin zoom, la ventana
+    viewport:EnableMouse(true)
+    viewport:RegisterForDrag("LeftButton")
+    viewport:SetScript("OnDragStart", function(self)
+        if zoom == 1 then window:StartMoving() return end
+        local x, y = GetCursorPosition()
+        local startX, startY, startOx, startOy, scale = x, y, ox, oy, self:GetEffectiveScale()
+        self:SetScript("OnUpdate", function()
+            local cx, cy = GetCursorPosition()
+            ox, oy = startOx - (cx - startX) / scale, startOy + (cy - startY) / scale
+            Layout()
+        end)
+    end)
+    viewport:SetScript("OnDragStop", function(self)
+        self:SetScript("OnUpdate", nil)
+        window:StopMovingOrSizing()
     end)
 end
 

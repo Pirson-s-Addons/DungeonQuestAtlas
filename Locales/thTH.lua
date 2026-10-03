@@ -76,6 +76,7 @@ L["ROUTE_STOP"] = "เส้นทางไป %s: จุดแวะ %d จา�
 L["ROUTE_SAVED"] = "บันทึกจุดแวะ %d ของเส้นทางไป %s แล้ว: %s"
 L["ROUTE_CLEARED"] = "ลบเส้นทางไป %s แล้ว"
 L["ROUTE_STARTED"] = "เส้นทางไป %s: %d จุดแวะ แล้วจึงถึงทางเข้า"
+L["ROUTE_FLY"] = "บินไปที่ %s"
 L["LOWER"] = "Lower"
 L["UPPER"] = "Upper"
 L["LEVEL"] = "เลเวล:"

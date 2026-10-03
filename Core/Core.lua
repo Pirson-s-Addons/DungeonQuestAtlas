@@ -252,20 +252,24 @@ end
 
 -- Donde esta la entrada: la del mapa del juego, lo recogido o Data/Dungeons.lua
 function ns.Entrance(d)
-    local game = ns.GameEntrance and ns.GameEntrance(d)
-    if game then return game, true end
+    -- La grabada con /dqa entrance, la exacta de Data/Dungeons.lua y, si no hay,
+    -- el icono del mapa del juego (en las de bajo tierra no esta en la puerta)
     local mine = Collected().entrances and Collected().entrances[d.key]
     if mine then return mine, true end
-    return d.entrance, d.verified
+    if d.entrance then return d.entrance, true end
+    local game = ns.GameEntrance and ns.GameEntrance(d)
+    if game then return game, true end
 end
 
 -- Ruta hasta la entrada para tu faccion: la grabada con /dqa route o la de
--- Data/Dungeons.lua (routes = { Alliance = { { mapID, x, y }, ... } }). O nil.
+-- Data/Dungeons.lua (routes = { Alliance = { { mapID, x, y }, ... } }); si no,
+-- el punto de vuelo mas cercano a la entrada (ns.FlightRoute). O nil.
 function ns.Route(d)
     local faction = UnitFactionGroup("player")
     local mine = Collected().routes and Collected().routes[d.key]
     local stops = (mine and mine[faction]) or (d.routes and d.routes[faction])
-    return stops and #stops > 0 and stops or nil
+    if stops and #stops > 0 then return stops end
+    return ns.FlightRoute and ns.FlightRoute(d) -- la de cualquier mazmorra: volar y la entrada
 end
 
 -- Wowhead en el idioma del cliente (si lo tiene) o en ingles
