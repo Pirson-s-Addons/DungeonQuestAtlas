@@ -22,8 +22,28 @@ local function CreatePinMixin()
 
     function DungeonQuestAtlasPinMixin:OnAcquired(marker, x, y)
         self.marker = marker
-        self:SetSize(ns.db.pinSize, ns.db.pinSize)
+        local size = ns.db.pinSize
+        self:SetSize(size, size)
         self:SetPosition(x, y)
+        -- Halo solo en el recien marcado y solo unos segundos: luego, la gema sola
+        local h = ns.highlight
+        local left = h and h.marker == marker and h.untilTime - GetTime() or 0
+        if not (self.Glow and self.Pulse) then return end
+        self.Glow:SetSize(size * 1.6, size * 1.6)
+        self.Glow:SetShown(left > 0)
+        if left <= 0 then
+            self.Pulse:Stop()
+            return
+        end
+        self.Pulse:Play()
+        if C_Timer then
+            C_Timer.After(left, function()
+                if self.marker == marker then
+                    self.Pulse:Stop()
+                    self.Glow:Hide()
+                end
+            end)
+        end
     end
 
     function DungeonQuestAtlasPinMixin:OnMouseEnter()

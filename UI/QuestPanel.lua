@@ -1,19 +1,22 @@
 local _, ns = ...
 local L = ns.L
+local unpack = unpack or table.unpack
 
 -- ==========================================
--- MISIONES (en el libro)
+-- MISIONES
 -- ==========================================
--- Pagina izquierda: las misiones de la mazmorra como botones del Diario.
--- Pagina derecha: el detalle en pergamino, con la fuente de las misiones del
--- juego: donde empieza y termina, cadena, objetivos, recompensas, descripcion.
+-- Pagina izquierda: las misiones de la mazmorra como botones del Diario, con
+-- "(2/5)" si son de una cadena. Pagina derecha: la hoja de la mision como la
+-- del juego, de un vistazo: titulo y estado, la cadena, los objetivos, las
+-- donde empieza y termina, las recompensas (como la ventana de misiones del
+-- juego) y la descripcion.
 
 local UNVERIFIED = "Interface\\RaidFrame\\ReadyCheck-Waiting"
 local FACTION_NAME = { Alliance = "FACTION_ALLIANCE", Horde = "FACTION_HORDE", Both = "FACTION_ALL" }
 local SEP = "  ·  "
 local LINK = "|cff5c1d00" -- enlaces sobre papel
 local MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
-local LEGEND_H = 30
+local LEGEND_H = 40 -- dos lineas de leyenda en las paginas estrechas
 
 local function Icon(path, size)
     return ("|T%s:%d|t"):format(path, size or 14)
@@ -47,6 +50,8 @@ local function QuestTooltip(row)
         GameTooltip:AddLine(ns.FactionMarkup(q.faction) .. " " .. L[FACTION_NAME[q.faction]], 1, 1, 1)
     end
     if q.classes then GameTooltip:AddLine(L.CLASS_ONLY:format(ns.ClassNames(q, true)), 1, 1, 1) end
+    local step, total = ChainStep(q, id)
+    if step then GameTooltip:AddLine(L.CHAIN:format(step, total), 0.78, 0.72, 0.6) end
     if not ns.IsVerified(id) then GameTooltip:AddLine(Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED, 0.6, 0.6, 0.6, true) end
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(L.CLICK_DETAILS, 0.5, 0.8, 1)
@@ -57,34 +62,62 @@ end
 -- Lista (pagina izquierda)
 -- ------------------------------------------
 
+-- Filas compactas de dos lineas sobre el papel: caja oscura con el icono de
+-- estado del juego, el titulo y debajo "Requiere nivel 13 · Cadena 2/5"; a la
+-- derecha la faccion, la clase y el nivel. Las de una cadena llevan una franja
+-- azul a la izquierda. Las hechas, en verde suave (legibles, no transparentes).
+local ROW_H = 44
+local CHAIN_COLOR = { 0.4, 0.72, 1 }
+local CHAIN_HEX = "|cff66b8ff"
+local TITLE_COLOR = {
+    COMPLETED = { 0.55, 0.85, 0.55 },
+    BLOCKED = { 0.85, 0.55, 0.5 },
+}
+
 local function CreateQuestList(parent, onSelect)
     local selected
 
-    -- Como los botones de jefe: en el hueco redondo, el icono de estado del
-    -- juego (! ... ? marca candado) sobre fondo oscuro; la faccion, junto al nivel
     local function Setup(row)
-        ns.SetupJournalButton(row)
-        row.hole = row:CreateTexture(nil, "ARTWORK")
-        ns.PlaceInHole(row.hole, row)
-        row.hole:SetTexture(MASK) -- un circulo blanco: tenido de oscuro
-        row.hole:SetVertexColor(0.05, 0.03, 0.01, 0.85)
-        row.status = row:CreateTexture(nil, "OVERLAY")
-        ns.PlaceInHole(row.status, row, 30)
-        row.level = row:CreateFontString(nil, "ARTWORK", "GameFontNormalMed3")
-        row.level:SetPoint("RIGHT", -16, 0)
+        row.bg = row:CreateTexture(nil, "BACKGROUND")
+        row.bg:SetPoint("TOPLEFT", 0, -1)
+        row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
+        row.glow = row:CreateTexture(nil, "BORDER") -- la elegida: brillo dorado
+        row.glow:SetAllPoints(row.bg)
+        row.glow:SetTexture("Interface\\QuestFrame\\UI-QuestLogTitleHighlight")
+        row.glow:SetBlendMode("ADD")
+        row.glow:SetVertexColor(1, 0.75, 0.2, 0.55)
+        local hl = row:CreateTexture(nil, "HIGHLIGHT")
+        hl:SetAllPoints(row.bg)
+        hl:SetColorTexture(1, 1, 1, 0.08)
+        row.chainBar = row:CreateTexture(nil, "ARTWORK")
+        row.chainBar:SetPoint("TOPLEFT", row.bg)
+        row.chainBar:SetPoint("BOTTOMLEFT", row.bg)
+        row.chainBar:SetWidth(4)
+        row.chainBar:SetColorTexture(CHAIN_COLOR[1], CHAIN_COLOR[2], CHAIN_COLOR[3], 1)
+        row.status = row:CreateTexture(nil, "ARTWORK")
+        row.status:SetSize(24, 24)
+        row.status:SetPoint("LEFT", 10, 0)
+        row.level = row:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        row.level:SetPoint("RIGHT", -10, 0)
         row.faction = row:CreateTexture(nil, "ARTWORK")
         row.faction:SetSize(18, 18)
-        row.faction:SetPoint("RIGHT", row.level, "LEFT", -4, 0)
+        row.faction:SetPoint("RIGHT", row.level, "LEFT", -6, 0)
         -- Mision de clase: el circulo de su clase (el del marco de objetivo)
         row.class = row:CreateTexture(nil, "ARTWORK")
         row.class:SetSize(18, 18)
         row.class:SetPoint("RIGHT", row.faction, "LEFT", -2, 0)
         row.class:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
-        row.label = row:CreateFontString(nil, "ARTWORK", "GameFontNormalMed3")
-        row.label:SetPoint("LEFT", 72, 0) -- fuera del borde curvo del hueco
+        row.label = row:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        row.label:SetPoint("TOPLEFT", 42, -7)
         row.label:SetPoint("RIGHT", row.class, "LEFT", -4, 0)
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
+        row.info = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        row.info:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -4)
+        row.info:SetPoint("RIGHT", row.label, "RIGHT")
+        row.info:SetJustifyH("LEFT")
+        row.info:SetWordWrap(false)
+        row.info:SetTextColor(0.78, 0.74, 0.66)
         row:SetScript("OnClick", function(self)
             if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT) end
             onSelect(self.questID)
@@ -97,27 +130,36 @@ local function CreateQuestList(parent, onSelect)
         local id = item.id
         local q = ns.Quests[id] or {}
         local status = ns.QuestStatus(id)
+        local isSelected = id == selected
         row.questID = id
+        row.bg:SetColorTexture(0.1, 0.07, 0.04, isSelected and 0.95 or 0.78)
+        row.glow:SetShown(isSelected)
         ns.SetStatusIcon(row.status, status)
-        -- Hecha: se apaga, como las misiones grises del juego
-        local done = status == ns.STATUS_COMPLETED
         local faction = ns.FACTION_ATLAS[q.faction or ""]
         if faction then row.faction:SetAtlas(faction) end
         row.faction:SetShown(faction ~= nil)
         local coords = q.classes and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[q.classes[1]]
         if coords then row.class:SetTexCoord(unpack(coords)) end
         row.class:SetShown(coords ~= nil)
-        -- De una cadena: "Titulo (2/5)", como el "paso N" del detalle
+        row.label:SetText(ns.QuestTitle(id))
+        local color = TITLE_COLOR[status]
+        if color then row.label:SetTextColor(unpack(color)) else row.label:SetTextColor(1, 0.82, 0) end
+        -- Segunda linea: nivel minimo y, si es de una cadena, su paso en azul
+        local info = {}
+        if q.minLevel then info[#info + 1] = L.REQUIRES_LEVEL:format(q.minLevel) end
         local step, total = ChainStep(q, id)
-        row.label:SetText(ns.QuestTitle(id) .. (step and ("  |cff8c7a5a(%d/%d)|r"):format(step, total) or ""))
-        row.label:SetTextColor(ns.PARCHMENT_GOLD[1], ns.PARCHMENT_GOLD[2], ns.PARCHMENT_GOLD[3], done and 0.55 or 1)
-        row.status:SetAlpha(status == ns.STATUS_BLOCKED and 0.8 or 1)
+        if step then
+            info[#info + 1] = CHAIN_HEX .. L.CHAIN_SHORT:format(step, total) .. "|r"
+        elseif q.chain == true then
+            info[#info + 1] = CHAIN_HEX .. L.CHAIN_PART .. "|r"
+        end
+        row.info:SetText(table.concat(info, SEP))
+        row.chainBar:SetShown(step ~= nil or q.chain == true)
         local level = ns.QuestLevel(q, id)
         row.level:SetText(level and ("|c%s%d|r"):format(ns.LevelColor(level, level, UnitLevel("player")), level) or "?")
-        ns.SetJournalButtonSelected(row, id == selected)
     end
 
-    local list = ns.CreateScrollList(parent, 54, Setup, Update)
+    local list = ns.CreateScrollList(parent, ROW_H, Setup, Update)
     return {
         -- El ScrollBox guarda tablas, no numeros sueltos
         Refresh = function(_, ids, questID)
@@ -159,10 +201,55 @@ local function CreateDetail(parent)
     end
 
     local detail = { questID = nil }
-    local title = Text("QuestTitleFont", 0)
+    local title = Text("GameFontNormal", 0)
+    ns.SetPaperTitleFont(title, 18)
     local meta = Text("GameFontBlack", 6)
-    local statusLine = Text("GameFontNormal", 6) -- el estado, destacado en su linea
+    -- El estado en una placa oscura con su color claro (dorado, verde, rojo): sobre
+    -- el papel ningun color de estado se lee bien
+    local statusRow = Add(CreateFrame("Frame", nil, content), 6)
+    statusRow:SetHeight(26)
+    local statusBadge = ns.CreateDarkBox(statusRow, 10)
+    statusBadge:SetPoint("TOPLEFT")
+    statusBadge:SetHeight(26)
+    local statusLine = statusBadge:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    statusLine:SetPoint("LEFT", 6, 0)
     local unverified = Text("GameFontBlack", 4, ns.INK_LIGHT)
+    local requires = Text("GameFontNormal", 6) -- "Antes: <paso anterior>", si aun no esta hecho
+
+    -- Cadena: un boton por paso, reutilizados. Cada paso abre su hoja.
+    local chainHeader = Section(L.CHAIN)
+    local chain = Add(CreateFrame("Frame", nil, content))
+    local chainBg = chain:CreateTexture(nil, "BACKGROUND")
+    chainBg:SetPoint("TOPLEFT", -4, 2)
+    chainBg:SetPoint("BOTTOMRIGHT", 4, -2)
+    chainBg:SetColorTexture(0.2, 0.35, 0.55, 0.14)
+    local links = {}
+    local function Link(i)
+        if not links[i] then
+            local b = CreateFrame("Button", nil, chain)
+            b:SetHeight(20)
+            b:SetPoint("TOPLEFT", 0, -20 * (i - 1))
+            b:SetPoint("RIGHT")
+            b:SetNormalFontObject("QuestFont")
+            b:SetText(" ") -- crea el FontString para alinearlo a la izquierda
+            b:GetFontString():ClearAllPoints()
+            b:GetFontString():SetPoint("LEFT", 2, 0)
+            b:GetFontString():SetShadowOffset(0, 0)
+            local hl = b:CreateTexture(nil, "HIGHLIGHT")
+            hl:SetAllPoints()
+            hl:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.12)
+            -- Cualquier paso abre su hoja, tambien los de fuera de la mazmorra
+            -- (Data/Quests.lua los trae con su inicio y final para marcarlos)
+            b:SetScript("OnClick", function(self) ns.ShowQuest(self.questID) end)
+            links[i] = b
+        end
+        return links[i]
+    end
+    local chainNote = Text("GameFontBlack", 4)
+
+    local objHeader = Section(L.OBJECTIVES)
+    local obj = Text("QuestFont")
+    obj.section = objHeader
 
     -- Donde ---------------------------------------------------------------
     Section(L.WHERE)
@@ -217,100 +304,89 @@ local function CreateDetail(parent)
     end)
     share:SetMotionScriptsWhileDisabled(true) -- el tooltip explica por que esta apagado
 
-    -- Cadena: un boton por paso, reutilizados. Cada paso abre su hoja.
-    local chainHeader = Section(L.CHAIN)
-    local chain = Add(CreateFrame("Frame", nil, content))
-    local links = {}
-    local function Link(i)
-        if not links[i] then
-            local b = CreateFrame("Button", nil, chain)
-            b:SetHeight(20)
-            b:SetPoint("TOPLEFT", 0, -20 * (i - 1))
-            b:SetPoint("RIGHT")
-            b:SetNormalFontObject("QuestFont")
-            b:SetText(" ") -- crea el FontString para alinearlo a la izquierda
-            b:GetFontString():ClearAllPoints()
-            b:GetFontString():SetPoint("LEFT", 2, 0)
-            b:GetFontString():SetShadowOffset(0, 0)
-            local hl = b:CreateTexture(nil, "HIGHLIGHT")
-            hl:SetAllPoints()
-            hl:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.12)
-            -- Cualquier paso abre su hoja, tambien los de fuera de la mazmorra
-            -- (Data/Quests.lua los trae con su inicio y final para marcarlos)
-            b:SetScript("OnClick", function(self) ns.ShowQuest(self.questID) end)
-            links[i] = b
-        end
-        return links[i]
-    end
-    local chainNote = Text("GameFontBlack", 4, ns.INK_LIGHT)
-
-    local objHeader = Section(L.OBJECTIVES)
-    local obj = Text("QuestFont")
-    obj.section = objHeader
-
-    -- Recompensas: filas de botin del Diario, una columna; debajo XP y dinero
+    -- Recompensas: como la ventana de misiones del juego, una seccion mas del
+    -- papel; tarjetas en dos columnas (objetos, XP y dinero)
     local rewardHeader = Section(L.REWARDS)
     local rewards = Add(CreateFrame("Frame", nil, content))
+    rewards.section = rewardHeader
+    local PAD, ROW = 0, ns.REWARD_CARD_HEIGHT + 6
     local labels, cards = {}, {}
     local function Label(i)
-        labels[i] = labels[i] or ns.PaperText(rewards, "GameFontBlack")
+        if not labels[i] then
+            labels[i] = ns.PaperText(rewards, "GameFontBlack")
+        end
         return labels[i]
     end
     local function Card(i)
-        cards[i] = cards[i] or ns.CreateItemButton(rewards)
+        cards[i] = cards[i] or ns.CreateRewardCard(rewards)
         return cards[i]
     end
+
     local function FillRewards(q, id)
-        local y, nLabel, nCard = 0, 0, 0
+        local y, nLabel, nCard, col = -2, 0, 0, 0
+        local function EndRow()
+            if col == 1 then y = y - ROW end
+            col = 0
+        end
         local function Line(text)
+            EndRow()
             nLabel = nLabel + 1
             local fs = Label(nLabel)
             fs:ClearAllPoints()
-            fs:SetPoint("TOPLEFT", 0, y - 2)
+            fs:SetPoint("TOPLEFT", PAD, y)
             fs:SetText(text)
             fs:Show()
-            y = y - 20
+            y = y - 18
         end
-        local function Items(list)
-            for _, itemID in ipairs(list) do
-                nCard = nCard + 1
-                local card = Card(nCard)
-                card:ClearAllPoints()
-                card:SetPoint("TOPLEFT", 0, y)
-                card:SetPoint("RIGHT")
-                ns.SetItemButton(card, itemID, q.counts and q.counts[itemID])
-                card:Show()
-                y = y - ns.ITEM_ROW_HEIGHT - 2
-            end
+        -- Dos por fila: la de la izquierda hasta el centro, la de la derecha desde el
+        local function Put(itemID, count, icon, text)
+            nCard = nCard + 1
+            local card = Card(nCard)
+            local half = (ns.Width(rewards, 330) - 6) / 2
+            card:ClearAllPoints()
+            card:SetWidth(half)
+            card:SetPoint("TOPLEFT", PAD + col * (half + 6), y)
+            ns.SetRewardCard(card, itemID, count, icon, text)
+            card:Show()
+            col = col + 1
+            if col == 2 then y = y - ROW; col = 0 end
         end
         local mine = DungeonQuestAtlasCollectorDB.quests[id]
         local choice = q.choice or (mine and mine.rewards) or {}
         if #choice > 1 then Line(L.CHOOSE_ONE) end
-        Items(choice)
-        if q.rewards and #q.rewards > 0 then
-            if #choice > 0 then Line(L.ALSO_RECEIVE) end
-            Items(q.rewards)
-        end
+        for _, itemID in ipairs(choice) do Put(itemID, q.counts and q.counts[itemID]) end
         local xp, money = ns.QuestXP(q, id), ns.QuestMoney(q, id)
-        local extra = {}
+        local given = q.rewards or {}
+        local extras = #given + ((xp and xp > 0) and 1 or 0) + ((money and money > 0 and GetCoinTextureString) and 1 or 0)
+        if extras > 0 and #choice > 0 then Line(L.ALSO_RECEIVE) end
+        for _, itemID in ipairs(given) do Put(itemID, q.counts and q.counts[itemID]) end
         if xp and xp > 0 then
-            extra[#extra + 1] = L.XP:format(BreakUpLargeNumbers and BreakUpLargeNumbers(xp) or xp)
+            Put(nil, nil, "Interface\\Icons\\XP_Icon", L.XP:format(BreakUpLargeNumbers and BreakUpLargeNumbers(xp) or xp))
         end
-        if money and money > 0 and GetCoinTextureString then extra[#extra + 1] = GetCoinTextureString(money) end
-        if #extra > 0 then Line(table.concat(extra, SEP)) end
+        if money and money > 0 and GetCoinTextureString then
+            Put(nil, nil, "Interface\\Icons\\INV_Misc_Coin_01", GetCoinTextureString(money))
+        end
+        EndRow()
         for i = nLabel + 1, #labels do labels[i]:Hide() end
         for i = nCard + 1, #cards do cards[i]:Hide() end
         rewards:SetHeight(math.max(1, -y))
-        return nLabel + nCard > 0
+        return nCard > 0
     end
 
     local descHeader = Section(L.DESCRIPTION)
     local desc = Text("QuestFont")
     desc.section = descHeader
 
-    local function Layout()
-        local width = math.max(100, scroll:GetWidth() - 10)
+    -- El juego parte el texto en lineas al pintar: justo despues de SetWidth,
+    -- GetStringHeight puede dar aun una sola linea y el final no se alcanza con
+    -- la rueda. Por eso se vuelve a medir en el siguiente frame, ya pintado.
+    local Layout
+    local function Relayout() Layout(true) end
+    function Layout(again)
+        local width = math.max(100, ns.Width(scroll, 110) - 10)
         content:SetWidth(width)
+        rewards:SetWidth(width)
+        if detail.questID and rewards:IsShown() then FillRewards(ns.Quests[detail.questID] or {}, detail.questID) end
         -- Los cuatro botones caben siempre en la pagina
         local bw = math.floor((width - GAP * (PER_ROW - 1)) / PER_ROW)
         for i, b in ipairs(row) do
@@ -335,7 +411,8 @@ local function CreateDetail(parent)
                 previous = block
             end
         end
-        content:SetHeight(height + 8)
+        content:SetHeight(height + 24) -- aire al final: el borde de la pagina no tapa la ultima linea
+        if again ~= true and C_Timer then C_Timer.After(0, Relayout) end
     end
     scroll:SetScript("OnSizeChanged", Layout)
 
@@ -385,7 +462,8 @@ local function CreateDetail(parent)
         end
         if q.classes then parts[#parts + 1] = L.CLASS_ONLY:format(ns.ClassNames(q, true)) end
         meta:SetText(table.concat(parts, SEP))
-        statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "paper"))
+        statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "light"))
+        statusBadge:SetWidth(statusLine:GetStringWidth() + 14)
         Set(unverified, not ns.IsVerified(id) and (Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
 
         local startList, endList = ns.QuestPlaces(id, "starts"), ns.QuestPlaces(id, "ends")
@@ -400,7 +478,7 @@ local function CreateDetail(parent)
 
         local steps = type(q.chain) == "table" and q.chain or {}
         local current = ChainStep(q, id) or 0
-        chainHeader.text:SetText(L.CHAIN:format(math.max(current, 1), math.max(#steps, 1)))
+        chainHeader.text:SetText(#steps > 1 and L.CHAIN:format(math.max(current, 1), #steps) or L.CHAIN_PART)
         chainHeader:SetShown(#steps > 1 or q.chain == true)
         chain:SetHeight(20 * #steps)
         chain:SetShown(#steps > 1)
@@ -414,6 +492,10 @@ local function CreateDetail(parent)
             link:Show()
         end
         Set(chainNote, q.chain == true and L.CHAIN_UNKNOWN or nil)
+        -- El paso anterior sin hacer: lo primero que hay que saber
+        local previous = current > 1 and steps[current - 1]
+        Set(requires, previous and ns.QuestStatus(previous) ~= ns.STATUS_COMPLETED
+            and ("|cff8c1a0d" .. L.CHAIN_REQUIRES:format(ns.QuestTitle(previous)) .. "|r") or nil)
 
         local objective = ns.QuestObjective(id)
         -- La llevas: el progreso de cada objetivo ("Cabeza de Arugal: 0/1"), del juego
@@ -475,11 +557,12 @@ function ns.CreateQuestPanel(left, right)
     legend:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 0, -3)
     legend:SetPoint("RIGHT", line, "RIGHT")
     legend:SetJustifyH("CENTER")
-    legend:SetSpacing(2)
+    legend:SetSpacing(1)
     local keys = {}
     for _, status in ipairs(ns.STATUS_ORDER) do
         keys[#keys + 1] = ns.StatusMarkup(status, 14) .. " " .. L["STATUS_" .. status]
     end
+    keys[#keys + 1] = "|TInterface\\Buttons\\WHITE8X8:12:4:0:0:8:8:0:8:0:8:102:184:255|t " .. L.CHAIN_PART
     legend:SetText(table.concat(keys, "   "))
 
     local empty = ns.PaperText(left, "QuestFont")

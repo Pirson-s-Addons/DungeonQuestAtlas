@@ -2,22 +2,21 @@ local _, ns = ...
 local L = ns.L
 
 -- ==========================================
--- VENTANA PRINCIPAL: el Diario de mazmorras
+-- VENTANA PRINCIPAL: como la Guia de aventuras
 -- ==========================================
--- Marco de Blizzard con retrato (PortraitFrameTemplate). Arriba el buscador y
--- los filtros; a la izquierda las mazmorras; a la derecha el libro del Diario
--- (UI-EJ-JournalBG) con sus pestanas laterales: Misiones, Jefes y Mazmorra.
--- En la pagina izquierda del libro, la cabecera de la mazmorra y la lista; en
--- la derecha, el detalle. Tamano fijo como el Diario (la escala va en
--- opciones); se arrastra, se cierra con Esc y recuerda su posicion. Nada
--- protegido: se puede usar en combate.
+-- Marco de Blizzard con retrato (PortraitFrameTemplate), del tamano del Diario.
+-- Arriba, las migas ("Principal > Mazmorra", NavBar del juego), el idioma y el
+-- buscador. Dos vistas:
+--   portada: "Mazmorras", los filtros y la cuadricula de tarjetas;
+--   mazmorra: el libro del Diario, lista a la izquierda y detalle a la derecha.
+-- Pestanas abajo: Mazmorras (la portada), Resumen, Misiones y Jefes.
+-- Se arrastra, se cierra con Esc, recuerda su posicion y cambia de tamano con
+-- clic derecho mantenido. Nada protegido: se puede usar en combate.
 
 local unpack = unpack or table.unpack
-local LIST_W = 262
 local BOOK = ns.BOOK
-local FRAME_W, FRAME_H = 6 + LIST_W + 6 + BOOK.width + 6, 60 + BOOK.height + 7
+local FRAME_W, FRAME_H = 6 + BOOK.width + 6, 60 + BOOK.height + 7
 local LOGO = "Interface\\AddOns\\DungeonQuestAtlas\\img\\logo_dqa"
-local QUEST_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 
 local frame, ui
 local filters = { myRange = false, kind = "all", faction = nil, search = "" }
@@ -29,75 +28,104 @@ end
 function ns.SetFilter(key, value)
     filters[key] = value
     if key == "faction" and ui and ui.faction then ui.faction:SetValue(value or "Both") end
+    -- Buscar lleva a la portada, donde salen los resultados (como en el Diario)
+    if key == "search" and value ~= "" then ns.char.view = "home" end
     ns.RefreshUI()
-end
-
--- Pasa la pagina del libro (si la opcion esta puesta y la ventana se ve)
-local function TurnPage(forward)
-    if ns.db.pageTurn and ui and ui.turner and frame:IsVisible() then ui.turner:Turn(forward) end
 end
 
 local function SelectedDungeon()
     return ns.char.dungeon and ns.DungeonByKey[ns.char.dungeon]
 end
 
--- Al abrir por primera vez: la primera mazmorra de tu nivel
+-- Si no hay ninguna elegida: la primera de tu nivel
 local function DefaultDungeon()
     local list = ns.FilterDungeons({ myRange = true, kind = "all", faction = filters.faction })
     return list[1] or ns.Dungeons[1]
 end
 
-local PANELS = { "quests", "bosses", "overview" }
+local PANELS = { "overview", "quests", "bosses" }
+local TABS = { "home", "overview", "quests", "bosses" }
+
+-- Migas: "Principal" y, en la vista de mazmorra, su nombre
+local function UpdateNav(d)
+    local nav = ui.nav
+    local key = d and d.key or nil
+    if nav.key == key then return end
+    nav.key = key
+    if nav.fallback then return nav:Reset(d) end
+    NavBar_Reset(nav)
+    if d then NavBar_AddButton(nav, { name = ns.DungeonName(d), OnClick = function() end }) end
+end
+
+local function SelectTab(name)
+    for i, key in ipairs(TABS) do
+        local tab = ui.tabs[key]
+        if PanelTemplates_SelectTab and PanelTemplates_DeselectTab then
+            if key == name then PanelTemplates_SelectTab(tab) else PanelTemplates_DeselectTab(tab) end
+        end
+        tab.selected = key == name
+    end
+end
 
 function ns.RefreshUI()
     if not (frame and frame:IsShown()) then return end
+    local home = ns.char.view ~= "dungeon"
+    ui.home:SetShown(home)
+    ui.book:SetShown(not home)
+    local list = ns.FilterDungeons(filters)
+    ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "   |cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
+
+    if home then
+        ui.grid:Refresh(list)
+        ui.noResults:SetShown(#list == 0)
+        UpdateNav(nil)
+        SelectTab("home")
+        return
+    end
+
     local d = SelectedDungeon()
     if not d then
         d = DefaultDungeon()
         ns.char.dungeon = d and d.key
     end
-    local list = ns.FilterDungeons(filters)
-    ui.dungeons:Refresh(list, d and d.key)
-    ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "\n|cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
-    ui.book:SetShown(d ~= nil)
     if not d then return end
+    UpdateNav(d)
 
     -- Cabecera de la pagina izquierda: icono, nombre, nivel y progreso
     ns.SetDungeonArt(ui.icon, d, "icon")
     ui.title:SetText(ns.DungeonName(d))
     local done, total = ns.DungeonProgress(d, filters.faction)
-    ui.subtitle:SetText(("%s |c%s%d–%d|r"):format(L.LEVEL, ns.LevelColor(d.minLevel, d.maxLevel, UnitLevel("player")),
-        d.minLevel, d.maxLevel) .. (total > 0 and ("   " .. L.PROGRESS:format(done, total)) or ""))
+    local killed, bossTotal = ns.BossKillProgress(d)
+    local parts = { ("%s |c%s%d–%d|r"):format(L.LEVEL, ns.LevelColor(d.minLevel, d.maxLevel, UnitLevel("player")),
+        d.minLevel, d.maxLevel) }
+    if total > 0 then parts[#parts + 1] = ns.StatusMarkup(ns.STATUS_AVAILABLE, 14) .. " " .. L.PROGRESS:format(done, total) end
+    if killed > 0 then parts[#parts + 1] = "|cffff7060" .. L.BOSSES_PROGRESS:format(killed, bossTotal) .. "|r" end
+    ui.subtitle:SetText(table.concat(parts, "   "))
 
-    local tab = ui.panels[ns.char.tab] and ns.char.tab or "quests" -- la vieja "entrance" ya no existe
+    local tab = tContains(PANELS, ns.char.tab) and ns.char.tab or "quests"
     ns.char.tab = tab
-    for _, key in ipairs(PANELS) do
-        ui.panels[key]:SetShown(key == tab)
-        ui.tabs[key]:SetSelected(key == tab)
-    end
+    for _, key in ipairs(PANELS) do ui.panels[key]:SetShown(key == tab) end
+    SelectTab(tab)
     ui.panels[tab]:SetDungeon(d)
 end
 
-local function IndexOf(list, value)
-    for i, v in ipairs(list) do if v == value then return i end end
-    return 0
-end
-
--- Hacia delante si la pestana nueva va despues (Misiones, Jefes, Mazmorra)
-local function ShowTab(name)
-    if not tContains(PANELS, name) then name = "quests" end
-    if name ~= ns.char.tab then TurnPage(IndexOf(PANELS, name) > IndexOf(PANELS, ns.char.tab)) end
-    ns.char.tab = name
+local function ShowHome()
+    ns.char.view = "home"
     ns.RefreshUI()
 end
 
--- Hacia delante si la mazmorra nueva va despues en la lista
+local function ShowTab(name)
+    if name == "home" then return ShowHome() end
+    if not tContains(PANELS, name) then name = "quests" end
+    ns.char.tab = name
+    ns.char.view = "dungeon"
+    ns.RefreshUI()
+end
+
+-- Tarjeta de la portada: abre la mazmorra en la ultima pestana usada
 function ns.SelectDungeon(d)
-    local old = SelectedDungeon()
-    if d and d ~= old then
-        TurnPage(IndexOf(ns.Dungeons, d) > IndexOf(ns.Dungeons, old))
-    end
     ns.char.dungeon = d and d.key
+    ns.char.view = d and "dungeon" or "home"
     ns.RefreshUI()
 end
 
@@ -116,8 +144,8 @@ local function SavePosition()
 end
 
 -- Desplegable moderno del juego: options = { { valor, texto }, ... }
-local function FilterDropdown(width, options, key)
-    local dd = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
+local function FilterDropdown(parent, width, options, key)
+    local dd = CreateFrame("DropdownButton", nil, parent, "WowStyle1DropdownTemplate")
     dd:SetWidth(width)
     if dd.SetupMenu then
         dd:SetupMenu(function(_, root)
@@ -130,46 +158,47 @@ local function FilterDropdown(width, options, key)
     return dd
 end
 
-local function CreateToolbar()
+-- Migas: la NavBar del juego (la del Diario); si el cliente no la tiene, un
+-- boton "Principal" y el nombre de la mazmorra al lado
+local function CreateNav()
+    local ok, nav = pcall(CreateFrame, "Frame", nil, frame, "NavBarTemplate")
+    if ok and nav and NavBar_Initialize and nav.home then
+        nav:SetPoint("TOPLEFT", 61, -22)
+        nav:SetSize(380, 34)
+        NavBar_Initialize(nav, "NavButtonTemplate", { name = L.HOME, OnClick = ShowHome }, nav.home, nav.overflow)
+        return nav
+    end
+    nav = CreateFrame("Frame", nil, frame)
+    nav:SetPoint("TOPLEFT", 64, -28)
+    nav:SetSize(380, 24)
+    local homeButton = CreateFrame("Button", nil, nav, "UIPanelButtonTemplate")
+    homeButton:SetSize(100, 22)
+    homeButton:SetPoint("LEFT")
+    homeButton:SetText(L.HOME)
+    homeButton:SetScript("OnClick", ShowHome)
+    local crumb = nav:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    crumb:SetPoint("LEFT", homeButton, "RIGHT", 8, 0)
+    nav.fallback = true
+    function nav:Reset(d) crumb:SetText(d and ("> " .. ns.DungeonName(d)) or "") end
+    return nav
+end
+
+local function CreateTopBar()
+    ui.nav = CreateNav()
+
     local search = CreateFrame("EditBox", nil, frame, "SearchBoxTemplate")
-    search:SetSize(LIST_W - 80, 20)
-    search:SetPoint("TOPLEFT", 70, -33)
+    search:SetSize(160, 20)
+    search:SetPoint("TOPRIGHT", -14, -31)
     search:SetAutoFocus(false)
     search:SetText(filters.search) -- al rehacer la ventana (otro idioma) sigue el filtro
-    if search.Instructions then search.Instructions:SetText(L.SEARCH) end -- "Buscar" del juego, en el idioma elegido
+    if search.Instructions then search.Instructions:SetText(L.SEARCH) end
     search:HookScript("OnTextChanged", function(self) ns.SetFilter("search", self:GetText()) end)
     ns.AddTooltip(search, L.SEARCH_TOOLTIP)
 
-    local range = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
-    range:SetSize(26, 26)
-    range:SetPoint("LEFT", search, "RIGHT", 12, 0)
-    range:SetChecked(filters.myRange)
-    range:SetScript("OnClick", function(self) ns.SetFilter("myRange", self:GetChecked() and true or false) end)
-    ns.AddTooltip(range, L.MY_RANGE_TOOLTIP)
-    local rangeLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    rangeLabel:SetPoint("LEFT", range, "RIGHT", 0, 1)
-    rangeLabel:SetText(L.MY_RANGE)
-
-    local kind = FilterDropdown(140, { { "all", L.KIND_ALL }, { "classic", L.KIND_CLASSIC }, { "forever", L.KIND_FOREVER } },
-        "kind")
-    kind:SetPoint("LEFT", rangeLabel, "RIGHT", 12, -1)
-    -- Faccion: tres botones con los emblemas del juego (ambas, Alianza, Horda).
-    -- La de tu personaje solo al abrir por primera vez, no al cambiar de idioma.
-    if ns.db.autoFaction and not filters.started then filters.faction = UnitFactionGroup("player") end
-    filters.started = true
-    local A, H = ns.FACTION_CREST.Alliance, ns.FACTION_CREST.Horde
-    local faction = ns.CreateIconToggleGroup(frame, 24, {
-        { value = "Both", tooltip = L.FACTION_ALL, crests = { A, H } },
-        { value = "Alliance", tooltip = L.FACTION_ALLIANCE, crests = { A } },
-        { value = "Horde", tooltip = L.FACTION_HORDE, crests = { H } },
-    }, function(value) ns.SetFilter("faction", value ~= "Both" and value or nil) end)
-    faction:SetPoint("LEFT", kind, "RIGHT", 12, 1)
-    faction:SetValue(filters.faction or "Both")
-
-    -- Idioma de la ventana, a la derecha: el del juego o cualquiera de los 20
+    -- Idioma de la ventana: el del juego o cualquiera de los 20
     local language = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
-    language:SetWidth(150)
-    language:SetPoint("TOPRIGHT", -12, -30)
+    language:SetWidth(140)
+    language:SetPoint("RIGHT", search, "LEFT", -12, 0)
     if language.SetupMenu then
         language:SetupMenu(function(_, root)
             if root.SetScrollMode then root:SetScrollMode(22 * 16) end
@@ -182,38 +211,91 @@ local function CreateToolbar()
         end)
     end
     ns.AddTooltip(language, L.LANGUAGE_TOOLTIP)
-
-    -- "34 mazmorras" / "7 misiones pendientes...", en dos lineas entre medias
-    ui.pending = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    ui.pending:SetPoint("LEFT", faction, "RIGHT", 12, 0)
-    ui.pending:SetPoint("RIGHT", language, "LEFT", -10, 0)
-    ui.pending:SetJustifyH("RIGHT")
-    ui.pending:SetMaxLines(2)
-    ui.range, ui.kind, ui.faction, ui.search, ui.language = range, kind, faction, search, language
+    ui.search, ui.language = search, language
 end
 
-local function CreateBook()
-    local book = CreateFrame("Frame", nil, frame)
-    book:SetSize(BOOK.width, BOOK.height)
-    book:SetPoint("BOTTOMRIGHT", -6, 7)
+-- Portada: titulo "Mazmorras", filtros a la derecha y la cuadricula
+local function CreateHome(area)
+    local home = CreateFrame("Frame", nil, area)
+    home:SetAllPoints()
+    local bg = home:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    ns.SetSkin(bg, "home")
+    local band = home:CreateTexture(nil, "BORDER") -- franja oscura del titulo, como en la Guia
+    band:SetPoint("TOPLEFT")
+    band:SetPoint("TOPRIGHT")
+    band:SetHeight(54)
+    band:SetColorTexture(0, 0, 0, 0.45)
+
+    local title = home:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+    ns.SetTitleFont(title, 24)
+    title:SetPoint("TOPLEFT", 20, -10)
+    title:SetText(L.TAB_DUNGEONS)
+    ui.pending = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    ui.pending:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 1, -3)
+
+    -- Filtros: faccion (emblemas), tipo y "Mi nivel", de derecha a izquierda
+    if ns.db.autoFaction and not filters.started then filters.faction = UnitFactionGroup("player") end
+    filters.started = true -- la de tu personaje solo al abrir, no al cambiar de idioma
+    local A, H = ns.FACTION_CREST.Alliance, ns.FACTION_CREST.Horde
+    local faction = ns.CreateIconToggleGroup(home, 24, {
+        { value = "Both", tooltip = L.FACTION_ALL, crests = { A, H } },
+        { value = "Alliance", tooltip = L.FACTION_ALLIANCE, crests = { A } },
+        { value = "Horde", tooltip = L.FACTION_HORDE, crests = { H } },
+    }, function(value) ns.SetFilter("faction", value ~= "Both" and value or nil) end)
+    faction:SetPoint("TOPRIGHT", -18, -15)
+    faction:SetValue(filters.faction or "Both")
+    local kind = FilterDropdown(home, 150, { { "all", L.KIND_ALL }, { "classic", L.KIND_CLASSIC },
+        { "forever", L.KIND_FOREVER } }, "kind")
+    kind:SetPoint("RIGHT", faction, "LEFT", -14, 0)
+    local rangeLabel = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    rangeLabel:SetPoint("RIGHT", kind, "LEFT", -12, 0)
+    rangeLabel:SetText(L.MY_RANGE)
+    local range = CreateFrame("CheckButton", nil, home, "UICheckButtonTemplate")
+    range:SetSize(26, 26)
+    range:SetPoint("RIGHT", rangeLabel, "LEFT", 0, 0)
+    range:SetChecked(filters.myRange)
+    range:SetScript("OnClick", function(self) ns.SetFilter("myRange", self:GetChecked() and true or false) end)
+    ns.AddTooltip(range, L.MY_RANGE_TOOLTIP)
+    ui.range, ui.kind, ui.faction = range, kind, faction
+
+    local gridArea = CreateFrame("Frame", nil, home)
+    gridArea:SetPoint("TOP", 0, -66)
+    gridArea:SetPoint("BOTTOM", 0, 6)
+    gridArea:SetWidth(ns.GRID_WIDTH + 24) -- con la barra de scroll
+    ui.grid = ns.CreateDungeonGrid(gridArea, ns.SelectDungeon)
+    ui.noResults = home:CreateFontString(nil, "OVERLAY", "GameFontDisableLarge")
+    ui.noResults:SetPoint("CENTER", 0, -20)
+    ui.noResults:SetText(L.NO_RESULTS)
+    ui.home = home
+end
+
+-- Vista de mazmorra: el libro del Diario, con la cabecera de la pagina izquierda
+local function CreateBook(area)
+    local book = CreateFrame("Frame", nil, area)
+    book:SetAllPoints()
     local bg = book:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetTexture(BOOK.file)
-    bg:SetTexCoord(unpack(BOOK.coords))
+    ns.SetSkin(bg, "book")
     ui.book = book
 
-    -- Cabecera de la pagina izquierda (como la del Diario en un encuentro)
-    local shadow = book:CreateTexture(nil, "BORDER")
-    shadow:SetSize(386, 39)
-    shadow:SetPoint("TOPLEFT", 0, -11)
-    ns.SetEJTexture(shadow, "LeftPageHeader")
+    -- Franja oscura detras del nombre, el nivel y el progreso (colores claros)
+    local band = book:CreateTexture(nil, "BORDER")
+    band:SetPoint("TOPLEFT", 0, -11)
+    band:SetSize(386, 60)
+    if CreateColor and band.SetGradient then
+        band:SetColorTexture(1, 1, 1, 1)
+        band:SetGradient("HORIZONTAL", CreateColor(0.08, 0.05, 0.02, 0.92), CreateColor(0.08, 0.05, 0.02, 0.55))
+    else
+        band:SetColorTexture(0.08, 0.05, 0.02, 0.85)
+    end
     local iconButton = CreateFrame("Button", nil, book)
     iconButton:SetSize(64, 61)
     iconButton:SetPoint("TOPLEFT", 0, -3)
     ui.icon = iconButton:CreateTexture(nil, "BACKGROUND")
     ui.icon:SetSize(40, 40)
     ui.icon:SetPoint("CENTER")
-    ui.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask") -- como el Diario
+    ui.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask")
     local ring = iconButton:CreateTexture(nil, "OVERLAY")
     ring:SetAllPoints()
     ns.SetEJTexture(ring, "BossModelButton")
@@ -225,15 +307,17 @@ local function CreateBook()
     ui.title:SetJustifyH("LEFT")
     ui.title:SetWordWrap(false)
     ui.title:SetTextColor(unpack(ns.TITLE_LIGHT))
-    ui.subtitle = ns.PaperText(book, "GameFontBlack")
+    ui.subtitle = book:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     ui.subtitle:SetPoint("TOPLEFT", iconButton, "BOTTOMRIGHT", 2, 8)
+    ui.subtitle:SetPoint("RIGHT", book, "LEFT", 380, 0)
+    ui.subtitle:SetWordWrap(false)
 
     -- Paginas: cada panel tiene su parte en cada una
     local leftPage = CreateFrame("Frame", nil, book)
     leftPage:SetPoint("TOPLEFT", 22, -76)
     leftPage:SetPoint("BOTTOMRIGHT", book, "BOTTOMLEFT", 382, 16)
     local rightPage = CreateFrame("Frame", nil, book)
-    rightPage:SetPoint("TOPLEFT", 412, -24)
+    rightPage:SetPoint("TOPLEFT", BOOK.spine + 20, -24)
     rightPage:SetPoint("BOTTOMRIGHT", -26, 18)
     local function Page(parent)
         local page = CreateFrame("Frame", nil, parent)
@@ -245,25 +329,27 @@ local function CreateBook()
         bosses = ns.CreateBossPanel(Page(leftPage), Page(rightPage)),
         overview = ns.CreateOverviewPanel(Page(leftPage), Page(rightPage)),
     }
+end
 
-    -- Hoja que pasa: el lomo en x=392, el pergamino dentro de las tapas
-    ui.turner = ns.CreatePageTurner(book, 392, { left = 12, right = BOOK.width - 14, top = 8, bottom = BOOK.height - 10 })
-
-    -- Pestanas laterales, en el borde derecho del libro
+-- Pestanas de abajo (PanelTabButtonTemplate, las de la Guia)
+local function CreateTabs()
     ui.tabs = {}
+    local labels = { home = L.TAB_DUNGEONS, overview = L.TAB_OVERVIEW, quests = L.TAB_QUESTS, bosses = L.TAB_BOSSES }
     local previous
-    for _, def in ipairs({
-        { "quests", L.TAB_QUESTS, QUEST_ICON, QUEST_ICON },
-        { "bosses", L.TAB_BOSSES, "TabLootIcon", "TabLootIconSelected" },
-        { "overview", L.TAB_OVERVIEW, "TabModelIcon", "TabModelIconSelected" },
-    }) do
-        local tab = ns.CreateSideTab(book, def[2], def[3], def[4], function() ShowTab(def[1]) end)
+    for i, key in ipairs(TABS) do
+        local tab = CreateFrame("Button", "DungeonQuestAtlasFrameTab" .. i, frame, "PanelTabButtonTemplate")
+        tab:SetText(labels[key])
+        if PanelTemplates_TabResize then PanelTemplates_TabResize(tab, 0) end
         if previous then
-            tab:SetPoint("TOP", previous, "BOTTOM", 0, 2)
+            tab:SetPoint("TOPLEFT", previous, "TOPRIGHT", 3, 0)
         else
-            tab:SetPoint("TOPLEFT", book, "TOPRIGHT", -12, -35)
+            tab:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 11, 2)
         end
-        ui.tabs[def[1]] = tab
+        tab:SetScript("OnClick", function()
+            if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB) end
+            ShowTab(key)
+        end)
+        ui.tabs[key] = tab
         previous = tab
     end
 end
@@ -288,24 +374,23 @@ local function CreateMainFrame()
     end)
     frame:SetScript("OnShow", ns.RefreshUI)
     tinsert(UISpecialFrames, "DungeonQuestAtlasFrame")
-    if frame.SetTitle then frame:SetTitle("Dungeon Quest Atlas |cff00ccffForever|r") end
+    -- Clic derecho mantenido y arrastrar: mas grande o mas pequena (la escala de opciones)
+    ns.EnableRightDragScale(frame, { frame }, function(scale)
+        ns.db.scale = scale
+        SavePosition()
+    end)
+    if frame.SetTitle then frame:SetTitle("|cffd597ffDungeon Quest Atlas Forever|r") end
     if frame.SetPortraitToAsset then frame:SetPortraitToAsset(LOGO) end
     ns.ApplyScale()
 
-    CreateToolbar()
-
-    local inset = CreateFrame("Frame", nil, frame, "InsetFrameTemplate")
-    inset:SetPoint("TOPLEFT", 6, -60)
-    inset:SetPoint("BOTTOMLEFT", 6, 7)
-    inset:SetWidth(LIST_W)
-    local listArea = CreateFrame("Frame", nil, inset)
-    listArea:SetPoint("TOPLEFT", 4, -4)
-    listArea:SetPoint("BOTTOMRIGHT", -2, 4)
-    ui.dungeons = ns.CreateDungeonList(listArea, ns.SelectDungeon)
-
-    CreateBook()
+    CreateTopBar()
+    local area = CreateFrame("Frame", nil, frame)
+    area:SetPoint("TOPLEFT", 6, -60)
+    area:SetPoint("BOTTOMRIGHT", -6, 7)
+    CreateHome(area)
+    CreateBook(area)
+    CreateTabs()
     ns.ui = ui
-    ShowTab(ns.char.tab)
 end
 
 -- Cambia el idioma de la ventana ("auto" = el del juego). Los textos se ponen
@@ -321,8 +406,11 @@ function ns.SetLanguage(code)
     frame:SetShown(shown)
 end
 
+-- /dqa y el minimapa: siempre se abre en la portada "Mazmorras" (los saltos a
+-- una mision o a un jefe, ns.ShowQuest / ns.ShowBoss, van a su pagina)
 function ns.ToggleMainFrame()
     if not frame then CreateMainFrame() end
+    if not frame:IsShown() then ns.char.view = "home" end
     frame:SetShown(not frame:IsShown())
 end
 

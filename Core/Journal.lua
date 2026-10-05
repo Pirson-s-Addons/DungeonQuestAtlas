@@ -53,6 +53,8 @@ end
 local CROP = {
     -- Estandarte de la lista: una franja
     banner = { button = { 0, 0.68359375, 0.22, 0.52 }, load = { 0, 1, 0.38, 0.6 }, bg = { 0, 0.77, 0.3, 0.45 } },
+    -- Tarjeta de la portada: el boton de mazmorra del Diario entero (174x96)
+    card = { button = { 0, 0.68359375, 0, 0.75 }, load = { 0, 1, 0.2, 0.75 }, bg = { 0, 0.77, 0.1, 0.6 } },
     -- Ilustracion de la pestana Mazmorra
     lore = { lore = { 0, 0.7617187, 0, 0.5 }, load = { 0, 1, 0.1, 0.72 }, bg = { 0, 0.77, 0.1, 0.55 } },
     -- Fondo del jefe elegido
@@ -103,14 +105,16 @@ local function Load(d)
     if EJ_SelectInstance then EJ_SelectInstance(id) end
     -- displayID -> jefe del Diario (nombre traducido, imagen, historia)
     for i = 1, 40 do
-        local bossName, bossDesc, encounterID = EJ_GetEncounterInfoByIndex(i, id)
+        -- El 7.o valor es el ID de ENCOUNTER_END (Core/BossKills.lua)
+        local bossName, bossDesc, encounterID, _, _, _, dungeonEncounterID = EJ_GetEncounterInfoByIndex(i, id)
         if not encounterID then break end
         for c = 1, 8 do
             local _, creature, _, display, icon = EJ_GetCreatureInfo(c, encounterID)
             if not creature then break end
             if display then
                 info.bosses[display] = { name = creature, icon = Valid(icon) and icon or nil,
-                    description = bossDesc ~= "" and bossDesc or nil, encounter = bossName }
+                    description = bossDesc ~= "" and bossDesc or nil, encounter = bossName,
+                    encounterID = dungeonEncounterID }
             end
         end
     end
@@ -138,7 +142,9 @@ local function Candidates(d, kind)
         if texture then list[#list + 1] = { texture, coords } end
     end
     local load = f.load and ("Interface\\Glues\\LoadingScreens\\LoadScreen" .. f.load)
-    if kind == "banner" then
+    if kind == "banner" or kind == "card" then
+        -- La tarjeta propia (Art/UI/card_<CLAVE>), si la hay: las nuevas de Forever
+        if kind == "card" and ns.ART_FILES["card_" .. d.key] then Add(ns.ART .. "card_" .. d.key) end
         Add(j.button, crop.button)
         Add(f.ej and (EJ .. "UI-EJ-DUNGEONBUTTON-" .. f.ej), crop.button)
         Add(load, crop.load)

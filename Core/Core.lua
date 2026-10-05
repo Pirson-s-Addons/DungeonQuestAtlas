@@ -11,25 +11,27 @@ local L = ns.L
 
 DungeonQuestAtlas = ns -- objeto global del addon (para otros addons y /dump)
 
-local DB_VERSION = 2
+local DB_VERSION = 4
 local DEFAULTS = {
     minimap = { hide = false },
     scale = 1,
+    mapScale = 1,         -- tamano de la ventana del mapa (clic derecho y arrastrar)
     hideCompleted = false,
     hideOtherClasses = false, -- ocultar las misiones de clase que no son de la tuya
     chainGuide = true,    -- al entregar un paso de una cadena, marcar el inicio del siguiente
     autoFaction = true,
-    pageTurn = true,      -- animacion de pasar pagina al cambiar de mazmorra o de pestana
     waypointMode = "own", -- "own" (flecha y marcadores del addon), "native" (pin del juego), "tomtom"
     arrow = {},           -- posicion de la flecha
-    pinSize = 16,         -- tamano del marcador en el mapa y el minimapa (px)
+    pinSize = 20,         -- tamano del marcador en el mapa y el minimapa (px)
     wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
     language = "auto",    -- idioma de la ventana: "auto" (el del juego) o "deDE", "enUS"...
     collect = false,
     debug = false,
     window = {},
 }
-local CHAR_DEFAULTS = { dungeon = nil, tab = "quests", markers = {}, target = nil }
+local CHAR_DEFAULTS = { dungeon = nil, view = "home", tab = "quests", markers = {}, target = nil,
+    kills = {}, runs = {}, left = {}, done = {} } -- jefes muertos (Core/BossKills.lua): por mazmorra,
+    -- copia de la instancia, cuando saliste de ella y cuando murio el ultimo jefe
 ns.DEFAULTS = DEFAULTS
 
 ns.PREFIX = "|cffd597ffDungeon Quest Atlas|r: "
@@ -91,6 +93,8 @@ function ns.MigrateDB(db, defaults)
         db.preferTomTom = nil
     end
     db = CopyDefaults(defaults, db)
+    -- v3/v4: el marcador de 16 px casi no se veia y el de 26 era grande; 20 por defecto
+    if v < 4 and (db.pinSize == 16 or db.pinSize == 26) then db.pinSize = 20 end
     db.dbVersion = DB_VERSION
     return db
 end
@@ -318,6 +322,7 @@ local function On(event, fn)
     events[event] = fn
     frame:RegisterEvent(event)
 end
+ns.On = On
 
 On("PLAYER_LOGIN", function()
     ns.db = ns.MigrateDB(DungeonQuestAtlasDB, DEFAULTS)
@@ -336,12 +341,20 @@ On("PLAYER_LOGIN", function()
     if ns.CreateMinimapButton then ns.CreateMinimapButton() end
     if ns.SetupMapPins then ns.SetupMapPins() end
     if ns.Target() and ns.OnMarkersChanged then ns.OnMarkersChanged() end
+    -- Los textos de las misiones que ya llevas (el registro tarda en llenarse)
+    if C_Timer then C_Timer.After(5, ns.CollectLog) end
 end)
 
-for _, event in ipairs({ "QUEST_ACCEPTED", "QUEST_REMOVED", "QUEST_LOG_UPDATE",
+for _, event in ipairs({ "QUEST_REMOVED", "QUEST_LOG_UPDATE",
     "QUEST_DATA_LOAD_RESULT", "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP", "GROUP_ROSTER_UPDATE" }) do
     On(event, ns.RequestRefresh)
 end
+
+-- Coger una mision: su texto, desde el registro (por si no se vio la oferta)
+On("QUEST_ACCEPTED", function(questID)
+    if ns.Quests[questID] and not ns.QuestText(questID).desc then ns.CollectFromLog(questID) end
+    ns.RequestRefresh()
+end)
 
 -- Entregar un paso de una cadena: el inicio del siguiente (Core/Waypoints.lua)
 On("QUEST_TURNED_IN", function(questID)
@@ -350,7 +363,7 @@ On("QUEST_TURNED_IN", function(questID)
 end)
 
 On("QUEST_DETAIL", function()
-    if ns.db.collect then ns.CollectQuestDetail() end
+    ns.CollectQuestDetail(ns.db.collect) -- el texto, siempre
     ns.CheckTalkArrival()
 end)
 

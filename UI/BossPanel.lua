@@ -2,7 +2,7 @@ local _, ns = ...
 local L = ns.L
 
 -- ==========================================
--- JEFES Y BOTIN (en el libro)
+-- JEFES Y BOTIN
 -- ==========================================
 -- Pagina izquierda: botones de jefe del Diario, con la cara del jefe en el
 -- hueco redondo del boton. Pagina derecha: el modelo 3D del jefe sobre el
@@ -60,6 +60,25 @@ local function SetBossImage(creature, portrait, boss, d)
     end
 end
 
+-- Marca de jefe muerto: la X roja del juego (size px; quien la crea la coloca)
+-- y una placa oscura "Derrotado" (ancho segun el texto). Las dos ocultas.
+function ns.CreateSlainMark(parent, size)
+    local cross = parent:CreateTexture(nil, "OVERLAY", nil, 3)
+    cross:SetSize(size, size)
+    cross:SetTexture("Interface\\RaidFrame\\ReadyCheck-NotReady")
+    cross:Hide()
+    local slain = ns.CreateDarkBox(parent, 10)
+    slain:SetFrameLevel(parent:GetFrameLevel() + 5)
+    slain:SetHeight(16)
+    local text = slain:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    text:SetPoint("CENTER", 0, 0)
+    text:SetTextColor(1, 0.3, 0.25)
+    text:SetText(L.BOSS_KILLED)
+    slain:SetWidth(math.max(56, text:GetStringWidth() + 16))
+    slain:Hide()
+    return cross, slain
+end
+
 function ns.CreateBossPanel(left, right)
     local panel = { dungeon = nil, index = 1 }
 
@@ -84,16 +103,42 @@ function ns.CreateBossPanel(left, right)
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
         row.label:SetTextColor(unpack(ns.PARCHMENT_GOLD))
+        ns.RowText(row.label)
         row.info = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.info:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -4)
-        row.info:SetTextColor(0.75, 0.7, 0.6)
-        row:SetScript("OnClick", function(self) panel:SelectBoss(self.index) end)
+        row.info:SetTextColor(unpack(ns.PARCHMENT_SUB))
+        ns.RowText(row.info)
+        -- Jefe muerto: cruz roja sobre la cara y la placa "Derrotado" debajo
+        row.cross, row.slain = ns.CreateSlainMark(row, ns.JOURNAL_HOLE_SIZE + 4)
+        ns.PlaceInHole(row.cross, row, ns.JOURNAL_HOLE_SIZE + 4)
+        row.slain:SetPoint("BOTTOM", row, "BOTTOMLEFT", ns.JOURNAL_HOLE_X, 1)
+        row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+        row:SetScript("OnClick", function(self, button)
+            if button == "RightButton" then
+                ns.ToggleBossKill(panel.dungeon, ns.Bosses[panel.dungeon.key][self.index])
+            else
+                panel:SelectBoss(self.index)
+            end
+        end)
+        row:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(self.label:GetText())
+            GameTooltip:AddLine(L.BOSS_KILL_HINT, 1, 1, 1, true)
+            GameTooltip:Show()
+        end)
+        row:SetScript("OnLeave", GameTooltip_Hide)
     end, function(row, item)
         local boss, d = item.boss, panel.dungeon
         row.index = item.index
         SetBossImage(row.creature, row.portrait, boss, d)
         row.label:SetText((boss.kind == "rare" and "|cffc0c0ff" or "") .. ns.BossName(boss, d) .. "|r")
+        local killed = ns.IsBossKilled(d, boss)
         row.info:SetText(ns.BossInfo(boss))
+        row.creature:SetDesaturated(killed)
+        row.portrait:SetDesaturated(killed)
+        row.label:SetAlpha(killed and 0.6 or 1)
+        row.cross:SetShown(killed)
+        row.slain:SetShown(killed)
         ns.SetJournalButtonSelected(row, item.index == panel.index)
     end)
 
@@ -184,7 +229,8 @@ function ns.CreateBossPanel(left, right)
             ns.SetBossPortrait(icon, boss)
         end
         title:SetText(ns.BossName(boss, d))
-        info:SetText((boss.kind == "rare" and RARE or "") .. ns.BossInfo(boss) .. "|r")
+        info:SetText((ns.IsBossKilled(d, boss) and ("|cffa01010" .. L.BOSS_KILLED .. "|r" .. SEP) or "")
+            .. (boss.kind == "rare" and RARE or "") .. ns.BossInfo(boss) .. "|r")
         local journal = ns.JournalBoss(d, boss)
         lore:SetText(journal and journal.description or "")
         loot:SetItems(boss.loot)

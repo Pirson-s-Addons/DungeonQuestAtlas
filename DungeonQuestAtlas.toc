@@ -1,7 +1,7 @@
 ## Interface: 16001
 # Interfaz de la beta 1.60.1 de WoW Forever. Comprobar en el cliente con
 # /dump select(4, GetBuildInfo()) y actualizar si cambia en el lanzamiento.
-## Version: 1.05
+## Version: 2.00
 ## Author: Pirson
 ## IconTexture: Interface\AddOns\DungeonQuestAtlas\img\logo_dqa
 ## Title: |cffd597ffDungeon Quest Atlas Forever|r
@@ -142,6 +142,7 @@ Core/Journal.lua
 Core/Navigation.lua
 Core/Collector.lua
 Core/Integrations.lua
+Core/BossKills.lua
 
 UI/Theme.lua
 UI/List.lua

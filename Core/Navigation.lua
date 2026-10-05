@@ -45,12 +45,19 @@ function ns.SetTarget(marker)
     Changed()
 end
 
+-- El marcador recien puesto brilla en el mapa del mundo unos segundos (UI/MapPins.lua)
+ns.HIGHLIGHT_TIME = 3
+local function Highlight(marker)
+    ns.highlight = { marker = marker, untilTime = GetTime() + ns.HIGHLIGHT_TIME }
+end
+
 -- El mismo sitio no se repite: se reutiliza y pasa a ser el objetivo
 function ns.AddMarker(point, title, kind)
     for _, m in ipairs(Markers()) do
         if m.mapID == point.mapID and m.x == point.x and m.y == point.y then
             m.title, m.kind = title, kind or m.kind
             m.npcID, m.under = point.npcID, point.under
+            Highlight(m)
             ns.SetTarget(m)
             return m
         end
@@ -58,6 +65,7 @@ function ns.AddMarker(point, title, kind)
     local marker = { mapID = point.mapID, x = point.x, y = point.y, title = title, kind = kind,
         npcID = point.npcID, under = point.under }
     table.insert(Markers(), marker)
+    Highlight(marker)
     ns.SetTarget(marker)
     return marker
 end

@@ -1,11 +1,13 @@
 local _, ns = ...
 
 -- ==========================================
--- TEMA: el Diario de mazmorras del juego
+-- TEMA: la Guia de aventuras de Retail
 -- ==========================================
--- Todo el arte es del propio cliente (nada se empaqueta): la hoja de texturas
--- del Diario (Interface\EncounterJournal), con las mismas coordenadas que usa
--- Blizzard_EncounterJournal (rama forever de wow-ui-source), y sus fuentes.
+-- Como el Diario de mazmorras del juego: la hoja de texturas del Diario
+-- (Interface\EncounterJournal, con las coordenadas de Blizzard_EncounterJournal,
+-- rama forever de wow-ui-source), sus fuentes y sus plantillas. Las piezas que
+-- tienen arte propio en Art/UI (encargo en _project/docs/DungeonQuestAtlas/
+-- arte-retail.md) lo usan si el fichero esta; si no, la del juego (ns.SetSkin).
 
 local unpack = unpack or table.unpack
 local SHEET = "Interface\\EncounterJournal\\UI-EncounterJournalTextures"
@@ -16,14 +18,9 @@ local REGION = {
     BossButtonHighlight = { 0.00195313, 0.63671875, 0.15820313, 0.21191406 },
     LootFrame = { 0.00195313, 0.62890625, 0.61816406, 0.66210938 },
     DungeonNameBg = { 0.34570313, 0.84570313, 0.42871094, 0.49121094 },
+    InstanceButton = { 0.00195313, 0.34179688, 0.42871094, 0.52246094 },
+    InstanceButtonPushed = { 0.00195313, 0.34179688, 0.33300781, 0.42675781 },
     DungeonButtonHighlight = { 0.34570313, 0.68554688, 0.33300781, 0.42675781 },
-    TabUnselected = { 0.25585938, 0.37890625, 0.90332031, 0.95898438 },
-    TabSelected = { 0.12890625, 0.25195313, 0.90332031, 0.95898438 },
-    TabHighlight = { 0.00195313, 0.12500000, 0.90332031, 0.95898438 },
-    TabLootIcon = { 0.73046875, 0.82421875, 0.61816406, 0.66015625 },
-    TabLootIconSelected = { 0.63281250, 0.72656250, 0.61816406, 0.66015625 },
-    TabModelIcon = { 0.90234375, 1, 0.662109375, 0.705078125 },
-    TabModelIconSelected = { 0.8046875, 0.900390625, 0.662109375, 0.705078125 },
     BossModelButton = { 0.50585938, 0.63085938, 0.02246094, 0.08203125 },
     BossNameShadow = { 0.00195313, 0.77343750, 0.26953125, 0.33105469 },
     LeftPageHeader = { 0, 0.755859375, 0.9599609375, 1 },
@@ -34,14 +31,58 @@ function ns.SetEJTexture(texture, name)
     texture:SetTexCoord(unpack(REGION[name]))
 end
 
-ns.BOOK = { file = "Interface\\EncounterJournal\\UI-EJ-JournalBG", width = 785, height = 425,
-    coords = { 0, 0.766601562, 0, 0.830078125 } }
+-- Arte propio (Art/UI). Mientras no este, las piezas del juego.
+ns.ART = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\"
+local SKIN = {
+    -- Fondo de la portada (la cuadricula de mazmorras)
+    home = { atlas = "UI-EJ-Classic", color = { 0.05, 0.04, 0.08 } },
+    -- Libro de la pagina de una mazmorra: lista a la izquierda, detalle a la derecha
+    book = { file = "Interface\\EncounterJournal\\UI-EJ-JournalBG", coords = { 0, 0.766601562, 0, 0.830078125 } },
+}
+
+-- Piezas de Art/UI que lleva el addon ("home", "card_THANES"...). Se apuntan
+-- aqui al anadirlas: no consta que Forever devuelva false en SetTexture con un
+-- fichero del addon que falta (con las tarjetas, no: salian en negro).
+ns.ART_FILES = {}
+
+-- Pone en la textura la pieza "name": la de Art/UI si la hay; si no, la del juego
+function ns.SetSkin(texture, name)
+    if ns.ART_FILES[name] then
+        texture:SetTexture(ns.ART .. name)
+        texture:SetTexCoord(0, 1, 0, 1)
+        return
+    end
+    local s = SKIN[name]
+    if s.atlas and texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(s.atlas) then
+        texture:SetAtlas(s.atlas)
+    elseif s.file then
+        texture:SetTexture(s.file)
+        texture:SetTexCoord(unpack(s.coords or { 0, 1, 0, 1 }))
+    else
+        texture:SetColorTexture(unpack(s.color))
+    end
+end
+
+-- Ancho de un marco, o fallback si aun no lo tiene (recien creado, sin anclar)
+function ns.Width(frame, fallback)
+    local w = frame:GetWidth()
+    return type(w) == "number" and w > 0 and w or fallback
+end
+
+-- Medidas del libro (las del Diario: 785x425) y de sus paginas
+ns.BOOK = { width = 785, height = 425, spine = 392 }
 
 -- Colores del Diario: texto sobre papel, botones de jefe y titulos claros
-ns.INK = { 0.25, 0.15, 0.02 }          -- GameFontBlack del Diario
-ns.INK_LIGHT = { 0.45, 0.32, 0.18 }
+ns.INK = { 0.16, 0.09, 0.01 }          -- tinta casi negra: el papel del Diario es claro
+ns.INK_LIGHT = { 0.33, 0.21, 0.08 }    -- notas: mas suave, pero legible sobre el papel
+ns.INK_HEADER = { 0.42, 0.08, 0.02 }   -- cabeceras de seccion: granate oscuro
+ns.TEXT_ON_DARK = { 0.86, 0.82, 0.74 } -- texto secundario sobre fondos oscuros
+-- Regla de contraste: sobre el papel solo tinta oscura (INK, INK_HEADER, enlaces
+-- granates). Lo que lleva color de estado o de dificultad (dorado, verde,
+-- amarillo...) va siempre sobre fondo oscuro: placa, franja o fila.
 ns.PARCHMENT_GOLD = { 0.827, 0.659, 0.463 } -- texto de los botones de jefe
 ns.TITLE_LIGHT = { 0.902, 0.788, 0.671 }    -- titulo de la mazmorra
+ns.PARCHMENT_SUB = { 0.78, 0.7, 0.6 }       -- segunda linea de los botones de jefe
 
 -- Texto sobre papel: fuente del juego con la tinta del Diario
 function ns.PaperText(parent, font, color)
@@ -52,15 +93,24 @@ function ns.PaperText(parent, font, color)
     return fs
 end
 
+-- Titulos sobre papel: la fuente normal del juego (la de su idioma: tiene los
+-- glifos de chino, coreano y ruso) mas grande y gruesa. La de titulos de mision
+-- (QuestTitleFont) es de trazo fino y en Forever casi no se ve sobre el papel.
+function ns.SetPaperTitleFont(fs, size)
+    local font = GameFontNormal and GameFontNormal:GetFont()
+    if font then fs:SetFont(font, size, "") end
+end
+
 -- Titulo de seccion sobre papel con una raya fina debajo
 function ns.CreatePaperHeader(parent, text)
     local frame = CreateFrame("Frame", nil, parent)
-    frame:SetHeight(22)
-    frame.text = ns.PaperText(frame, "QuestTitleFont")
+    frame:SetHeight(24)
+    frame.text = ns.PaperText(frame, "GameFontNormal", ns.INK_HEADER)
+    ns.SetPaperTitleFont(frame.text, 15)
     frame.text:SetPoint("BOTTOMLEFT", 0, 5)
     frame.text:SetText(text)
     local line = frame:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.3)
+    line:SetColorTexture(ns.INK_HEADER[1], ns.INK_HEADER[2], ns.INK_HEADER[3], 0.45)
     line:SetHeight(1)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
@@ -68,10 +118,10 @@ function ns.CreatePaperHeader(parent, text)
 end
 
 -- Boton del Diario (el de los jefes): normal / seleccionado / resaltado.
--- El original mide 325x55; nuestras filas son mas anchas. Estirado entero, el
--- hueco redondo de la izquierda se deforma y se mueve, asi que va en dos
+-- El original mide 325x55; nuestras filas pueden ser mas anchas. Estirado
+-- entero, el hueco redondo de la izquierda se deforma, asi que va en dos
 -- trozos: la tapa con el hueco a su tamano y el resto estirado.
-local BUTTON_W, SHEET_W = 325, 512
+local BUTTON_W = 325
 local CAP = 72 -- ancho de la tapa con el hueco (px del boton original)
 -- Centro del hueco desde el borde izquierdo y tamano de lo que va dentro
 ns.JOURNAL_HOLE_X, ns.JOURNAL_HOLE_SIZE = 37, 46
@@ -110,6 +160,14 @@ function ns.SetJournalButtonSelected(button, on)
     SetButtonPiece(button.body, name, false)
 end
 
+-- Texto de una fila sobre el boton del Diario: dorado con sombra
+function ns.RowText(fs)
+    fs:SetTextColor(unpack(ns.PARCHMENT_GOLD))
+    fs:SetShadowColor(0, 0, 0, 1)
+    fs:SetShadowOffset(1, -1)
+    return fs
+end
+
 -- Icono a la izquierda de un boton rojo (UIPanelButtonTemplate), con el texto
 -- corrido a su derecha; gris cuando el boton esta apagado. Llamar tras SetText.
 function ns.SetButtonIcon(button, icon)
@@ -133,31 +191,87 @@ function ns.PlaceInHole(texture, button, size)
     texture:SetPoint("CENTER", button, "LEFT", ns.JOURNAL_HOLE_X, 0)
 end
 
--- Pestana lateral del libro (EncounterTabTemplate): icon = region de la hoja
--- o una textura cualquiera. Devuelve el boton; SetSelected(true/false).
-function ns.CreateSideTab(parent, tooltip, icon, iconSelected, onClick)
-    local tab = CreateFrame("Button", nil, parent)
-    tab:SetSize(63, 57)
-    tab.bg = tab:CreateTexture(nil, "BACKGROUND")
-    tab.bg:SetAllPoints()
-    ns.SetEJTexture(tab.bg, "TabUnselected")
-    local hl = tab:CreateTexture(nil, "HIGHLIGHT")
-    hl:SetAllPoints()
-    ns.SetEJTexture(hl, "TabHighlight")
-    hl:SetBlendMode("ADD")
-    tab.icon = tab:CreateTexture(nil, "OVERLAY")
-    tab.icon:SetSize(REGION[icon] and 48 or 26, REGION[icon] and 43 or 26)
-    tab.icon:SetPoint("RIGHT", REGION[icon] and -6 or -16, 0)
-    function tab:SetSelected(on)
-        ns.SetEJTexture(self.bg, on and "TabSelected" or "TabUnselected")
-        local name = on and iconSelected or icon
-        if REGION[name] then ns.SetEJTexture(self.icon, name) else self.icon:SetTexture(name) end
-        self.icon:SetDesaturated(not on and not REGION[name])
+-- Caja oscura con borde fino (tarjetas de recompensa, placas): la del tooltip
+local BORDER = "Interface\\Tooltips\\UI-Tooltip-Border"
+function ns.CreateDarkBox(parent, edge)
+    local box = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    box:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = BORDER, edgeSize = edge or 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 } })
+    box:SetBackdropColor(0.04, 0.03, 0.02, 0.85)
+    box:SetBackdropBorderColor(0.55, 0.45, 0.3)
+    return box
+end
+
+-- Cambiar el tamano de una ventana manteniendo el clic derecho y arrastrando
+-- (como MoveAny): a la derecha o arriba crece, a la izquierda o abajo mengua.
+-- El centro no se mueve; va de 5 en 5 % y, mientras se arrastra, una placa
+-- pequena arriba a la izquierda dice el tamano ("125%"). handles: los marcos donde se puede pulsar
+-- (los que reciben el raton); onDone(escala) al soltar, para guardarla.
+ns.SCALE_MIN, ns.SCALE_MAX = 0.5, 2
+
+-- Placa del porcentaje: una para todas las ventanas, encima de todo y sin
+-- escalar con la ventana (siempre del mismo tamano)
+local percent
+local function PercentPlaque()
+    if percent then return percent end
+    percent = ns.CreateDarkBox(UIParent)
+    percent:SetParent(UIParent)
+    percent:SetSize(84, 28)
+    percent:SetFrameStrata("TOOLTIP")
+    percent.text = percent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    percent.text:SetPoint("CENTER", 0, 1)
+    percent:Hide()
+    return percent
+end
+
+function ns.EnableRightDragScale(target, handles, onDone)
+    local driver = CreateFrame("Frame")
+    local x0, y0, s0, cx, cy
+    local function Show(scale)
+        local p = PercentPlaque()
+        p.text:SetText(("%d%%"):format(math.floor(scale * 100 + 0.5)))
+        p:ClearAllPoints()
+        p:SetPoint("TOPLEFT", target, "TOPLEFT", 66, 2) -- junto al retrato, sobre el borde
+        p:Show()
     end
-    tab:SetScript("OnClick", onClick)
-    ns.AddTooltip(tab, tooltip)
-    tab:SetSelected(false)
-    return tab
+    local function Stop()
+        driver:SetScript("OnUpdate", nil)
+        onDone(target:GetScale())
+        -- La placa se queda un momento para leer el tamano final
+        if C_Timer then C_Timer.After(0.8, function() if not driver:GetScript("OnUpdate") then PercentPlaque():Hide() end end) end
+    end
+    for _, handle in ipairs(handles) do
+        handle:HookScript("OnMouseDown", function(_, button)
+            if button ~= "RightButton" then return end
+            x0, y0 = GetCursorPosition()
+            s0 = target:GetScale()
+            local es = target:GetEffectiveScale()
+            cx, cy = target:GetCenter()
+            cx, cy = cx * es, cy * es -- en pixeles de pantalla
+            Show(s0)
+            driver:SetScript("OnUpdate", function()
+                if not IsMouseButtonDown("RightButton") then return Stop() end
+                local x, y = GetCursorPosition()
+                local s = s0 * (1 + ((x - x0) + (y - y0)) / 600)
+                s = math.floor(s * 20 + 0.5) / 20 -- de 5 en 5 %
+                s = math.max(ns.SCALE_MIN, math.min(ns.SCALE_MAX, s))
+                target:SetScale(s)
+                local e = target:GetEffectiveScale()
+                target:ClearAllPoints()
+                target:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cx / e, cy / e)
+                Show(s)
+            end)
+        end)
+    end
+end
+
+-- Titulos con la fuente de los titulos de la Guia (Morpheus) en los idiomas que
+-- la tienen entera; en los demas (cirilico, asiaticos, letras como la l o la r
+-- con trazo) se queda la fuente que traia.
+local MORPHEUS_LANGS = { enUS = true, esES = true, deDE = true, frFR = true, itIT = true, ptBR = true,
+    svSE = true, noNO = true }
+function ns.SetTitleFont(fs, size)
+    if MORPHEUS_LANGS[ns.UILANG or ""] then fs:SetFont("Fonts\\MORPHEUS.TTF", size, "") end
 end
 
 -- ------------------------------------------
@@ -176,11 +290,11 @@ ns.STATUS_ICON = {
 }
 -- Color del estado, legible sobre papel y sobre los botones oscuros
 ns.STATUS_COLOR = {
-    AVAILABLE = { paper = "|cff6b4a00", light = "|cffffd100" },
-    IN_LOG = { paper = "|cff5a4a33", light = "|cffe0d0b0" },
-    READY = { paper = "|cff7a4d00", light = "|cffffd100" },
-    COMPLETED = { paper = "|cff1a6b12", light = "|cff40c040" },
-    BLOCKED = { paper = "|cff8c1a0d", light = "|cffff4040" },
+    AVAILABLE = { paper = "|cff6e3500", light = "|cffffd100" },
+    IN_LOG = { paper = "|cff3a2a12", light = "|cffe0d0b0" },
+    READY = { paper = "|cff6e3500", light = "|cffffd100" },
+    COMPLETED = { paper = "|cff0d5208", light = "|cff40c040" },
+    BLOCKED = { paper = "|cff801408", light = "|cffff4040" },
 }
 
 function ns.SetStatusIcon(texture, status)
@@ -228,11 +342,10 @@ function ns.CreateIconToggleGroup(parent, size, options, onChange)
         b.bg = b:CreateTexture(nil, "BACKGROUND")
         b.bg:SetAllPoints()
         b.bg:SetColorTexture(0, 0, 0, 0.55)
-        -- El mismo marco que las filas de mazmorra
         b.border = CreateFrame("Frame", nil, b, "BackdropTemplate")
         b.border:SetPoint("TOPLEFT", -3, 3)
         b.border:SetPoint("BOTTOMRIGHT", 3, -3)
-        b.border:SetBackdrop({ edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 12 })
+        b.border:SetBackdrop({ edgeFile = BORDER, edgeSize = 12 })
         b.icons = {}
         local n = #o.crests
         for j, atlas in ipairs(o.crests) do
@@ -277,113 +390,6 @@ function ns.CreateIconToggleGroup(parent, size, options, onChange)
         end
     end
     return group
-end
-
--- ------------------------------------------
--- Pasar pagina
--- ------------------------------------------
--- El juego no dobla texturas en 3D, pero se imita bien: una hoja de
--- pergamino (la misma del libro) se pliega hacia el lomo encogiendose en
--- horizontal y, al otro lado, se despliega y se desvanece. Una sombra en
--- degradado hacia el lomo le da la curva. Lo nuevo ya esta pintado debajo,
--- asi que la hoja lo va destapando. Con el sonido de pasar pagina del juego.
-
-local TURN_TIME = 0.16 -- cada mitad del giro
-
--- Pixel del libro -> coordenada de su textura
-local function U(x) return ns.BOOK.coords[1] + (ns.BOOK.coords[2] - ns.BOOK.coords[1]) * x / ns.BOOK.width end
-local function V(y) return ns.BOOK.coords[3] + (ns.BOOK.coords[4] - ns.BOOK.coords[3]) * y / ns.BOOK.height end
-
--- Hoja: textura del libro recortada a una pagina, con su sombra
-local function Leaf(overlay, book, left, right, top, bottom)
-    local leaf = CreateFrame("Frame", nil, overlay)
-    leaf:SetPoint("TOPLEFT", book, "TOPLEFT", left, -top)
-    leaf:SetPoint("BOTTOMRIGHT", book, "TOPLEFT", right, -bottom)
-    local paper = leaf:CreateTexture(nil, "ARTWORK")
-    paper:SetAllPoints()
-    paper:SetTexture(ns.BOOK.file)
-    paper:SetTexCoord(U(left), U(right), V(top), V(bottom))
-    leaf.shade = leaf:CreateTexture(nil, "OVERLAY")
-    leaf.shade:SetAllPoints()
-    leaf.shade:SetColorTexture(1, 1, 1, 1)
-    leaf:Hide()
-    return leaf
-end
-
--- La sombra se oscurece hacia el lomo (side = "LEFT" o "RIGHT" del lomo)
-local function Shade(leaf, spineSide)
-    if not (CreateColor and leaf.shade.SetGradient) then
-        leaf.shade:SetColorTexture(0, 0, 0, 0.25)
-        return
-    end
-    local dark, clear = CreateColor(0, 0, 0, 0.55), CreateColor(0, 0, 0, 0.05)
-    if spineSide == "LEFT" then
-        leaf.shade:SetGradient("HORIZONTAL", dark, clear)
-    else
-        leaf.shade:SetGradient("HORIZONTAL", clear, dark)
-    end
-end
-
--- Animacion de una hoja: escala horizontal anclada al lomo
-local function Fold(leaf, spinePoint, from, to, smoothing, fade)
-    local group = leaf:CreateAnimationGroup()
-    local scale = group:CreateAnimation("Scale")
-    scale:SetOrigin(spinePoint, 0, 0)
-    scale:SetScaleFrom(from, 1)
-    scale:SetScaleTo(to, 1)
-    scale:SetDuration(TURN_TIME)
-    scale:SetSmoothing(smoothing)
-    if fade then
-        local alpha = group:CreateAnimation("Alpha")
-        alpha:SetFromAlpha(1)
-        alpha:SetToAlpha(0)
-        alpha:SetStartDelay(TURN_TIME * 0.4)
-        alpha:SetDuration(TURN_TIME * 0.6)
-    end
-    group:SetScript("OnFinished", function() leaf:Hide() end)
-    return group
-end
-
--- book: el marco del libro; spine: x del lomo; page = { top, bottom, left, right }
--- con los margenes del pergamino. Devuelve turner:Turn(forward).
-function ns.CreatePageTurner(book, spine, page)
-    local overlay = CreateFrame("Frame", nil, book)
-    overlay:SetAllPoints()
-    overlay:SetFrameLevel(book:GetFrameLevel() + 40)
-    local leftLeaf = Leaf(overlay, book, page.left, spine, page.top, page.bottom)
-    local rightLeaf = Leaf(overlay, book, spine, page.right, page.top, page.bottom)
-    Shade(leftLeaf, "RIGHT")
-    Shade(rightLeaf, "LEFT")
-    -- Hacia delante: la derecha se pliega al lomo y cae desplegandose a la izquierda
-    local anims = {
-        [true] = { first = rightLeaf, firstAnim = Fold(rightLeaf, "LEFT", 1, 0.02, "IN"),
-            second = leftLeaf, secondAnim = Fold(leftLeaf, "RIGHT", 0.02, 1, "OUT", true) },
-        [false] = { first = leftLeaf, firstAnim = Fold(leftLeaf, "RIGHT", 1, 0.02, "IN"),
-            second = rightLeaf, secondAnim = Fold(rightLeaf, "LEFT", 0.02, 1, "OUT", true) },
-    }
-    for _, a in pairs(anims) do
-        a.firstAnim:SetScript("OnFinished", function()
-            a.first:Hide()
-            a.second:Show()
-            a.secondAnim:Play()
-        end)
-    end
-
-    local turner = {}
-    function turner:Turn(forward)
-        forward = forward ~= false
-        for _, a in pairs(anims) do
-            a.firstAnim:Stop()
-            a.secondAnim:Stop()
-            a.first:Hide()
-            a.second:Hide()
-        end
-        local a = anims[forward]
-        a.first:Show()
-        a.firstAnim:Play()
-        if PlaySound and SOUNDKIT and SOUNDKIT.IG_ABILITY_PAGE_TURN then PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN) end
-    end
-    return turner
 end
 
 -- ScrollFrame con la barra fina del Diario (MinimalScrollBar) pegada a su

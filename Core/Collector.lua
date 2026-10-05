@@ -4,9 +4,11 @@ local L = ns.L
 -- ==========================================
 -- RECOLECTOR
 -- ==========================================
--- Fuente principal de datos: lo que el propio juego ensena. Con /dqa collect on,
--- cada mision que abres (QUEST_DETAIL) guarda su texto, el PNJ, el mapa y tu
--- posicion. /dqa entrance <clave> guarda la entrada de una mazmorra. Todo se usa
+-- Fuente principal de datos: lo que el propio juego ensena. El juego solo da el
+-- texto de una mision cuando un PNJ te la ofrece o cuando la llevas, asi que se
+-- guarda siempre, sin activar nada: al ofrecertela (QUEST_DETAIL) y desde tu
+-- registro (al cogerla y al entrar al juego). Con /dqa collect on, ademas, el PNJ,
+-- el mapa y tu posicion de todas las misiones, para /dqa export. /dqa entrance <clave> guarda la entrada de una mazmorra. Todo se usa
 -- al momento y /dqa export lo saca como tabla Lua para pegarlo en Data/.
 -- Se guardan todas las misiones, no solo las conocidas: asi salen tambien las
 -- de las mazmorras nuevas de Forever, cuyos IDs aun no estan en Data/.
@@ -61,9 +63,12 @@ local function RewardItems()
     return #items > 0 and items or nil
 end
 
-function ns.CollectQuestDetail()
+-- full: modo recolector (todas las misiones, con PNJ y posicion, y aviso en el
+-- chat). Sin el, solo el texto de las misiones del addon y en silencio.
+function ns.CollectQuestDetail(full)
     local id = GetQuestID()
     if not id or id == 0 then return end
+    if not full and not ns.Quests[id] then return end
     local db = DungeonQuestAtlasCollectorDB.quests
     local entry = db[id] or {}
     entry.text = entry.text or {}
@@ -73,12 +78,53 @@ function ns.CollectQuestDetail()
         obj = GetObjectiveText(),
         giverName = UnitExists("npc") and UnitName("npc") or nil,
     }
-    entry.giver = NpcHere() or entry.giver
-    entry.rewards = RewardItems() or entry.rewards
+    if full then
+        entry.giver = NpcHere() or entry.giver
+        entry.rewards = RewardItems() or entry.rewards
+    end
     db[id] = Stamp(entry)
     ns.Debug("QUEST_DETAIL %d giver=%s", id, entry.giver and tostring(entry.giver.npcID) or "-")
-    ns.Print(L.COLLECTED:format(entry.text[ns.LOCALE].title or "?", id))
+    if full then ns.Print(L.COLLECTED:format(entry.text[ns.LOCALE].title or "?", id)) end
     ns.RequestRefresh()
+end
+
+-- Texto de una mision que llevas, desde el registro del juego (se elige un
+-- momento y se vuelve a la que estaba elegida). Devuelve true si la guarda.
+function ns.CollectFromLog(id)
+    local log = C_QuestLog
+    if not (log and log.GetLogIndexForQuestID and log.GetLogIndexForQuestID(id)
+        and log.SetSelectedQuest and GetQuestLogQuestText) then return false end
+    local previous = log.GetSelectedQuest and log.GetSelectedQuest()
+    log.SetSelectedQuest(id)
+    local desc, obj = GetQuestLogQuestText()
+    if previous and previous ~= id then log.SetSelectedQuest(previous) end
+    desc = ns.PlainText(desc)
+    if type(desc) ~= "string" or desc == "" then return false end
+    local db = DungeonQuestAtlasCollectorDB.quests
+    local entry = db[id] or {}
+    entry.text = entry.text or {}
+    local text = entry.text[ns.LOCALE] or {}
+    text.title = text.title or (log.GetTitleForQuestID and log.GetTitleForQuestID(id)) or nil
+    text.desc, text.obj = desc, ns.PlainText(obj) or text.obj
+    entry.text[ns.LOCALE] = text
+    db[id] = Stamp(entry)
+    ns.Debug("texto de %d desde el registro", id)
+    return true
+end
+
+-- Todas las misiones del addon que llevas y aun no tienen texto
+function ns.CollectLog()
+    local log = C_QuestLog
+    if not (log and log.GetNumQuestLogEntries and log.GetInfo) then return end
+    local saved = false
+    for i = 1, log.GetNumQuestLogEntries() do
+        local info = log.GetInfo(i)
+        local id = info and not info.isHeader and info.questID
+        if id and ns.Quests[id] and not ns.QuestText(id).desc then
+            saved = ns.CollectFromLog(id) or saved
+        end
+    end
+    if saved then ns.RequestRefresh() end
 end
 
 -- QUEST_COMPLETE: el PNJ con el que se entrega
