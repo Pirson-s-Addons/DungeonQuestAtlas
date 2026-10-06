@@ -20,6 +20,34 @@
 
 ---
 
+## 📸 Screenshots · Capturas
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=AYYhYFyfzfY"><img src="https://img.youtube.com/vi/AYYhYFyfzfY/maxresdefault.jpg" width="640" alt="How to use Dungeon Quest Atlas · Cómo se usa"></a><br>
+<sub>▶️ How to use Dungeon Quest Atlas · Cómo se usa</sub>
+</p>
+
+<table>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/287/screenshot_1-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Every dungeon, like the Adventure Guide · Todas las mazmorras, como la Guía de aventuras</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/289/screenshot_3-png.png" alt="Quests, chains and rewards"><br><sub>Quests, chains and rewards · Misiones, cadenas y recompensas</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/290/screenshot_4-png.png" alt="Bosses and loot"><br><sub>Bosses and loot · Jefes y botín</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/288/screenshot_2-png.png" alt="Entrance, map and route"><br><sub>Entrance, map and route · Entrada, mapa y ruta</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/293/screenshot_6-png.png" alt="Dungeon map with M"><br><sub>Dungeon map with M · Mapa de la mazmorra con M</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/291/screenshot_5-png.png" alt="Maps of the new Forever dungeons"><br><sub>Maps of the new Forever dungeons · Mapas de las mazmorras nuevas</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/306/screenshot_8-jpg.jpg" alt="Map marker and guide arrow"><br><sub>Map marker and guide arrow · Marcador y flecha de guía</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/297/screenshot_7-png.png" alt="Language selector"><br><sub>Language selector · Selector de idioma</sub></td>
+</tr>
+</table>
+
+---
+
 ## What it does
 
 **Dungeon Quest Atlas Forever** lists all the **dungeon quests** of **WoW Forever** in a window styled like the game's own **Dungeon Journal**, together with every **boss and its loot**. Pick a dungeon on the left and see every quest for it: its level, faction, whether you already completed it, the **whole quest chain**, the objectives, the **rewards** (with their tooltips and XP), the **quest giver** and where to find them. One click puts a pin on the map, either on the quest giver or on the **instance entrance**, with its own guidance arrow or **TomTom**.
