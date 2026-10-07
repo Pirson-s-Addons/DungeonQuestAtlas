@@ -9,13 +9,13 @@ local _, ns = ...
 -- registro de combate y marca algunos GUID como secretos:
 --   - ENCOUNTER_END con exito: por el nombre del encuentro.
 --   - Cualquier unidad muerta que se vea (objetivo, foco, placas, raton,
---     boss1-5): por el npcID de su GUID o por su nombre.
+--     boss1-5, objetivos del grupo): por el npcID de su GUID o por su nombre.
 --   (COMBAT_LOG_EVENT_UNFILTERED no: Forever lo bloquea con ADDON_ACTION_FORBIDDEN,
 --   que no es un error y pcall no lo para.)
 --   - A mano: clic derecho en el jefe.
 -- Las cruces se quitan (la mazmorra se da por terminada):
---   - al salir con todos los jefes muertos;
---   - tras LEFT_RESET fuera de la mazmorra (volver antes, p. ej. tras morir, no);
+--   - al salir vivo, o con todos los jefes muertos;
+--   - tras LEFT_RESET fuera si saliste muerto (volver antes las conserva);
 --   - DONE_RESET despues de matar al ultimo jefe, aunque sigas dentro;
 --   - al entrar en otra copia de la instancia (otro zoneUID en los GUID).
 -- Los plazos van con time() (hora real): cuentan tambien con la sesion cerrada.
@@ -183,12 +183,17 @@ function ns.UpdateInstance()
     local now = kind == "party" and instanceID or nil
     if currentInstance and currentInstance ~= now then
         ns.char.left[currentInstance] = time() -- para LEFT_RESET
+        -- Salir vivo (portal, piedra de hogar) termina la mazmorra; salir muerto
+        -- (liberar el espiritu) guarda las cruces LEFT_RESET por si vuelves
+        local finished = not UnitIsDeadOrGhost("player")
         for _, d in ipairs(DungeonsOf(currentInstance)) do
             local done, total = ns.BossKillProgress(d)
-            if total > 0 and done == total then
-                Reset(currentInstance)
-                ns.char.runs[currentInstance] = nil
-            end
+            if total > 0 and done == total then finished = true end
+        end
+        if finished then
+            ns.Debug("fuera de la mazmorra: cruces fuera")
+            Reset(currentInstance)
+            ns.char.runs[currentInstance] = nil
         end
         ns.RequestRefresh()
     end
@@ -217,8 +222,19 @@ ns.On("ENCOUNTER_END", function(encounterID, name, _, _, success)
     end
 end)
 
-for _, event in ipairs({ "UNIT_HEALTH", "NAME_PLATE_UNIT_ADDED" }) do
+-- NAME_PLATE_UNIT_REMOVED: la placa de un bicho que muere se quita, pero la
+-- unidad aun se puede leer durante el evento
+for _, event in ipairs({ "UNIT_HEALTH", "NAME_PLATE_UNIT_ADDED", "NAME_PLATE_UNIT_REMOVED" }) do
     ns.On(event, ns.CheckBossUnit)
+end
+-- Lo que no avisa con eventos: los objetivos del grupo, el foco y boss1-5
+local POLLED = { "target", "focus", "mouseover", "boss1", "boss2", "boss3", "boss4", "boss5" }
+for i = 1, 4 do POLLED[#POLLED + 1] = "party" .. i .. "target" end
+if C_Timer and C_Timer.NewTicker then
+    C_Timer.NewTicker(1, function()
+        if not currentInstance then return end
+        for _, unit in ipairs(POLLED) do ns.CheckBossUnit(unit) end
+    end)
 end
 ns.On("PLAYER_TARGET_CHANGED", function() ns.CheckBossUnit("target") end)
 ns.On("UPDATE_MOUSEOVER_UNIT", function() ns.CheckBossUnit("mouseover") end)

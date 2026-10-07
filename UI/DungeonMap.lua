@@ -256,9 +256,8 @@ end
 -- EN EL MAPA DEL MUNDO (M), DENTRO DE LA MAZMORRA
 -- ==========================================
 -- Idea de ForeverDungeonJournal (sin su codigo): al abrir el mapa del mundo
--- dentro de una mazmorra con plano, el plano tapa el mapa. Un boton (o el clic
--- derecho en el plano, como para alejar en el mapa de Blizzard) vuelve al mapa
--- del mundo; al entrar en otra mazmorra se empieza otra vez por el plano.
+-- dentro de una mazmorra con plano, el plano tapa el mapa. Un boton vuelve al
+-- mapa del mundo; al entrar en otra mazmorra se empieza otra vez por el plano.
 
 local overlay, toggle
 local wantWorld = false
@@ -288,11 +287,14 @@ local function CreateOverlay()
     plaque.prev:SetPoint("LEFT", 4, 0)
     plaque.next:SetPoint("RIGHT", -4, 0)
     plaque:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
+    -- Clic derecho: planta siguiente; izquierdo: la anterior (no al soltar un arrastre)
+    local downX, downY
+    plan.viewport:HookScript("OnMouseDown", function() downX, downY = GetCursorPosition() end)
     plan.viewport:HookScript("OnMouseUp", function(_, button)
-        if button == "RightButton" then
-            wantWorld = true
-            ns.UpdateWorldMapOverlay()
-        end
+        local x, y = GetCursorPosition()
+        if not downX or math.abs(x - downX) + math.abs(y - downY) > 8 then return end
+        local step = (button == "RightButton" and 1) or (button == "LeftButton" and -1) or 0
+        if step ~= 0 and plan.floors[plan.index + step] then plan:ShowFloor(plan.index + step) end
     end)
 
     toggle = CreateFrame("Button", nil, WorldMapFrame, "UIPanelButtonTemplate")
