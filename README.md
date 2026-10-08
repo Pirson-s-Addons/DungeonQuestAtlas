@@ -64,16 +64,17 @@
 - **Class quests** (warlock, paladin, mage...) show the class icon, are locked for other classes and don't count in the "x/y" total. Option to hide them.
 - **Your progress** on the quests you carry ("Head of Arugal: 0/1") and a **Share** button to push the quest to your group.
 - **Objectives and rewards**: objectives in your game's language, reward cards with icon, quality color and the game's own tooltip (hold Shift to compare), the choice rewards and the ones you always get, XP and money. The new Forever rewards are included.
-- **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room.
+- **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate, wheel or + / - to zoom), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room. **Show on map** takes you to the boss on the dungeon map.
+- **Recipes & Patterns**: the new Forever recipes of each dungeon, with the bosses that drop them and their chance (from Wowhead Forever).
 - **Dungeon Journal look**: the game's own journal book, side tabs, boss buttons and loot rows, with each dungeon's artwork and lore taken from your game client.
 - Scarlet Monastery, Dire Maul and Stratholme split into wings.
 - **Quest start and end**: the NPC or object that gives the quest and the one where you turn it in, with zone and coordinates, and **Mark start** / **Mark end** buttons that also open the world map on the pin. If the NPC is inside the dungeon, the entrance is marked.
 - **Exact instance entrance** of every dungeon (the real portal, or the cave mouth when the portal is underground), with a **Mark entrance on map** button (also the portal icon next to each dungeon), and a **Route** button that takes you to the closest flight master of your faction and then to the entrance.
 - **Built-in guidance arrow**, no TomTom needed: an on-screen arrow that turns as you move, with the distance, markers on the world map and on the minimap, and it clears itself when you arrive. Left click it to **target the NPC and put a star on them**. NPCs underground (caves, cellars) keep their marker until you talk to them. You can also use the game's own map pin or **TomTom** instead.
 - **Wowhead link** for every quest, in the window's language, ready to copy with Ctrl+C.
-- **Dungeon maps** (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic for the classic dungeons, and maps drawn for this addon for Hall of Thanes, Ruins of Lordaeron and Excavation Site: Wetlands. Every floor, each boss marked with its portrait (click it to jump to its loot), mouse-wheel zoom and drag to move around.
+- **Dungeon maps** (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic for the classic dungeons, and maps drawn for this addon for Hall of Thanes, Ruins of Lordaeron, Excavation Site: Wetlands and City of Dalaran. Every floor with its own button, each boss marked with its portrait (click it to jump to its loot), the entrance and the stairs between floors (click a staircase to change floor), mouse-wheel zoom and drag to move around.
 - **AtlasLoot**: a "View loot" button when AtlasLoot is loaded. **Questie**: used as a fallback for quest givers the addon doesn't know yet.
-- Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde) and a search box (dungeon or boss name).
+- Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde; also on every dungeon page) and a search box (dungeon or boss name).
 - **Page-turn animation** with sound when you change dungeon or tab (can be turned off).
 - Minimap button (LibDBIcon, works with minimap button collectors), window scale, Esc to close.
 - Translated into 20 languages, with a **language selector** in the window: show it in any of them without changing your game's language. Quest, NPC, zone and item names come from the game itself, in its language.
