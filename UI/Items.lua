@@ -29,6 +29,7 @@ function ns.ItemInfo(id)
     end
     -- "Dos manos, Hacha" / "Cuero" / "Pocion": ranura y tipo en el idioma del juego
     local slot = equipLoc and equipLoc ~= "" and _G[equipLoc]
+    if slot == "" then slot = nil end -- recetas: hueco "INVTYPE_NON_EQUIP_IGNORE" vacio (", Peleteria")
     local kind = slot and subType and subType ~= "" and slot ~= subType and (slot .. ", " .. subType) or slot or subType
     return { name = name, link = link, quality = quality, icon = icon or QUESTION, kind = kind }
 end

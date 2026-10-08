@@ -337,4 +337,12 @@ ns.Places = {
     ["npc:5387"] = { npcID = 5387, name = "High Explorer Magellas", mapID = 1455, x = 69.8, y = 18.4 },
     ["npc:956"] = { npcID = 956, name = "Dorin Songblade", mapID = 1433, x = 30.8, y = 46.6 },
     ["name:Titan Relic"] = { name = "Titan Relic", inside = true },
+    -- Ciudad de Dalaran (Wowhead Forever, 08-10-2026)
+    ["npc:2278"] = { npcID = 2278, name = "Melisara", mapID = 1424, x = 62.5, y = 20.5 },
+    ["npc:2410"] = { npcID = 2410, name = "Magus Wordeen Voidglare", mapID = 1424, x = 61.6, y = 20.6 },
+    ["npc:5502"] = { npcID = 5502, name = "Shylamiir", mapID = 1453, x = 15.2, y = 49.8 },
+    ["npc:5694"] = { npcID = 5694, name = "High Sorcerer Andromath", mapID = 1453, x = 37.6, y = 81.6 },
+    ["npc:11044"] = { npcID = 11044, name = "Doctor Martin Felben", mapID = 1458, x = 46.4, y = 74.4 },
+    ["npc:247264"] = { npcID = 247264, name = "Emissary Jacques", mapID = 1424, x = 48.3, y = 60.1 },
+    ["npc:269127"] = { npcID = 269127, name = "Image of Archmage Modera", mapID = 1421, x = 68.5, y = 45.3 },
 }

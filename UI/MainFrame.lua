@@ -6,9 +6,10 @@ local L = ns.L
 -- ==========================================
 -- Marco de Blizzard con retrato (PortraitFrameTemplate), del tamano del Diario.
 -- Arriba, las migas ("Principal > Mazmorra", NavBar del juego), el idioma y el
--- buscador. Dos vistas:
+-- buscador. Tres vistas:
 --   portada: "Mazmorras", los filtros y la cuadricula de tarjetas;
---   mazmorra: el libro del Diario, lista a la izquierda y detalle a la derecha.
+--   mazmorra: el libro del Diario, lista a la izquierda y detalle a la derecha;
+--   mapa ("Ver mapa"): el plano de la mazmorra, "Principal > Mazmorra > Mapa".
 -- Pestanas abajo: Mazmorras (la portada), Resumen, Misiones y Jefes.
 -- Se arrastra, se cierra con Esc, recuerda su posicion y cambia de tamano con
 -- clic derecho mantenido. Nada protegido: se puede usar en combate.
@@ -27,7 +28,10 @@ end
 
 function ns.SetFilter(key, value)
     filters[key] = value
-    if key == "faction" and ui and ui.faction then ui.faction:SetValue(value or "Both") end
+    if key == "faction" and ui then
+        if ui.faction then ui.faction:SetValue(value or "Both") end
+        if ui.bookFaction then ui.bookFaction:SetValue(value or "Both") end
+    end
     -- Buscar lleva a la portada, donde salen los resultados (como en el Diario)
     if key == "search" and value ~= "" then ns.char.view = "home" end
     ns.RefreshUI()
@@ -46,15 +50,19 @@ end
 local PANELS = { "overview", "quests", "bosses" }
 local TABS = { "home", "overview", "quests", "bosses" }
 
--- Migas: "Principal" y, en la vista de mazmorra, su nombre
-local function UpdateNav(d)
+local ShowTab
+
+-- Migas: "Principal", en la vista de mazmorra su nombre y, en la del mapa, "Mapa"
+-- (el nombre de la mazmorra vuelve a su libro)
+local function UpdateNav(d, map)
     local nav = ui.nav
-    local key = d and d.key or nil
+    local key = d and (d.key .. (map and ">map" or "")) or nil
     if nav.key == key then return end
     nav.key = key
-    if nav.fallback then return nav:Reset(d) end
+    if nav.fallback then return nav:Reset(d, map) end
     NavBar_Reset(nav)
-    if d then NavBar_AddButton(nav, { name = ns.DungeonName(d), OnClick = function() end }) end
+    if d then NavBar_AddButton(nav, { name = ns.DungeonName(d), OnClick = function() ShowTab(ns.char.tab) end }) end
+    if map then NavBar_AddButton(nav, { name = L.MAP, OnClick = function() end }) end
 end
 
 local function SelectTab(name)
@@ -69,9 +77,11 @@ end
 
 function ns.RefreshUI()
     if not (frame and frame:IsShown()) then return end
-    local home = ns.char.view ~= "dungeon"
+    local map = ns.char.view == "map" and ns.DungeonMaps(SelectedDungeon())
+    local home = not map and ns.char.view ~= "dungeon"
     ui.home:SetShown(home)
-    ui.book:SetShown(not home)
+    ui.book:SetShown(not home and not map)
+    ui.map:SetShown(map and true or false)
     local list = ns.FilterDungeons(filters)
     ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "   |cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
 
@@ -89,7 +99,14 @@ function ns.RefreshUI()
         ns.char.dungeon = d and d.key
     end
     if not d then return end
-    UpdateNav(d)
+    UpdateNav(d, map)
+    if map then
+        SelectTab(nil)
+        local plan = ui.map.plan
+        if plan.dungeon ~= d then plan:SetDungeon(d, map) else plan:ShowFloor(plan.index) end -- jefes muertos al dia
+        if ui.mapBoss ~= nil then plan:FocusBoss(ui.mapBoss or nil); ui.mapBoss = nil end
+        return
+    end
 
     -- Cabecera de la pagina izquierda: icono, nombre, nivel y progreso
     ns.SetDungeonArt(ui.icon, d, "icon")
@@ -114,7 +131,7 @@ local function ShowHome()
     ns.RefreshUI()
 end
 
-local function ShowTab(name)
+function ShowTab(name)
     if name == "home" then return ShowHome() end
     if not tContains(PANELS, name) then name = "quests" end
     ns.char.tab = name
@@ -179,7 +196,9 @@ local function CreateNav()
     local crumb = nav:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     crumb:SetPoint("LEFT", homeButton, "RIGHT", 8, 0)
     nav.fallback = true
-    function nav:Reset(d) crumb:SetText(d and ("> " .. ns.DungeonName(d)) or "") end
+    function nav:Reset(d, map)
+        crumb:SetText(d and ("> " .. ns.DungeonName(d) .. (map and (" > " .. L.MAP) or "")) or "")
+    end
     return nav
 end
 
@@ -303,7 +322,7 @@ local function CreateBook(area)
     ns.AddTooltip(iconButton, L.TAB_OVERVIEW)
     ui.title = book:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     ui.title:SetPoint("TOPLEFT", iconButton, "TOPRIGHT", 2, -17)
-    ui.title:SetPoint("RIGHT", book, "LEFT", 380, 0)
+    ui.title:SetPoint("RIGHT", book, "LEFT", 300, 0) -- a la derecha, la faccion
     ui.title:SetJustifyH("LEFT")
     ui.title:SetWordWrap(false)
     ui.title:SetTextColor(unpack(ns.TITLE_LIGHT))
@@ -311,6 +330,16 @@ local function CreateBook(area)
     ui.subtitle:SetPoint("TOPLEFT", iconButton, "BOTTOMRIGHT", 2, 8)
     ui.subtitle:SetPoint("RIGHT", book, "LEFT", 380, 0)
     ui.subtitle:SetWordWrap(false)
+    -- Faccion tambien aqui (la misma que la de la portada): cambiar las misiones
+    -- sin volver a Principal
+    local A, H = ns.FACTION_CREST.Alliance, ns.FACTION_CREST.Horde
+    ui.bookFaction = ns.CreateIconToggleGroup(book, 20, {
+        { value = "Both", tooltip = L.FACTION_ALL, crests = { A, H } },
+        { value = "Alliance", tooltip = L.FACTION_ALLIANCE, crests = { A } },
+        { value = "Horde", tooltip = L.FACTION_HORDE, crests = { H } },
+    }, function(value) ns.SetFilter("faction", value ~= "Both" and value or nil) end)
+    ui.bookFaction:SetPoint("TOPRIGHT", band, "TOPRIGHT", -10, -12)
+    ui.bookFaction:SetValue(filters.faction or "Both")
 
     -- Paginas: cada panel tiene su parte en cada una
     local leftPage = CreateFrame("Frame", nil, book)
@@ -329,6 +358,24 @@ local function CreateBook(area)
         bosses = ns.CreateBossPanel(Page(leftPage), Page(rightPage)),
         overview = ns.CreateOverviewPanel(Page(leftPage), Page(rightPage)),
     }
+end
+
+-- Vista del mapa: el plano entero y centrado (sin zoom: no se pierde nada), con
+-- los botones de planta arriba a la izquierda. Arrastrar sin zoom mueve la ventana.
+local function CreateMapView(area)
+    local view = CreateFrame("Frame", nil, area)
+    view:SetAllPoints()
+    local bg = view:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.03, 0.025, 0.02, 1)
+    local plan = ns.CreateDungeonPlan(view, function(start)
+        if start then frame:StartMoving() else frame:StopMovingOrSizing(); SavePosition() end
+    end)
+    plan.viewport:SetAllPoints()
+    plan.floorBar:SetPoint("TOPLEFT", 10, -10)
+    plan.floorBar:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
+    view.plan = plan
+    ui.map = view
 end
 
 -- Pestanas de abajo (PanelTabButtonTemplate, las de la Guia)
@@ -389,6 +436,7 @@ local function CreateMainFrame()
     area:SetPoint("BOTTOMRIGHT", -6, 7)
     CreateHome(area)
     CreateBook(area)
+    CreateMapView(area)
     CreateTabs()
     ns.ui = ui
 end
@@ -426,6 +474,17 @@ function ns.ShowQuest(id)
     frame:Show()
     ShowTab("quests")
     ui.panels.quests:SelectQuest(id)
+end
+
+-- Boton "Ver mapa": el plano en la misma ventana; con bossIndex, en la planta de
+-- ese jefe y con su chincheta resaltada
+function ns.ShowDungeonMap(d, bossIndex)
+    if not ns.DungeonMaps(d) then return end
+    if not frame then CreateMainFrame() end
+    ui.mapBoss = bossIndex or false -- false: "Ver mapa" sin jefe, quita el resalte
+    ns.char.dungeon = d.key
+    ns.char.view = "map"
+    if frame:IsShown() then ns.RefreshUI() else frame:Show() end
 end
 
 -- Salta a un jefe (chinchetas del mapa de la mazmorra)

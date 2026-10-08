@@ -20,7 +20,7 @@ function ns.CreateMinimapButton()
 
     local launcher = LDB:NewDataObject(NAME, {
         type = "launcher",
-        icon = ns.IMG .. "minimap_dqa",
+        icon = ns.LOGO, -- el logo del addon, como en la ventana
         OnClick = function(_, button)
             if button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
         end,

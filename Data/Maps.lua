@@ -101,14 +101,17 @@ ns.Maps = {
         { id = 308, tex = "interface\\worldmap\\scholomance\\scholomance3_%d", pins = { { 4, 0.304, 0.579 }, { 5, 0.304, 0.669 }, { 9, 0.728, 0.808 }, { 10, 0.956, 0.459 }, { 11, 0.72, 0.12 }, { 15, 0.736, 0.464 } } },
         { id = 309, tex = "interface\\worldmap\\scholomance\\scholomance4_%d", pins = { { 8, 0.406, 0.884 }, { 12, 0.675, 0.521 }, { 13, 0.844, 0.308 }, { 14, 0.67, 0.061 } } },
     },
+    -- Colmillo Oscuro: plantas en el orden del recorrido, no en el de Blizzard (316, la
+    -- muralla, va tercera: de la cocina se sube a ella y de ella a la torre). A mano: gen.py
+    -- las deja en el orden de Blizzard.
     SFK = {
         { id = 310, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep1_%d", pins = { { 1, 0.661, 0.711 }, { 2, 0.34, 0.635 }, { 5, 0.275, 0.586 }, { 6, 0.596, 0.646 }, { 7, 0.657, 0.456 }, { 13, 0.338, 0.568 } } },
         { id = 311, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep2_%d", pins = { { 3, 0.48, 0.29 }, { 4, 0.295, 0.803 } } },
+        { id = 316, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep7_%d", pins = {} },
         { id = 312, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep3_%d", pins = { { 14, 0.463, 0.626 } } },
         { id = 313, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep4_%d", pins = { { 9, 0.574, 0.433 } } },
         { id = 314, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep5_%d", pins = {} },
         { id = 315, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep6_%d", pins = { { 10, 0.591, 0.533 }, { 11, 0.639, 0.2 } } },
-        { id = 316, tex = "interface\\worldmap\\shadowfangkeep\\shadowfangkeep7_%d", pins = {} },
     },
     STRAT_LIVE = {
         { id = 317, tex = "interface\\worldmap\\stratholme\\stratholme1_%d", pins = { { 1, 0.575, 0.697 }, { 2, 0.54, 0.71 }, { 3, 0.847, 0.454 }, { 4, 0.71, 0.218 }, { 6, 0.394, 0.335 }, { 7, 0.304, 0.4 }, { 8, 0.125, 0.476 }, { 9, 0.036, 0.501 }, { 10, 0.271, 0.751 }, { 11, 0.188, 0.837 } } },
@@ -123,4 +126,10 @@ ns.Maps = {
     EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
     THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },
+    -- Dalaran: planta 1 las cloacas (la entrada), planta 2 la ciudad. Jefes de
+    -- ForeverDungeonJournal (los vistos en la demo de la BlizzCon)
+    DALARAN = {
+        { id = "DALARAN1", pins = { { 1, 0.535, 0.505 } } },
+        { id = "DALARAN2", pins = { { 2, 0.545, 0.705 }, { 7, 0.52, 0.24 } } },
+    },
 }

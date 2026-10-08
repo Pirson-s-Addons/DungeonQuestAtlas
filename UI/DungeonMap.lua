@@ -5,16 +5,14 @@ local L = ns.L
 -- MAPAS DE MAZMORRA
 -- ==========================================
 -- Los planos de Data/Maps.lua (mapas de Blizzard de WoW Classic; WoW Forever
--- no trae mapas de mazmorra), en su propia ventana (boton "Ver mapa" de la
--- pestana Mazmorra) y, dentro de la mazmorra, en el mapa del mundo (M). Cada
--- jefe es una chincheta con su cara: al pulsarla se abre su pestana de Jefes.
+-- no trae mapas de mazmorra), en la ventana principal (boton "Ver mapa": vista
+-- "Principal > Mazmorra > Mapa", UI/MainFrame.lua) y, dentro de la mazmorra, en
+-- el mapa del mundo (M). Cada jefe es una chincheta con su cara: al pulsarla se
+-- abre su pestana de Jefes. La entrada y las escaleras llevan los iconos del
+-- mapa del juego; pulsar una escalera lleva a su planta.
 
 local ART = "Interface\\AddOns\\" .. addonName .. "\\Art\\Maps\\"
 local MAP_W, MAP_H = 1002, 668 -- lo que se ve de las 4x3 piezas de 256
-local WIDTH = 780              -- ancho del plano en la ventana
-local SCALE = WIDTH / MAP_W
-local FOOTER = 44              -- franja de abajo: la placa de las plantas
-local PAD, TOP = 10, 62        -- margen del plano y alto del titulo (con el retrato)
 local PIN = 24                 -- la cara; con el aro, la chincheta mide ~1,5 veces
 local MAX_ZOOM, ZOOM_STEP = 4, 1.25 -- rueda del raton: zoom hacia el cursor
 
@@ -23,15 +21,17 @@ function ns.DungeonMaps(d)
     return d and ns.Maps[d.key]
 end
 
-local function PageButton(parent, kind)
-    local b = CreateFrame("Button", nil, parent)
-    b:SetSize(32, 32)
-    b:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-" .. kind .. "Page-Up")
-    b:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-" .. kind .. "Page-Down")
-    b:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-" .. kind .. "Page-Disabled")
-    b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-    return b
+-- Planta en la que esta la chincheta de un jefe (por su posicion en ns.Bosses), o nil
+function ns.BossFloor(d, bossIndex)
+    for f, floor in ipairs(ns.DungeonMaps(d) or {}) do
+        for _, p in ipairs(floor.pins) do
+            if p[1] == bossIndex then return f end
+        end
+    end
 end
+
+local FLOOR_BUTTON_W, FLOOR_BUTTON_H = 96, 22 -- botones de planta
+local FLOOR_PAD, FLOOR_GAP = 7, 3              -- margen de su placa y hueco entre botones
 
 -- Chincheta de jefe: su cara recortada en circulo dentro de un aro, como los
 -- botones del minimapa (medidas de LibDBIcon: aro de 53 con el hueco de 20 en
@@ -52,7 +52,48 @@ local function CreatePin(canvas, onClick)
     ring:SetPoint("TOPLEFT", -7 * k, 5 * k)
     pin.cross = ns.CreateSlainMark(pin, PIN + 6) -- jefe muerto (sin placa: no cabe)
     pin.cross:SetPoint("CENTER")
+    -- Brillo al pasar el raton: del tamano del boton del minimapa (31 con el aro de
+    -- 53 en su esquina), no solo de la cara, para que coincida con el aro
     pin:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight", "ADD")
+    local glow = pin:GetHighlightTexture()
+    if glow then
+        glow:ClearAllPoints()
+        glow:SetSize(31 * k, 31 * k)
+        glow:SetPoint("TOPLEFT", -7 * k, 5 * k)
+    end
+    -- Jefe buscado desde "Ver en el mapa": estrella dorada detras de la cara, grande y
+    -- latiendo (brillo y tamano), y el aro encendido. pin.focus es un marco del plano
+    -- (no de la chincheta, para quedar detras de ella): con Show/Hide arranca y para todo.
+    pin.focus = CreateFrame("Frame", nil, canvas)
+    pin.focus:SetAllPoints(pin)
+    pin.focus:Hide()
+    local star = pin.focus:CreateTexture(nil, "OVERLAY", nil, 7)
+    star:SetTexture("Interface\\Cooldown\\star4")
+    star:SetBlendMode("ADD")
+    star:SetVertexColor(1, 0.8, 0.2)
+    star:SetSize(PIN * 3.4, PIN * 3.4)
+    star:SetPoint("CENTER")
+    local pulse = star:CreateAnimationGroup()
+    pulse:SetLooping("BOUNCE")
+    local fade = pulse:CreateAnimation("Alpha")
+    fade:SetFromAlpha(1)
+    fade:SetToAlpha(0.35)
+    fade:SetDuration(0.45)
+    local grow = pulse:CreateAnimation("Scale")
+    grow:SetScaleFrom(0.8, 0.8)
+    grow:SetScaleTo(1.25, 1.25)
+    grow:SetDuration(0.45)
+    pin.focus:SetScript("OnShow", function()
+        pin:SetFrameLevel(pin:GetParent():GetFrameLevel() + 5) -- encima de caras y marcas, bajo los botones de planta
+        pin.focus:SetFrameLevel(pin:GetFrameLevel() - 1)
+        pin:LockHighlight()
+        pulse:Play()
+    end)
+    pin.focus:SetScript("OnHide", function()
+        pulse:Stop()
+        pin:UnlockHighlight()
+        pin:SetFrameLevel(pin:GetParent():GetFrameLevel() + 1)
+    end)
     pin:SetScript("OnClick", function(self)
         ns.ShowBoss(self.dungeon, self.index)
         if onClick then onClick() end
@@ -63,11 +104,60 @@ local function CreatePin(canvas, onClick)
     return pin
 end
 
+-- Marcas de la planta: la entrada (el portal de las entradas de mazmorra del mapa
+-- del mundo) y las escaleras (las puertas con flecha de los mapas de Blizzard).
+-- Si el cliente no tiene el atlas, unas flechas y un icono clasicos.
+local MARK_ICON = {
+    entrance = { atlas = "dungeon", file = "Interface\\Icons\\Spell_Nature_AstralRecal", size = 30 },
+    up = { atlas = "poi-door-up", file = "Interface\\Buttons\\Arrow-Up-Up", size = 28 },
+    down = { atlas = "poi-door-down", file = "Interface\\Buttons\\Arrow-Down-Up", size = 28 },
+    floor = { atlas = "poi-door", file = "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up", size = 28 },
+}
+
+local function SetMarkIcon(texture, kind)
+    local icon = MARK_ICON[kind]
+    if texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(icon.atlas) then
+        texture:SetAtlas(icon.atlas)
+    else
+        texture:SetTexture(icon.file)
+    end
+end
+
+-- Marca: icono con su rotulo debajo, dorado con contorno como los del mapa del
+-- juego (se lee sobre cualquier plano); tooltip y, en las escaleras, clic
+local function CreateMark(canvas, plan)
+    local mark = CreateFrame("Button", nil, canvas)
+    mark.icon = mark:CreateTexture(nil, "ARTWORK")
+    mark.icon:SetAllPoints()
+    mark.glow = mark:CreateTexture(nil, "HIGHLIGHT")
+    mark.glow:SetAllPoints()
+    mark.glow:SetBlendMode("ADD")
+    mark.label = mark:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local font = mark.label:GetFont()
+    if font then mark.label:SetFont(font, 13, "OUTLINE") end
+    mark.label:SetPoint("TOP", mark, "BOTTOM", 0, -1)
+    mark:SetScript("OnClick", function(self)
+        if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
+        if self.to and plan.floors[self.to] then plan:ShowFloor(self.to) end
+    end)
+    ns.AddTooltip(mark, function()
+        if mark.kind == "entrance" then
+            local point = plan.dungeon and ns.Entrance(plan.dungeon)
+            return L.MAP_ENTRANCE .. (point and ("\n|cffffffff" .. ns.ZoneName(point.mapID) .. " "
+                .. ns.FormatCoords(point) .. "|r\n" .. L.MARK_ENTRANCE_TOOLTIP) or "")
+        end
+        local title = (mark.kind == "up" and L.MAP_UP) or (mark.kind == "down" and L.MAP_DOWN)
+            or L.MAP_FLOOR_SHORT:format(mark.to)
+        return title .. "\n|cffffffff" .. L.MAP_GO_FLOOR:format(mark.to) .. "|r"
+    end)
+    return mark
+end
+
 -- Plano: viewport que recorta y, dentro, el plano a escala con sus 12 piezas
 -- (la ultima columna y la ultima fila se recortan) y las chinchetas. El plano
 -- cabe entero en el viewport (centrado si sobra sitio) y la rueda hace zoom.
--- Arrastrar con zoom mueve el plano; sin zoom llama a onIdleDrag(true/false).
--- La placa de plantas (plan.plaque) la coloca quien crea el plano.
+-- Arrastrar mueve el plano si es mas grande que el viewport; si no, llama a
+-- onIdleDrag(true/false). Los botones de planta (plan.floorBar) los coloca quien crea el plano.
 local function CreatePlan(parent, onIdleDrag, onPinClick)
     local plan = {}
     local viewport = CreateFrame("Frame", nil, parent)
@@ -80,7 +170,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         local w, h = math.min(256, MAP_W - (n - 1) % 4 * 256), math.min(256, MAP_H - math.floor((n - 1) / 4) * 256)
         tiles[n]:SetTexCoord(0, w / 256, 0, h / 256)
     end
-    local pins = {}
+    local pins, marks = {}, {}
     local zoom, ox, oy = 1, 0, 0
 
     -- Coloca piezas y chinchetas para el zoom y el desplazamiento actuales
@@ -100,10 +190,12 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             tile:SetSize(math.min(256, MAP_W - col * 256) * s, math.min(256, MAP_H - row * 256) * s)
             tile:SetPoint("TOPLEFT", col * 256 * s, -row * 256 * s)
         end
-        for _, pin in ipairs(pins) do
-            if pin.x then
-                pin:ClearAllPoints()
-                pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * mw, -pin.y * mh)
+        for _, list in ipairs({ pins, marks }) do
+            for _, pin in ipairs(list) do
+                if pin.x then
+                    pin:ClearAllPoints()
+                    pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * mw, -pin.y * mh)
+                end
             end
         end
     end
@@ -120,20 +212,55 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     plan.Zoom = function(_, ...) Zoom(...) end
 
-    -- Plantas: placa de cuero con las flechas en sus puntas y "Planta 2/3"
-    local plaque = ns.CreateDarkBox(parent)
-    plaque:SetSize(250, 38)
-    local page = plaque:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    ns.SetTitleFont(page, 17)
-    page:SetPoint("CENTER", 0, 1)
-    local prev, nextPage = PageButton(plaque, "Prev"), PageButton(plaque, "Next")
-    prev:SetPoint("LEFT", 12, 0)
-    nextPage:SetPoint("RIGHT", -12, 0)
-    plaque.page, plaque.prev, plaque.next = page, prev, nextPage
-    plan.plaque = plaque
+    -- Plantas: un boton del juego por planta, en columna sobre una placa oscura
+    -- (idea de ForeverDungeonJournal); la de ahora, iluminada y en blanco. Solo si
+    -- hay mas de una. Caben todas: si no hay alto para 22 px por boton, menguan
+    -- (minimo 16). Lo coloca quien crea el plano (plan.floorBar, anclado por arriba).
+    local floorBar = ns.CreateDarkBox(parent, 10)
+    floorBar:SetFrameLevel(viewport:GetFrameLevel() + 10)
+    local floorButtons = {}
+    plan.floorBar, plan.floorButtons = floorBar, floorButtons
 
+    local function UpdateFloorButtons()
+        local floors = plan.floors
+        if not floors then return end
+        local n = #floors
+        local room = viewport:GetHeight()
+        room = (type(room) == "number" and room > 0) and room or 400
+        local h = math.max(16, math.min(FLOOR_BUTTON_H, math.floor((room - 20 - 2 * FLOOR_PAD) / n) - FLOOR_GAP))
+        for i = 1, math.max(n, #floorButtons) do
+            local b = floorButtons[i]
+            if i <= n and n > 1 then
+                if not b then
+                    b = CreateFrame("Button", nil, floorBar, "UIPanelButtonTemplate")
+                    b:SetScript("OnClick", function(self) plan:ShowFloor(self.floor) end)
+                    floorButtons[i] = b
+                end
+                b:SetSize(FLOOR_BUTTON_W, h)
+                b:ClearAllPoints()
+                b:SetPoint("TOPLEFT", FLOOR_PAD, -FLOOR_PAD - (i - 1) * (h + FLOOR_GAP))
+                b.floor = i
+                b:SetText(L.MAP_FLOOR_SHORT:format(i))
+                local current = i == plan.index
+                if current then b:LockHighlight() else b:UnlockHighlight() end
+                local text = b:GetFontString()
+                if text then
+                    if current then text:SetTextColor(1, 1, 1) else text:SetTextColor(1, 0.82, 0) end
+                end
+                b:Show()
+            elseif b then
+                b:Hide()
+            end
+        end
+        floorBar:SetSize(FLOOR_BUTTON_W + 2 * FLOOR_PAD, n * (h + FLOOR_GAP) - FLOOR_GAP + 2 * FLOOR_PAD)
+        floorBar:SetShown(n > 1)
+    end
+    viewport:HookScript("OnSizeChanged", UpdateFloorButtons)
+
+    -- Otra planta: zoom fuera. La misma (refresco de jefes muertos): se queda como esta
     function plan:ShowFloor(index)
         local floors = self.floors
+        if index ~= self.index then zoom, ox, oy = 1, 0, 0 end
         self.index = index
         local floor = floors[index]
         -- Primero la pieza del cliente (floor.tex); si no la tiene, la del addon
@@ -145,7 +272,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             end
         end
         if fallback > 0 then ns.Debug("mapa %s: %d piezas del addon (el cliente no las tiene)", floor.id, fallback) end
-        for _, pin in ipairs(pins) do pin:Hide() end
+        for _, pin in ipairs(pins) do pin:Hide(); pin.focus:Hide() end
         for k, p in ipairs(floor.pins) do
             local pin = pins[k] or CreatePin(canvas, onPinClick)
             pins[k] = pin
@@ -156,24 +283,47 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             pin.portrait:SetDesaturated(killed)
             pin.cross:SetShown(killed)
             pin.x, pin.y = p[2], p[3]
+            pin.focus:SetShown(p[1] == self.focus)
             pin:Show()
         end
         for k = #floor.pins + 1, #pins do pins[k].x = nil end
-        zoom, ox, oy = 1, 0, 0
+        for _, mark in ipairs(marks) do mark:Hide(); mark.x = nil end
+        local floorMarks = ns.MapMarks[self.dungeon.key] and ns.MapMarks[self.dungeon.key][index] or {}
+        for k, m in ipairs(floorMarks) do
+            local mark = marks[k] or CreateMark(canvas, self)
+            marks[k] = mark
+            mark.kind, mark.x, mark.y, mark.to = m[1], m[2], m[3], m[4]
+            SetMarkIcon(mark.icon, m[1])
+            SetMarkIcon(mark.glow, m[1])
+            mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
+            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or L.MAP_FLOOR_SHORT:format(m[4]))
+            mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
+            mark:Show()
+        end
         Layout()
-        page:SetText(#floors > 1 and L.MAP_FLOOR:format(index, #floors) or "")
-        plaque:SetShown(#floors > 1)
-        prev:SetEnabled(index > 1)
-        nextPage:SetEnabled(index < #floors)
+        UpdateFloorButtons()
+    end
+
+    -- "Ver en el mapa": va a la planta del jefe y lo resalta 3 s, para ver cual es
+    -- (nil: quita el resalte)
+    function plan:FocusBoss(bossIndex)
+        self.focus = bossIndex
+        self:ShowFloor(bossIndex and ns.BossFloor(self.dungeon, bossIndex) or self.index)
+        if not bossIndex then return end
+        local token = {}
+        self.focusToken = token
+        C_Timer.After(3, function()
+            if self.focusToken ~= token then return end
+            self.focus = nil
+            for _, pin in ipairs(pins) do pin.focus:Hide() end
+        end)
     end
 
     function plan:SetDungeon(d, floors)
-        self.dungeon, self.floors = d, floors
+        self.dungeon, self.floors, self.index, self.focus = d, floors, nil, nil
         self:ShowFloor(1)
     end
 
-    prev:SetScript("OnClick", function() plan:ShowFloor(plan.index - 1) end)
-    nextPage:SetScript("OnClick", function() plan:ShowFloor(plan.index + 1) end)
     viewport:EnableMouseWheel(true)
     viewport:SetScript("OnMouseWheel", function(self, delta)
         local x, y = GetCursorPosition()
@@ -199,58 +349,18 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         self:SetScript("OnUpdate", nil)
         if onIdleDrag then onIdleDrag(false) end
     end)
+    -- Clic derecho: planta siguiente; izquierdo: la anterior (no al soltar un arrastre)
+    local downX, downY
+    viewport:HookScript("OnMouseDown", function() downX, downY = GetCursorPosition() end)
+    viewport:HookScript("OnMouseUp", function(_, button)
+        local x, y = GetCursorPosition()
+        if not downX or math.abs(x - downX) + math.abs(y - downY) > 8 then return end
+        local step = (button == "RightButton" and 1) or (button == "LeftButton" and -1) or 0
+        if step ~= 0 and plan.floors[plan.index + step] then plan:ShowFloor(plan.index + step) end
+    end)
     return plan
 end
-
--- ==========================================
--- VENTANA DEL MAPA (boton "Ver mapa")
--- ==========================================
-
-local window
-local function CreateWindow()
-    -- El marco con retrato del juego (como la Guia): el nombre en el titulo, el
-    -- plano en un hueco hundido y la placa de plantas debajo
-    window = CreateFrame("Frame", "DungeonQuestAtlasMapFrame", UIParent, "PortraitFrameTemplate")
-    window:Hide()
-    window:SetSize(WIDTH + 2 * PAD, TOP + MAP_H * SCALE + FOOTER + PAD)
-    window:SetPoint("CENTER")
-    window:SetFrameStrata("DIALOG") -- encima de la ventana principal (HIGH)
-    window:SetMovable(true)
-    window:SetClampedToScreen(true)
-    window:EnableMouse(true)
-    window:RegisterForDrag("LeftButton")
-    window:SetScript("OnDragStart", window.StartMoving)
-    window:SetScript("OnDragStop", window.StopMovingOrSizing)
-    if window.SetPortraitToAsset then window:SetPortraitToAsset(ns.LOGO) end
-    tinsert(UISpecialFrames, "DungeonQuestAtlasMapFrame")
-
-    -- Arrastrar el plano sin zoom mueve la ventana
-    local plan = CreatePlan(window, function(start)
-        if start then window:StartMoving() else window:StopMovingOrSizing() end
-    end)
-    window.plan = plan
-    local viewport = plan.viewport
-    viewport:SetSize(WIDTH, MAP_H * SCALE)
-    viewport:SetPoint("TOPLEFT", PAD, -TOP)
-    local inset = CreateFrame("Frame", nil, window, "InsetFrameTemplate")
-    inset:SetPoint("TOPLEFT", viewport, -3, 3)
-    inset:SetPoint("BOTTOMRIGHT", viewport, 3, -3)
-    inset:SetFrameLevel(math.max(viewport:GetFrameLevel() - 1, 0))
-    plan.plaque:SetPoint("CENTER", window, "BOTTOM", 0, (FOOTER + PAD) / 2)
-
-    -- Clic derecho mantenido y arrastrar (en el plano o en el marco): tamano
-    window:SetScale(ns.db.mapScale or 1)
-    ns.EnableRightDragScale(window, { window, viewport }, function(scale) ns.db.mapScale = scale end)
-end
-
-function ns.ShowDungeonMap(d)
-    local floors = ns.DungeonMaps(d)
-    if not floors then return end
-    if not window then CreateWindow() end
-    if window.SetTitle then window:SetTitle(ns.DungeonName(d)) end
-    window.plan:SetDungeon(d, floors)
-    window:Show()
-end
+ns.CreateDungeonPlan = CreatePlan
 
 -- ==========================================
 -- EN EL MAPA DEL MUNDO (M), DENTRO DE LA MAZMORRA
@@ -277,25 +387,6 @@ local function CreateOverlay()
     overlay.plan = plan
     plan.viewport:SetAllPoints()
     plan.viewport:SetFrameLevel(overlay:GetFrameLevel() + 1)
-    -- Plantas: placa pequena bajo el boton de volver al mapa del mundo, fuera del
-    -- plano (abajo tapaba las salas)
-    local plaque = plan.plaque
-    plaque:SetSize(170, 28)
-    plaque.page:SetFontObject("GameFontNormal")
-    ns.SetTitleFont(plaque.page, 14)
-    for _, arrow in ipairs({ plaque.prev, plaque.next }) do arrow:SetSize(24, 24) end
-    plaque.prev:SetPoint("LEFT", 4, 0)
-    plaque.next:SetPoint("RIGHT", -4, 0)
-    plaque:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
-    -- Clic derecho: planta siguiente; izquierdo: la anterior (no al soltar un arrastre)
-    local downX, downY
-    plan.viewport:HookScript("OnMouseDown", function() downX, downY = GetCursorPosition() end)
-    plan.viewport:HookScript("OnMouseUp", function(_, button)
-        local x, y = GetCursorPosition()
-        if not downX or math.abs(x - downX) + math.abs(y - downY) > 8 then return end
-        local step = (button == "RightButton" and 1) or (button == "LeftButton" and -1) or 0
-        if step ~= 0 and plan.floors[plan.index + step] then plan:ShowFloor(plan.index + step) end
-    end)
 
     toggle = CreateFrame("Button", nil, WorldMapFrame, "UIPanelButtonTemplate")
     toggle:SetSize(170, 26)
@@ -303,7 +394,9 @@ local function CreateOverlay()
     toggle:SetFrameLevel(overlay:GetFrameLevel() + 30)
     toggle:SetText(L.VIEW_MAP)
     ns.SetButtonIcon(toggle, "Interface\\Icons\\INV_Misc_Map_01")
-    plaque:SetPoint("TOPRIGHT", toggle, "BOTTOMRIGHT", 0, -4)
+    -- Plantas: arriba a la izquierda del plano, como en la ventana
+    plan.floorBar:SetPoint("TOPLEFT", host, "TOPLEFT", 10, -10)
+    plan.floorBar:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
     toggle:SetScript("OnClick", function()
         wantWorld = not wantWorld
         ns.UpdateWorldMapOverlay()
@@ -328,6 +421,18 @@ function ns.UpdateWorldMapOverlay()
         plan:ShowFloor(plan.index) -- jefes muertos al dia
     end
     overlay:Show()
+end
+
+-- Entrada del plano: la marca en el mapa del mundo y lo abre en su zona (fuera
+-- de la mazmorra: desde la Sima Ignea, Orgrimmar). En M, quita el plano.
+function ns.ShowEntranceOnWorldMap(d)
+    local point = d and ns.Entrance(d)
+    if not point then return end
+    ns.SetWaypoint(point, ns.DungeonName(d), "entrance")
+    if DungeonQuestAtlasFrame then DungeonQuestAtlasFrame:Hide() end -- que no tape el mapa
+    wantWorld = true
+    ns.UpdateWorldMapOverlay()
+    ns.OpenMapAt(point.mapID)
 end
 
 local watcher = CreateFrame("Frame")

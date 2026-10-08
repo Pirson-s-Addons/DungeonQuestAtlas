@@ -211,7 +211,7 @@ function ns.CreateOverviewPanel(left, right)
         bossHeader.text:SetText(L.TAB_BOSSES .. "  " .. killed .. "/" .. total)
         local rows, n = {}, 0
         for i, boss in ipairs(ns.Bosses[d.key] or {}) do
-            if boss.kind ~= "trash" then
+            if boss.kind ~= "trash" and boss.kind ~= "recipes" then
                 n = n + 1
                 local r = math.floor((n - 1) / 2) + 1
                 rows[r] = rows[r] or {}

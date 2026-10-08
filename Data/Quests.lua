@@ -335,6 +335,16 @@ ns.Quests = {
     [98815] = { level = 28, minLevel = 24, faction = "Alliance", chain = { 469, 98815 }, need = { { 284845, 4 } }, xp = 1150, money = 1200, starts = { "npc:2094" }, ends = { "npc:2094" }, verified = false },
     [98823] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95664, 98823 }, choice = { 271766, 271767, 271719 }, need = { { 270866, 1 } }, xp = 3150, money = 6000, starts = { "npc:9087" }, ends = { "npc:259118" }, verified = true },
     [98824] = { level = 31, minLevel = 24, faction = "Alliance", chain = { 95810, 98824 }, choice = { 271716, 271767, 271766 }, need = { { 270865, 1 } }, xp = 3150, money = 6000, starts = { "npc:1077" }, ends = { "npc:5387" }, verified = true },
+    -- Ciudad de Dalaran (foreverchanges.pro y Wowhead Forever, 08-10-2026; aun no abre en la beta).
+    -- Wowhead no tiene el final de casi ninguna: ends sale del PNJ que nombra el objetivo.
+    [92456] = { level = 33, minLevel = 24, faction = "Alliance", choice = { 279835, 279836 }, need = { { 251983, 1 } }, xp = 9400, starts = { "npc:5502" }, ends = { "npc:5502" }, verified = true },
+    [92457] = { level = 33, minLevel = 24, faction = "Both", choice = { 279837, 279838 }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
+    [92458] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 }, choice = { 279839, 279840, 279841 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
+    [92489] = { level = 33, minLevel = 24, faction = "Alliance", choice = { 251962, 279849 }, xp = 9400, starts = { "npc:5694" }, ends = { "npc:5694" }, verified = true },
+    [96984] = { level = 33, minLevel = 24, faction = "Horde", chain = { 92434, 96984, 97287 }, choice = { 279842, 279843, 279844 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:2410" }, verified = true },
+    [96986] = { level = 33, minLevel = 24, faction = "Horde", choice = { 251963, 251965 }, xp = 9400, starts = { "npc:2278" }, ends = { "npc:2278" }, verified = true },
+    [96987] = { level = 33, minLevel = 24, faction = "Horde", need = { { 275996, 1 } }, xp = 9400, verified = true },
+    [96988] = { level = 33, minLevel = 24, faction = "Horde", choice = { 279847, 279848 }, need = { { 275997, 6 } }, xp = 9400, starts = { "npc:11044" }, ends = { "npc:11044" }, verified = true },
     -- Pasos de cadena de fuera de la mazmorra (Wowhead Forever, 02-10-2026):
     -- no salen en ninguna lista; se abren desde la cadena para ver y marcar
     -- su inicio y su final. chain: la de la mision de mazmorra que los pide.
@@ -516,4 +526,8 @@ ns.Quests = {
     [97292] = { level = 21, minLevel = 16, faction = "Horde", chain = { 97288, 97289, 97290, 97291, 97292 }, starts = { "npc:2055" }, ends = { "npc:2055" } },
     [469] = { level = 21, minLevel = 18, faction = "Alliance", chain = { 469, 98815 }, starts = { "npc:2093" }, ends = { "npc:2094" } },
     [95663] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95663, 95682 }, starts = { "npc:2787" }, ends = { "npc:13155" } },
+    [92432] = { level = 33, minLevel = 30, faction = "Alliance", chain = { 92432, 92458, 92459 }, starts = { "npc:247264" }, ends = { "npc:269127" } },
+    [92459] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 } },
+    [92434] = { level = 34, minLevel = 30, faction = "Horde", chain = { 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:269127" } },
+    [97287] = { level = 33, minLevel = 24, faction = "Horde", chain = { 92434, 96984, 97287 } },
 }

@@ -15,7 +15,6 @@ local DB_VERSION = 4
 local DEFAULTS = {
     minimap = { hide = false },
     scale = 1,
-    mapScale = 1,         -- tamano de la ventana del mapa (clic derecho y arrastrar)
     hideCompleted = false,
     hideOtherClasses = false, -- ocultar las misiones de clase que no son de la tuya
     chainGuide = true,    -- al entregar un paso de una cadena, marcar el inicio del siguiente
