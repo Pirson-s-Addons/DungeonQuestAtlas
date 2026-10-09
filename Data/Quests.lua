@@ -341,9 +341,9 @@ ns.Quests = {
     [92457] = { level = 33, minLevel = 24, faction = "Both", choice = { 279837, 279838 }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
     [92458] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 }, choice = { 279839, 279840, 279841 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
     [92489] = { level = 33, minLevel = 24, faction = "Alliance", choice = { 251962, 279849 }, xp = 9400, starts = { "npc:5694" }, ends = { "npc:5694" }, verified = true },
-    [96984] = { level = 33, minLevel = 24, faction = "Horde", chain = { 92434, 96984, 97287 }, choice = { 279842, 279843, 279844 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:2410" }, verified = true },
+    [96984] = { level = 33, minLevel = 24, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, choice = { 279842, 279843, 279844 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:2410" }, verified = true },
     [96986] = { level = 33, minLevel = 24, faction = "Horde", choice = { 251963, 251965 }, xp = 9400, starts = { "npc:2278" }, ends = { "npc:2278" }, verified = true },
-    [96987] = { level = 33, minLevel = 24, faction = "Horde", need = { { 275996, 1 } }, xp = 9400, verified = true },
+    [96987] = { level = 33, minLevel = 24, faction = "Horde", need = { { 275996, 1 } }, xp = 9400, starts = { "npc:268743" }, ends = { "npc:268743" }, verified = true },
     [96988] = { level = 33, minLevel = 24, faction = "Horde", choice = { 279847, 279848 }, need = { { 275997, 6 } }, xp = 9400, starts = { "npc:11044" }, ends = { "npc:11044" }, verified = true },
     -- Pasos de cadena de fuera de la mazmorra (Wowhead Forever, 02-10-2026):
     -- no salen en ninguna lista; se abren desde la cadena para ver y marcar
@@ -528,6 +528,10 @@ ns.Quests = {
     [95663] = { level = 31, minLevel = 24, faction = "Horde", chain = { 95663, 95682 }, starts = { "npc:2787" }, ends = { "npc:13155" } },
     [92432] = { level = 33, minLevel = 30, faction = "Alliance", chain = { 92432, 92458, 92459 }, starts = { "npc:247264" }, ends = { "npc:269127" } },
     [92459] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 } },
-    [92434] = { level = 34, minLevel = 30, faction = "Horde", chain = { 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:269127" } },
-    [97287] = { level = 33, minLevel = 24, faction = "Horde", chain = { 92434, 96984, 97287 } },
+    [92434] = { level = 34, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:269127" } },
+    [97287] = { level = 33, minLevel = 24, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 } },
+    -- Llave de Dalaran de la Horda: guia de Wowhead y ForeverDungeonJournal (544 y 93680 a la vez)
+    [544] = { level = 34, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
+    [93680] = { level = 33, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
+    [545] = { level = 35, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
 }

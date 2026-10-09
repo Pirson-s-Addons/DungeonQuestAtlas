@@ -88,17 +88,19 @@ ns.Bosses = {
         { name = "Shen'dralar Provisioner", kind = "object", display = 14412, level = 52, loot = { { 18487 } } },
         { name = "Lord Hel'nurath", kind = "object", display = 14556, level = 62, loot = { { 18757, 22.2 }, { 18754, 23.6 }, { 18755, 25.7 }, { 18756, 24.9 } } },
     },
-    -- Ciudad de Dalaran (08-10-2026, aun no abre en la beta): orden de la guia de Wowhead,
-    -- display y nivel de foreverchanges.pro (niveles de la demo de la BlizzCon; Lyn y Fel
-    -- Ancient sin nivel). Botin: lo visto en la demo, sin probabilidad.
+    -- Ciudad de Dalaran (09-10-2026, ya abierta): orden de la guia de Wowhead (Mana Devourer,
+    -- que no sale en ella, antes de Fel Ancient: este se abre al matar a los de alrededor).
+    -- Display y nivel de foreverchanges.pro y ForeverDungeonJournal (Lyn sin nivel). Botin de
+    -- ForeverDungeonJournal 1.6.2 con los itemID de Wowhead Forever; aun sin probabilidad.
     DALARAN = {
-        { name = "Atrexis the Grave Knight", npcID = 247126, display = 145787, level = 29, loot = {} },
-        { name = "Arcane Anomaly", npcID = 245999, display = 129891, level = 30, loot = {} },
-        { name = "Arcanic Enigma", npcID = 246016, loot = { { 273045 } } },
-        { name = "Unstable Sentinel", npcID = 246017, display = 129954, level = 31, loot = { { 273046 } } },
-        { name = "Fel Ancient", npcID = 246003, display = 129894, level = 32, loot = {} },
-        { name = "Lyn the Ignored", npcID = 247032, kind = "rare", display = 130235, loot = {} },
-        { name = "Shade of the Archmage", npcID = 246020, display = 130061, level = 33, loot = { { 273052 } } },
+        { name = "Atrexis the Grave Knight", npcID = 247126, display = 145787, level = 29, loot = { { 273032 }, { 273036 }, { 273033 } } },
+        { name = "Arcane Anomaly", npcID = 245999, display = 129891, level = 30, loot = { { 273034 }, { 273031 }, { 273035 } } },
+        { name = "Arcanic Enigma", npcID = 246016, display = 129900, level = 30, loot = { { 273045 }, { 273044 }, { 273043 } } },
+        { name = "Unstable Sentinel", npcID = 246017, display = 129954, level = 31, loot = { { 273046 }, { 273047 }, { 273048 }, { 273099 } } },
+        { name = "Mana Devourer", npcID = 246008, display = 129895, level = 31, loot = { { 273041 }, { 273040 }, { 273042 } } },
+        { name = "Fel Ancient", npcID = 246003, display = 129894, level = 32, loot = { { 273037 }, { 273039 }, { 273038 } } },
+        { name = "Lyn the Ignored", npcID = 247032, kind = "rare", display = 130235, loot = { { 273055 }, { 273054 }, { 273053 } } },
+        { name = "Shade of the Archmage", npcID = 246020, display = 130061, level = 33, loot = { { 273052 }, { 273049 }, { 273051 } } },
     },
     EXCAVATION = {
         { name = "Saltspine", npcID = 260322, display = 144209, level = 28, loot = { { 273024 }, { 273022 }, { 273023 } } },

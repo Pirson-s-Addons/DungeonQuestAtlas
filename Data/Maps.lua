@@ -127,9 +127,9 @@ ns.Maps = {
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
     THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },
     -- Dalaran: planta 1 las cloacas (la entrada), planta 2 la ciudad. Jefes de
-    -- ForeverDungeonJournal (los vistos en la demo de la BlizzCon)
+    -- ForeverDungeonJournal 1.6.2 (todos, con la mazmorra ya abierta)
     DALARAN = {
-        { id = "DALARAN1", pins = { { 1, 0.535, 0.505 } } },
-        { id = "DALARAN2", pins = { { 2, 0.545, 0.705 }, { 7, 0.52, 0.24 } } },
+        { id = "DALARAN1", pins = { { 1, 0.535, 0.505 }, { 7, 0.680, 0.177 } } },
+        { id = "DALARAN2", pins = { { 2, 0.527, 0.843 }, { 3, 0.669, 0.503 }, { 4, 0.614, 0.413 }, { 5, 0.416, 0.730 }, { 6, 0.513, 0.549 }, { 8, 0.520, 0.240 } } },
     },
 }
