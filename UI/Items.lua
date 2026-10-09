@@ -39,10 +39,21 @@ function ns.QualityColor(quality)
     return color and color.hex or "|cffffffff"
 end
 
+-- Objetos cuyo tooltip cierra el cliente de Forever (BC_ASSERT "format - mixing of
+-- ordered and unordered argument specifications", datos rotos de Blizzard; pcall no
+-- sirve): solo nombre y tipo. 273042: botas del Devorador de mana (Dalaran), beta 70291.
+local BROKEN_TOOLTIP = { [273042] = true }
+
 local function ShowTooltip(self)
     if not self.itemID then return end
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetItemByID(self.itemID)
+    if BROKEN_TOOLTIP[self.itemID] then
+        local item = ns.ItemInfo(self.itemID)
+        GameTooltip:AddLine(ns.QualityColor(item.quality) .. (item.name or ("#" .. self.itemID)) .. "|r")
+        if item.kind then GameTooltip:AddLine(item.kind, 1, 1, 1) end
+    else
+        GameTooltip:SetItemByID(self.itemID)
+    end
     if IsModifiedClick and IsModifiedClick("COMPAREITEMS") and GameTooltip_ShowCompareItem then
         GameTooltip_ShowCompareItem(GameTooltip)
     end
