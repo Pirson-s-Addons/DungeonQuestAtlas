@@ -22,6 +22,11 @@ local DEFAULTS = {
     waypointMode = "own", -- "own" (flecha y marcadores del addon), "native" (pin del juego), "tomtom"
     arrow = {},           -- posicion de la flecha
     pinSize = 20,         -- tamano del marcador en el mapa y el minimapa (px)
+    -- Entradas de mazmorra en el mapa del mundo (UI/MapPins.lua): en los mapas de
+    -- zona y en los de continente, cada uno por su lado (tambien con el boton del mapa)
+    mapEntrances = true,
+    mapEntrancesContinent = true,
+    entranceSize = 34,    -- tamano de su icono (px)
     wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
     language = "auto",    -- idioma de la ventana: "auto" (el del juego) o "deDE", "enUS"...
     collect = false,

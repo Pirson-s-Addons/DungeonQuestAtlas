@@ -107,6 +107,17 @@ local function CreateGeneral()
     Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -251, ns.UpdateMinimapButton,
         function() return not db.minimap.hide end, function(v) db.minimap.hide = not v end)
     Checkbox("chainGuide", L.CHAIN_GUIDE, L.CHAIN_GUIDE_TOOLTIP, -277)
+    -- Entradas en zonas y en continentes, a la derecha: abajo ya no cabe nada.
+    -- Las mismas que el boton del mapa del mundo (clic derecho y clic).
+    local entranceSize -- atenuado si no hay entradas en ningun mapa
+    local function EntrancesChanged()
+        ns.RefreshMapPins()
+        entranceSize:Refresh()
+    end
+    Checkbox("mapEntrances", L.MAP_ENTRANCES, L.MAP_ENTRANCES_TOOLTIP, -251, EntrancesChanged)
+        :SetPoint("TOPLEFT", X + 300, -251)
+    Checkbox("mapEntrancesContinent", L.MAP_ENTRANCES_CONTINENT, L.MAP_ENTRANCES_CONTINENT_TOOLTIP, -277,
+        EntrancesChanged):SetPoint("TOPLEFT", X + 300, -277)
     -- Desplegable con etiqueta a la izquierda: options = { { valor, texto }, ... }
     local function Dropdown(key, label, tooltip, y, options)
         local fs = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -147,8 +158,19 @@ local function CreateGeneral()
         { "auto", L.LANG_AUTO },
         { "en", L.LANG_ENGLISH },
     })
-    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -396, 10, 32, 1,
-        function(v) return tostring(math.floor(v + 0.5)) end, ns.ApplyPinSize)
+    -- Los dos tamanos lado a lado: abajo ya no cabe nada
+    local function Px(v) return tostring(math.floor(v + 0.5)) end
+    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -396, 10, 32, 1, Px, ns.ApplyPinSize):SetWidth(190)
+    entranceSize = Slider("entranceSize", L.ENTRANCE_SIZE, L.ENTRANCE_SIZE_TOOLTIP, -396, 16, 56, 1, Px, ns.RefreshMapPins)
+    entranceSize:SetWidth(190)
+    entranceSize:SetPoint("TOPLEFT", X + 310, -396)
+    local refreshSize = entranceSize.Refresh
+    entranceSize.Refresh = function(self)
+        refreshSize(self)
+        local on = db.mapEntrances or db.mapEntrancesContinent
+        self:SetEnabled(on)
+        self:SetAlpha(on and 1 or 0.5)
+    end
     Separator(panel, -429)
 
     -- Recolector ----------------------------------------------------------------
@@ -170,6 +192,7 @@ local function CreateGeneral()
         ns.ResetOptions()
         ns.ApplyScale()
         ns.ApplyPinSize()
+        ns.RefreshMapPins()
         ns.UpdateMinimapButton()
         ns.SetLanguage(ns.db.language) -- vuelve al idioma del juego
         ns.RefreshUI()

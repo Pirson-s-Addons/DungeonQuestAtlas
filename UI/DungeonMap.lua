@@ -144,7 +144,8 @@ local function CreateMark(canvas, plan)
         if mark.kind == "entrance" then
             local point = plan.dungeon and ns.Entrance(plan.dungeon)
             return L.MAP_ENTRANCE .. (point and ("\n|cffffffff" .. ns.ZoneName(point.mapID) .. " "
-                .. ns.FormatCoords(point) .. "|r\n" .. L.MARK_ENTRANCE_TOOLTIP) or "")
+                .. ns.FormatCoords(point) .. "|r\n"
+                .. (ns.db.mapEntrances and L.MAP_ENTRANCE_SHOW or L.MARK_ENTRANCE_TOOLTIP)) or "")
         end
         local title = (mark.kind == "up" and L.MAP_UP) or (mark.kind == "down" and L.MAP_DOWN)
             or L.MAP_FLOOR_SHORT:format(mark.to)
@@ -368,9 +369,12 @@ ns.CreateDungeonPlan = CreatePlan
 -- Idea de ForeverDungeonJournal (sin su codigo): al abrir el mapa del mundo
 -- dentro de una mazmorra con plano, el plano tapa el mapa. Un boton vuelve al
 -- mapa del mundo; al entrar en otra mazmorra se empieza otra vez por el plano.
+-- Fuera de ella, el plano de la mazmorra cuya entrada pulses en el mapa
+-- (UI/MapPins.lua) hasta volver, cambiar de mapa o cerrarlo.
 
 local overlay, toggle
 local wantWorld = false
+local shown -- mazmorra abierta desde su entrada en el mapa del mundo
 
 local function CreateOverlay()
     local host = WorldMapFrame.ScrollContainer or WorldMapFrame
@@ -398,22 +402,22 @@ local function CreateOverlay()
     plan.floorBar:SetPoint("TOPLEFT", host, "TOPLEFT", 10, -10)
     plan.floorBar:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
     toggle:SetScript("OnClick", function()
-        wantWorld = not wantWorld
+        if shown then shown = nil else wantWorld = not wantWorld end
         ns.UpdateWorldMapOverlay()
     end)
 end
 
 function ns.UpdateWorldMapOverlay()
-    local d = WorldMapFrame and WorldMapFrame:IsShown() and ns.CurrentDungeon()
+    local d = WorldMapFrame and WorldMapFrame:IsShown() and (shown or ns.CurrentDungeon())
     local floors = ns.DungeonMaps(d)
     if not floors then
         if overlay then overlay:Hide(); toggle:Hide() end
         return
     end
     if not overlay then CreateOverlay() end
-    toggle:SetText(wantWorld and L.VIEW_MAP or (WORLD_MAP or L.VIEW_MAP))
+    toggle:SetText((wantWorld and not shown) and L.VIEW_MAP or (WORLD_MAP or L.VIEW_MAP))
     toggle:Show()
-    if wantWorld then overlay:Hide() return end
+    if wantWorld and not shown then overlay:Hide() return end
     local plan = overlay.plan
     if plan.dungeon ~= d then
         plan:SetDungeon(d, floors)
@@ -423,16 +427,35 @@ function ns.UpdateWorldMapOverlay()
     overlay:Show()
 end
 
--- Entrada del plano: la marca en el mapa del mundo y lo abre en su zona (fuera
--- de la mazmorra: desde la Sima Ignea, Orgrimmar). En M, quita el plano.
+-- Entrada del plano: abre el mapa del mundo en su zona (fuera de la mazmorra:
+-- desde la Sima Ignea, Orgrimmar) con su portal (UI/MapPins.lua) latiendo unos
+-- segundos. Con los portales apagados en opciones, un marcador. En M, quita el plano.
 function ns.ShowEntranceOnWorldMap(d)
     local point = d and ns.Entrance(d)
     if not point then return end
-    ns.SetWaypoint(point, ns.DungeonName(d), "entrance")
+    if ns.db.mapEntrances then
+        ns.entranceHighlight = { key = d.key, untilTime = GetTime() + ns.HIGHLIGHT_TIME }
+    else
+        ns.SetWaypoint(point, ns.DungeonName(d), "entrance")
+    end
     if DungeonQuestAtlasFrame then DungeonQuestAtlasFrame:Hide() end -- que no tape el mapa
-    wantWorld = true
+    wantWorld, shown = true, nil
     ns.UpdateWorldMapOverlay()
     ns.OpenMapAt(point.mapID)
+    ns.RefreshMapPins() -- si el mapa ya estaba en esa zona, no se repinta solo
+end
+
+-- Clic en la entrada de una mazmorra en el mapa del mundo: su plano encima
+function ns.ShowDungeonOnWorldMap(d)
+    if not ns.DungeonMaps(d) then return end
+    shown = d
+    ns.UpdateWorldMapOverlay()
+end
+
+local function ForgetShown()
+    if not shown then return end
+    shown = nil
+    ns.UpdateWorldMapOverlay()
 end
 
 local watcher = CreateFrame("Frame")
@@ -442,6 +465,9 @@ watcher:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_LOGIN" then
         if not WorldMapFrame then return end
         WorldMapFrame:HookScript("OnShow", ns.UpdateWorldMapOverlay)
+        WorldMapFrame:HookScript("OnHide", ForgetShown)
+        -- Ir a otro mapa (migas, rueda) quita el plano abierto desde una entrada
+        if WorldMapFrame.OnMapChanged then hooksecurefunc(WorldMapFrame, "OnMapChanged", ForgetShown) end
         return
     end
     wantWorld = false

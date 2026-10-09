@@ -22,4 +22,59 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
+	<!-- Entrada de una mazmorra (UI/MapPins.lua): el portal de mazmorra del mapa del
+	     juego, que se ilumina al pasar el raton, y una estrella que late detras unos
+	     segundos al llegar desde la marca "Entrada" de su plano. -->
+	<Frame name="DungeonQuestAtlasEntrancePinTemplate" mixin="DungeonQuestAtlasEntrancePinMixin" enableMouse="true" virtual="true">
+		<Size x="34" y="34"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Glow" file="Interface\Cooldown\star4" alphaMode="ADD" hidden="true">
+					<Anchors><Anchor point="CENTER"/></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" alphaMode="ADD" alpha="0.5" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
+				<Alpha childKey="Glow" fromAlpha="0.25" toAlpha="1" duration="0.6" smoothing="IN_OUT"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	<!-- Boton del mapa del mundo con el menu de las entradas (UI/MapPins.lua): el
+	     aspecto de los botones redondos del mapa (fondo, icono y aro del minimapa). -->
+	<DropdownButton name="DungeonQuestAtlasMapButtonTemplate" mixin="DungeonQuestAtlasMapButtonMixin" frameStrata="HIGH" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="25" y="25"/>
+					<Anchors><Anchor point="TOPLEFT" x="2" y="-4"/></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="22" y="22"/>
+					<Anchors><Anchor point="TOPLEFT" x="6" y="-5"/></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="54" y="54"/>
+					<Anchors><Anchor point="TOPLEFT"/></Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</DropdownButton>
 </Ui>

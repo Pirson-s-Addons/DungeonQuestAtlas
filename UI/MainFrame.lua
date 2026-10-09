@@ -487,6 +487,14 @@ function ns.ShowDungeonMap(d, bossIndex)
     if frame:IsShown() then ns.RefreshUI() else frame:Show() end
 end
 
+-- Abre la ventana en la pagina de una mazmorra (entradas del mapa del mundo)
+function ns.OpenDungeon(d)
+    if not frame then CreateMainFrame() end
+    ns.char.dungeon = d.key
+    ns.char.view = "dungeon"
+    if frame:IsShown() then ns.RefreshUI() else frame:Show() end
+end
+
 -- Salta a un jefe (chinchetas del mapa de la mazmorra)
 function ns.ShowBoss(d, index)
     if not frame then CreateMainFrame() end
