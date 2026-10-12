@@ -4,16 +4,16 @@ local L = ns.L
 -- ==========================================
 -- JEFES Y BOTIN
 -- ==========================================
--- Pagina izquierda: botones de jefe del Diario, con la cara del jefe en el
--- hueco redondo del boton. Pagina derecha: el modelo 3D del jefe sobre el
--- fondo de la mazmorra (como la vista de modelo del Diario) y debajo su
--- botin. Nombre e historia salen del Diario del juego si lo conoce
--- (Core/Journal.lua); si no, el nombre de Data/Bosses.lua.
+-- Pagina izquierda del libro: botones de jefe del Diario, con la cara del jefe
+-- en el hueco redondo del boton (ns.CreateBossList). Pestanas laterales de la
+-- pagina derecha: Botin (ns.CreateLootPanel) y Modelo (ns.CreateModelPanel).
+-- Nombre e historia salen del Diario del juego si lo conoce (Core/Journal.lua);
+-- si no, el nombre de Data/Bosses.lua.
 
 local unpack = unpack or table.unpack
 -- Delante de "Raro" sobre el papel: el dragon plateado de los raros del juego (el
 -- texto, en tinta: ningun color claro se lee sobre el pergamino)
-local RARE = "|A:nameplates-icon-elite-silver:14:14|a "
+ns.RARE_PREFIX = "|A:nameplates-icon-elite-silver:14:14|a "
 local ICON = {
     trash = "Interface\\Icons\\INV_Misc_Bone_HumanSkull_01",
     object = "Interface\\Icons\\INV_Box_01",
@@ -21,7 +21,7 @@ local ICON = {
     unknown = "Interface\\Icons\\INV_Misc_QuestionMark",
 }
 local SEP = "  ·  "
--- Distancia de la camara del modelo 3D: el cuerpo entero en el recuadro de 136 de alto
+-- Distancia de la camara del modelo 3D: el cuerpo entero en la pagina
 local MODEL_DISTANCE = 2
 
 -- Retrato del jefe con su modelo (displayID); si el cliente no puede, un icono
@@ -149,15 +149,19 @@ local function UpdatePortraitFrame(row, boss)
     row.levelBadge.text:SetText(level and tostring(level) or "??")
 end
 
-function ns.CreateBossPanel(left, right)
-    local panel = { dungeon = nil, index = 1 }
+-- ------------------------------------------
+-- Lista de jefes (pagina izquierda del libro)
+-- ------------------------------------------
+-- Los botones de jefe del Diario, con la cara del jefe en el hueco redondo.
+-- Clic: onSelect(indice); clic derecho: derrotado o no. :SetDungeon(d, elegido)
+function ns.CreateBossList(parent, onSelect)
+    local list = { dungeon = nil, index = nil }
 
-    local empty = ns.PaperText(left, "QuestFont")
+    local empty = ns.PaperText(parent, "QuestFont")
     empty:SetPoint("TOP", 0, -30)
     empty:SetText(L.NO_BOSSES)
 
-    -- Jefes (pagina izquierda) ------------------------------------------------
-    local bosses = ns.CreateScrollList(left, 54, function(row)
+    local rows = ns.CreateScrollList(parent, 54, function(row)
         ns.SetupJournalButton(row)
         -- Imagen del Diario: donde la pone Blizzard (sale un poco por arriba)
         row.creature = row:CreateTexture(nil, "OVERLAY")
@@ -172,7 +176,6 @@ function ns.CreateBossPanel(left, right)
         row.label:SetPoint("RIGHT", -12, 0)
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
-        row.label:SetTextColor(unpack(ns.PARCHMENT_GOLD))
         ns.RowText(row.label)
         row.info = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.info:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -4)
@@ -187,9 +190,10 @@ function ns.CreateBossPanel(left, right)
         row:SetScript("OnClick", function(self, button)
             if button == "RightButton" then
                 if self.kind == "recipes" then return end
-                ns.ToggleBossKill(panel.dungeon, ns.Bosses[panel.dungeon.key][self.index])
+                ns.ToggleBossKill(list.dungeon, ns.Bosses[list.dungeon.key][self.index])
             else
-                panel:SelectBoss(self.index)
+                if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN) end
+                onSelect(self.index)
             end
         end)
         row:SetScript("OnEnter", function(self)
@@ -200,7 +204,7 @@ function ns.CreateBossPanel(left, right)
         end)
         row:SetScript("OnLeave", GameTooltip_Hide)
     end, function(row, item)
-        local boss, d = item.boss, panel.dungeon
+        local boss, d = item.boss, list.dungeon
         row.index, row.kind = item.index, boss.kind
         SetBossImage(row.creature, row.portrait, boss, d)
         UpdatePortraitFrame(row, boss)
@@ -212,27 +216,220 @@ function ns.CreateBossPanel(left, right)
         row.label:SetAlpha(killed and 0.6 or 1)
         row.cross:SetShown(killed)
         row.slain:SetShown(killed)
-        ns.SetJournalButtonSelected(row, item.index == panel.index)
+        ns.SetJournalButtonSelected(row, item.index == list.index)
     end)
 
-    -- Jefe elegido (pagina derecha) -------------------------------------------
-    local header = CreateFrame("Frame", nil, right)
-    header:SetPoint("TOPLEFT")
-    header:SetPoint("TOPRIGHT")
-    header:SetHeight(136) -- bajo, para que se vea mas botin
-    local bg = header:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    -- Modelo 3D del jefe; se gira arrastrando con el raton
-    local model = CreateFrame("PlayerModel", nil, header)
-    model:SetPoint("TOPLEFT", 0, -2)
-    model:SetPoint("BOTTOMRIGHT", 0, 26)
-    -- Cuerpo entero: la camara automatica encuadra muy cerca en una franja
-    -- ancha; se aleja cuando el modelo ha cargado
+    function list:SetShown(shown)
+        parent:SetShown(shown)
+    end
+
+    function list:SetDungeon(d, index)
+        self.dungeon, self.index = d, index
+        local bosses = d and ns.Bosses[d.key] or {}
+        empty:SetShown(#bosses == 0)
+        local items = {}
+        for i, boss in ipairs(bosses) do items[i] = { index = i, boss = boss } end
+        rows:SetItems(items)
+    end
+
+    return list
+end
+
+-- ------------------------------------------
+-- Botin (pestana lateral)
+-- ------------------------------------------
+-- Sin jefe elegido: todo el botin de la mazmorra, cada objeto con "Jefe: X"
+-- debajo (clic, ese jefe); con jefe, solo el suyo y su probabilidad. Arriba un
+-- desplegable por tipo de objeto (ns.LOOT_FILTERS).
+
+-- Tipo de un objeto para el filtro: classID e INVTYPE de GetItemInfoInstant
+-- (sin el objeto en cache, solo "Todo" lo muestra)
+local ACCESSORY = { INVTYPE_NECK = true, INVTYPE_FINGER = true, INVTYPE_TRINKET = true }
+function ns.LootCategory(itemID)
+    local instant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    if not instant then return nil end
+    local _, _, _, equipLoc, _, classID = instant(itemID)
+    if classID == 2 then return "weapons" end
+    if classID == 9 then return "recipes" end
+    if classID == 4 then return ACCESSORY[equipLoc] and "accessories" or "armor" end
+    if classID then return "other" end
+end
+ns.LOOT_FILTERS = { { "all", "LOOT_ALL" }, { "weapons", "LOOT_WEAPONS" }, { "armor", "LOOT_ARMOR" },
+    { "accessories", "LOOT_ACCESSORIES" }, { "recipes", "RECIPES" }, { "other", "LOOT_OTHER" } }
+
+-- Todo el botin de la mazmorra: { itemID, %, from = { jefes } }, sin repetir objetos
+-- (las recetas caen de varios jefes: el primero que la suelta y "+N")
+function ns.DungeonLoot(d)
+    local items, seen = {}, {}
+    for i, boss in ipairs(d and ns.Bosses[d.key] or {}) do
+        if boss.kind ~= "recipes" then
+            for _, it in ipairs(boss.loot or {}) do
+                local item = seen[it[1]]
+                if item then
+                    item.from[#item.from + 1] = i
+                else
+                    item = { it[1], it[2], from = { i } }
+                    seen[it[1]] = item
+                    items[#items + 1] = item
+                end
+            end
+        end
+    end
+    return items
+end
+
+local function FilterLoot(items, filter)
+    if filter == "all" then return items end
+    local out = {}
+    for _, it in ipairs(items) do
+        if ns.LootCategory(it[1]) == filter then out[#out + 1] = it end
+    end
+    return out
+end
+
+-- page: la pagina derecha entera; bar: la franja de arriba (desplegables)
+function ns.CreateLootPanel(page, bar)
+    local panel = { dungeon = nil, index = nil, filter = "all" }
+    local frame = CreateFrame("Frame", nil, page)
+    frame:SetPoint("TOPLEFT", 0, -34)
+    frame:SetPoint("BOTTOMRIGHT")
+
+    local filter = CreateFrame("DropdownButton", nil, bar, "WowStyle1DropdownTemplate")
+    filter:SetWidth(150)
+    filter:SetPoint("RIGHT", bar, "RIGHT", -150, 0)
+    if filter.SetupMenu then
+        filter:SetupMenu(function(_, root)
+            for _, o in ipairs(ns.LOOT_FILTERS) do
+                root:CreateRadio(L[o[2]], function() return panel.filter == o[1] end,
+                    function() panel.filter = o[1]; panel:Refresh() end)
+            end
+        end)
+    end
+    panel.filterButton = filter
+
+    local empty = ns.PaperText(frame, "QuestFont")
+    empty:SetPoint("TOP", 0, -30)
+    empty:SetWidth(300)
+    empty:SetJustifyH("CENTER")
+
+    -- Con jefe: recetas a la derecha con el jefe que mas la suelta ("+N" si hay
+    -- mas); clic en el, su botin, y el tooltip con todos los que la sueltan
+    local function SourceButton(row, anchor)
+        local source = CreateFrame("Button", nil, row)
+        source:SetPoint("TOPLEFT", anchor, "TOPLEFT", -3, 3)
+        source:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", 3, -3)
+        source:SetFrameLevel(row:GetFrameLevel() + 2)
+        source:SetScript("OnClick", function(self) ns.SelectBoss(self.from[1]) end)
+        source:SetScript("OnEnter", function(self)
+            anchor:SetTextColor(unpack(ns.INK_HEADER)) -- sobre el papel: granate, no dorado
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(L.TAB_BOSSES)
+            local list, d = ns.Bosses[panel.dungeon.key], panel.dungeon
+            for _, i in ipairs(self.from) do
+                local pct = ns.LootChance(list[i], self.itemID)
+                GameTooltip:AddDoubleLine(ns.BossName(list[i], d), pct and (pct .. "%") or "", 1, 1, 1, 1, 1, 1)
+            end
+            GameTooltip:AddLine(L.MAP_PIN_TOOLTIP, 0.6, 0.8, 1)
+            GameTooltip:Show()
+        end)
+        source:SetScript("OnLeave", function()
+            anchor:SetTextColor(unpack(anchor.color))
+            GameTooltip_Hide()
+        end)
+        return source
+    end
+
+    local function BossLabel(from)
+        local d = panel.dungeon
+        local boss = from and d and ns.Bosses[d.key][from[1]]
+        return boss and (ns.BossName(boss, d) .. (#from > 1 and (" +" .. (#from - 1)) or ""))
+    end
+
+    local bossArea = CreateFrame("Frame", nil, frame)
+    bossArea:SetAllPoints()
+    local bossLoot = ns.CreateScrollList(bossArea, ns.ITEM_ROW_HEIGHT + 2, function(row)
+        ns.SetupItemButton(row)
+        row.extra.color = ns.INK
+        row.source = SourceButton(row, row.extra)
+    end, function(row, item)
+        local extra = item[2] and (item[2] .. "%")
+        local from = BossLabel(item.from)
+        if from then extra = from .. (extra and ("  " .. extra) or "") end
+        ns.SetItemButton(row, item[1], nil, extra)
+        row.source.from, row.source.itemID = item.from, item[1]
+        row.source:SetShown(from ~= nil)
+    end)
+
+    -- Sin jefe: la fila de botin y "Jefe: X" debajo, sobre el papel (tinta)
+    local allArea = CreateFrame("Frame", nil, frame)
+    allArea:SetAllPoints()
+    local allLoot = ns.CreateScrollList(allArea, ns.ITEM_ROW_HEIGHT + 16, function(row)
+        local item = CreateFrame("Button", nil, row)
+        item:SetPoint("TOPLEFT")
+        item:SetPoint("TOPRIGHT")
+        item:SetHeight(ns.ITEM_ROW_HEIGHT)
+        ns.SetupItemButton(item)
+        row.item = item
+        -- En tinta oscura y a la altura del nombre: la franja oscura de la fila ya
+        -- se ha desvanecido ahi y el gris claro no se leia sobre el papel
+        row.boss = ns.PaperText(row, "GameFontBlack", ns.INK)
+        row.boss:SetPoint("TOPLEFT", item, "BOTTOMLEFT", 52, -1)
+        row.boss.color = ns.INK
+        row.source = SourceButton(row, row.boss)
+    end, function(row, item)
+        ns.SetItemButton(row.item, item[1], nil, item[2] and (item[2] .. "%"))
+        row.boss:SetText(L.LOOT_BOSS:format(BossLabel(item.from) or "?"))
+        row.source.from, row.source.itemID = item.from, item[1]
+    end)
+
+    function panel:SetShown(shown)
+        frame:SetShown(shown)
+        filter:SetShown(shown)
+    end
+
+    function panel:Refresh()
+        local d = self.dungeon
+        local boss = d and self.index and ns.Bosses[d.key][self.index]
+        local items = boss and boss.loot or ns.DungeonLoot(d)
+        items = FilterLoot(items, self.filter)
+        allArea:SetShown(boss == nil)
+        bossArea:SetShown(boss ~= nil)
+        if boss then bossLoot:SetItems(items) else allLoot:SetItems(items) end
+        empty:SetShown(#items == 0)
+        empty:SetText(self.filter == "all" and L.NO_BOSSES or L.LOOT_NONE)
+        self.items = items
+    end
+
+    function panel:SetDungeon(d, index)
+        self.dungeon, self.index = d, index
+        self:Refresh()
+    end
+
+    return panel
+end
+
+-- ------------------------------------------
+-- Modelo (pestana lateral)
+-- ------------------------------------------
+-- El modelo 3D del jefe en grande sobre el fondo de la mazmorra, con su nombre
+-- abajo (la vista de modelo del Diario). Se gira arrastrando; rueda y + / -
+-- acercan. Sin modelo (bichos normales, cofres), su icono.
+function ns.CreateModelPanel(page)
+    local panel = { dungeon = nil, index = nil }
+    local frame = CreateFrame("Frame", nil, page)
+    frame:SetAllPoints()
+    local bg = frame:CreateTexture(nil, "BACKGROUND")
+    bg:SetPoint("TOPLEFT", -8, 8)
+    bg:SetPoint("BOTTOMRIGHT", 8, -6)
+    local model = CreateFrame("PlayerModel", nil, frame)
+    model:SetPoint("TOPLEFT", 0, -4)
+    model:SetPoint("BOTTOMRIGHT", 0, 36)
+    -- Cuerpo entero: la camara automatica encuadra muy cerca; se aleja cuando
+    -- el modelo ha cargado
     model:SetScript("OnModelLoaded", function(self)
         self:SetPortraitZoom(0)
         self:SetCamDistanceScale(self.distance or MODEL_DISTANCE)
     end)
-    -- Zoom: rueda del raton y botones + / - (mas cerca = menos distancia)
     local function Zoom(delta)
         model.distance = math.max(0.5, math.min(4, (model.distance or MODEL_DISTANCE) - delta * 0.2))
         model:SetCamDistanceScale(model.distance)
@@ -240,9 +437,10 @@ function ns.CreateBossPanel(left, right)
     model:EnableMouseWheel(true)
     model:SetScript("OnMouseWheel", function(_, delta) Zoom(delta) end)
     for i, step in ipairs({ 1, -1 }) do
-        local b = CreateFrame("Button", nil, model)
-        b:SetSize(20, 20)
-        b:SetPoint("TOPRIGHT", -6 - (2 - i) * 22, -6)
+        local b = CreateFrame("Button", nil, frame)
+        b:SetSize(22, 22)
+        b:SetPoint("TOPRIGHT", -6 - (2 - i) * 24, -6)
+        b:SetFrameLevel(model:GetFrameLevel() + 2)
         local name = step > 0 and "Plus" or "Minus"
         b:SetNormalTexture("Interface\\Buttons\\UI-" .. name .. "Button-Up")
         b:SetPushedTexture("Interface\\Buttons\\UI-" .. name .. "Button-Down")
@@ -260,9 +458,9 @@ function ns.CreateBossPanel(left, right)
         self:SetFacing(self.facing)
     end)
     -- Ver al jefe en el mapa de la mazmorra (si tiene chincheta)
-    local onMap = CreateFrame("Button", nil, header)
-    onMap:SetSize(26, 26)
-    onMap:SetPoint("BOTTOMRIGHT", -6, 6)
+    local onMap = CreateFrame("Button", nil, frame)
+    onMap:SetSize(30, 30)
+    onMap:SetPoint("TOPLEFT", 6, -6)
     onMap:SetFrameLevel(model:GetFrameLevel() + 2)
     local mapIcon = onMap:CreateTexture(nil, "ARTWORK")
     mapIcon:SetAllPoints()
@@ -271,95 +469,40 @@ function ns.CreateBossPanel(left, right)
     onMap:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
     onMap:SetScript("OnClick", function() ns.ShowDungeonMap(panel.dungeon, panel.index) end)
     ns.AddTooltip(onMap, L.VIEW_ON_MAP)
-    -- Sin modelo (bichos normales, cofres): su icono
-    local icon = header:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(56, 56)
-    icon:SetPoint("CENTER", 0, 12)
-    local shadow = header:CreateTexture(nil, "OVERLAY")
-    shadow:SetPoint("BOTTOMLEFT", 0, -2)
-    shadow:SetPoint("BOTTOMRIGHT", 0, -2)
-    shadow:SetHeight(40)
+    local icon = frame:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(72, 72)
+    icon:SetPoint("CENTER", 0, 20)
+    local shadow = frame:CreateTexture(nil, "OVERLAY")
+    shadow:SetPoint("BOTTOMLEFT", -8, -6)
+    shadow:SetPoint("BOTTOMRIGHT", 8, -6)
+    shadow:SetHeight(76)
     ns.SetEJTexture(shadow, "BossNameShadow")
-    local title = header:CreateFontString(nil, "OVERLAY", "QuestTitleFontBlackShadow")
-    title:SetPoint("BOTTOM", 0, 8)
+    local title = frame:CreateFontString(nil, "OVERLAY", "QuestTitleFontBlackShadow")
+    ns.SetTitleFont(title, 22)
+    title:SetTextColor(1, 0.82, 0)
+    title:SetPoint("BOTTOM", 0, 26) -- separado del borde de abajo
     title:SetPoint("LEFT", 8, 0)
     title:SetPoint("RIGHT", -8, 0)
-
-    local info = ns.PaperText(right, "GameFontBlack")
-    info:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -8)
-    local lore = ns.PaperText(right, "GameFontBlack", ns.INK_LIGHT)
-    lore:SetPoint("TOPLEFT", info, "BOTTOMLEFT", 0, -4)
-    lore:SetPoint("RIGHT", right, "RIGHT", 0, 0)
-    lore:SetMaxLines(3)
-
-    local section = ns.CreatePaperHeader(right, L.LOOT)
-    section:SetPoint("TOPLEFT", lore, "BOTTOMLEFT", 0, -6)
-    section:SetPoint("RIGHT")
-
-    local lootArea = CreateFrame("Frame", nil, right)
-    lootArea:SetPoint("TOPLEFT", section, "BOTTOMLEFT", 0, -6)
-    lootArea:SetPoint("BOTTOMRIGHT")
-    -- Recetas: a la derecha, el jefe que mas la suelta y su probabilidad ("+N" si hay
-    -- mas); clic en el, su botin, y el tooltip con todos los que la sueltan
-    local function SetupLootRow(row)
-        ns.SetupItemButton(row)
-        local source = CreateFrame("Button", nil, row)
-        source:SetPoint("TOPLEFT", row.extra, "TOPLEFT", -3, 3)
-        source:SetPoint("BOTTOMRIGHT", row.extra, "BOTTOMRIGHT", 3, -3)
-        source:SetFrameLevel(row:GetFrameLevel() + 2)
-        source:SetScript("OnClick", function(self) panel:SelectBoss(self.from[1]) end)
-        source:SetScript("OnEnter", function(self)
-            row.extra:SetTextColor(1, 0.82, 0)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(L.TAB_BOSSES)
-            local list, d = ns.Bosses[panel.dungeon.key], panel.dungeon
-            for _, i in ipairs(self.from) do
-                local pct = ns.LootChance(list[i], self.itemID)
-                GameTooltip:AddDoubleLine(ns.BossName(list[i], d), pct and (pct .. "%") or "", 1, 1, 1, 1, 1, 1)
-            end
-            GameTooltip:AddLine(L.MAP_PIN_TOOLTIP, 0.6, 0.8, 1)
-            GameTooltip:Show()
-        end)
-        source:SetScript("OnLeave", function()
-            row.extra:SetTextColor(unpack(ns.TEXT_ON_DARK))
-            GameTooltip_Hide()
-        end)
-        row.source = source
-    end
-    local loot = ns.CreateScrollList(lootArea, ns.ITEM_ROW_HEIGHT + 2, SetupLootRow,
-        function(row, item)
-            local extra = item[2] and (item[2] .. "%")
-            local from = item.from and panel.dungeon and ns.Bosses[panel.dungeon.key][item.from[1]]
-            if from then
-                extra = ns.BossName(from, panel.dungeon) .. (#item.from > 1 and (" +" .. (#item.from - 1)) or "")
-                    .. (extra and ("  " .. extra) or "")
-            end
-            ns.SetItemButton(row, item[1], nil, extra)
-            row.source.from, row.source.itemID = item.from, item[1]
-            row.source:SetShown(from ~= nil)
-        end)
+    panel.title = title
 
     function panel:SetShown(shown)
-        left:SetShown(shown)
-        right:SetShown(shown)
+        frame:SetShown(shown)
         if not shown then model.boss = nil end -- al volver, el modelo otra vez desde cero
     end
 
-    function panel:Refresh()
-        local d = self.dungeon
-        local list = d and ns.Bosses[d.key] or {}
-        empty:SetShown(#list == 0)
-        right:SetAlpha(#list > 0 and 1 or 0)
-        local items = {}
-        for i, boss in ipairs(list) do items[i] = { index = i, boss = boss } end
-        bosses:SetItems(items)
-        local boss = list[self.index]
-        if not boss then return end
+    function panel:SetDungeon(d, index)
+        self.dungeon, self.index = d, index
+        local boss = d and index and ns.Bosses[d.key][index]
         ns.SetDungeonArt(bg, d, "bg")
+        if not boss then
+            model:Hide(); icon:Hide(); onMap:Hide()
+            title:SetText("")
+            return
+        end
         model:SetShown(boss.display ~= nil)
         icon:SetShown(boss.display == nil)
-        -- Solo al cambiar de jefe: cada refresco (datos de objetos al pasar el raton,
-        -- misiones) reiniciaba el modelo y su animacion en bucle
+        -- Solo al cambiar de jefe: cada refresco (datos de objetos, misiones)
+        -- reiniciaba el modelo y su animacion en bucle
         if boss.display and model.boss ~= boss then
             model.boss = boss
             model:ClearModel()
@@ -373,24 +516,8 @@ function ns.CreateBossPanel(left, right)
             model.boss = nil
             ns.SetBossPortrait(icon, boss)
         end
-        onMap:SetShown(ns.BossFloor(d, self.index) ~= nil)
+        onMap:SetShown(ns.BossFloor(d, index) ~= nil)
         title:SetText(ns.BossName(boss, d))
-        info:SetText((ns.IsBossKilled(d, boss) and ("|cffa01010" .. L.BOSS_KILLED .. "|r" .. SEP) or "")
-            .. ns.BossInfo(boss, RARE))
-        local journal = ns.JournalBoss(d, boss)
-        lore:SetText(journal and journal.description or "")
-        loot:SetItems(boss.loot)
-    end
-
-    function panel:SetDungeon(d)
-        if d ~= self.dungeon then self.index = 1 end
-        self.dungeon = d
-        self:Refresh()
-    end
-
-    function panel:SelectBoss(index)
-        self.index = index
-        self:Refresh()
     end
 
     return panel

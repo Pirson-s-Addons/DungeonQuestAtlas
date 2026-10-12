@@ -85,8 +85,9 @@ function ns.SetupItemButton(button)
     button.name:SetPoint("RIGHT", -10, 0)
     button.name:SetJustifyH("LEFT")
     button.name:SetWordWrap(false)
-    -- Sobre la fila de botin del Diario (oscura): texto claro
-    button.extra = ns.PaperText(button, "GameFontBlack", ns.TEXT_ON_DARK)
+    -- El tipo, sobre la parte oscura de la fila: claro. Lo de la derecha (%, jefe)
+    -- cae donde la fila del Diario ya se ha desvanecido sobre el papel: tinta.
+    button.extra = ns.PaperText(button, "GameFontBlack", ns.INK)
     button.extra:SetPoint("BOTTOMRIGHT", -12, 7)
     button.info = ns.PaperText(button, "GameFontBlack", ns.TEXT_ON_DARK)
     button.info:SetPoint("BOTTOMLEFT", button.icon, "BOTTOMRIGHT", 8, 4)

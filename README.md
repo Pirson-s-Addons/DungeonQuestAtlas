@@ -66,7 +66,11 @@
 - **Objectives and rewards**: objectives in your game's language, reward cards with icon, quality color and the game's own tooltip (hold Shift to compare), the choice rewards and the ones you always get, XP and money. The new Forever rewards are included.
 - **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate, wheel or + / - to zoom), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room. **Show on map** takes you to the boss on the dungeon map.
 - **Recipes & Patterns**: the new Forever recipes of each dungeon, with the bosses that drop them and their chance (from Wowhead Forever).
-- **Dungeon Journal look**: the game's own journal book, side tabs, boss buttons and loot rows, with each dungeon's artwork and lore taken from your game client.
+- **Adventure Guide look**, like Retail's: tabs at the bottom (Journeys, Traveler's Log, Dungeons, Raids, Tutorials), breadcrumbs with drop-downs to jump to any dungeon or boss, and the game's own journal book. On a dungeon page the bosses are always on the left and the side tabs switch the right page: **Overview** (artwork, map, entrance, route and lore), **Loot** (the whole dungeon's loot with "Boss: X", or one boss's, with a type filter), **Model** (big 3D model) and **Quests**.
+- **Raids**: the announced WoW Forever raids (The Barrow Deeps, Hyjal Summit, Onyxia's Lair) with their size and a countdown to their opening, bosses (names from the BlizzCon demo, may change) and the upcoming 2027 ones. Onyxia's Lair has its **attunement** chain for each faction, step by step, with the same quest page as the dungeons.
+- **Traveler's Log**: the **world event quests** (Hallow's End, Winter Veil, Lunar Festival, Darkmoon Faire, Midsummer...), one card per event with its dates and "ends in" from the game's calendar, and inside, every quest with its full page.
+- **Journeys**: the **new Forever reputations** with your standing (crest, level and bar), a filter, and **Coming soon**: launch, raid openings, Hardcore and the 2027 updates, each one opening its own news page.
+- **Tutorials**: a short guide to the addon, page by page, with a button that takes you to each part.
 - Scarlet Monastery, Dire Maul and Stratholme split into wings.
 - **Quest start and end**: the NPC or object that gives the quest and the one where you turn it in, with zone and coordinates, and **Mark start** / **Mark end** buttons that also open the world map on the pin. If the NPC is inside the dungeon, the entrance is marked.
 - **Exact instance entrance** of every dungeon (the real portal, or the cave mouth when the portal is underground), with a **Mark entrance on map** button (also the portal icon next to each dungeon), and a **Route** button that takes you to the closest flight master of your faction and then to the entrance.
@@ -75,14 +79,13 @@
 - **Dungeon maps** (WoW Forever has none): a **View map** button with Blizzard's own dungeon maps from WoW Classic for the classic dungeons, and maps drawn for this addon for Hall of Thanes, Ruins of Lordaeron, Excavation Site: Wetlands and City of Dalaran. Every floor with its own button, each boss marked with its portrait (click it to jump to its loot), the entrance and the stairs between floors (click a staircase to change floor), mouse-wheel zoom and drag to move around.
 - **Dungeon entrances on the world map**: each dungeon's portal on its zone map and on the continent map, with its levels and your quest progress. Click it to see the dungeon map right on the world map, or right-click to open the dungeon in the addon. A round button on the world map holds every setting (zones, continents, icon size).
 - **AtlasLoot**: a "View loot" button when AtlasLoot is loaded. **Questie**: used as a fallback for quest givers the addon doesn't know yet.
-- Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde; also on every dungeon page) and a search box (dungeon or boss name).
-- **Page-turn animation** with sound when you change dungeon or tab (can be turned off).
+- Filters: my level, classic / new in Forever, **faction buttons** (both, Alliance, Horde) on every tab that depends on your faction, and a search box (dungeon, boss, raid or quest).
 - Minimap button (LibDBIcon, works with minimap button collectors), window scale, Esc to close.
 - Translated into 20 languages, with a **language selector** in the window: show it in any of them without changing your game's language. Quest, NPC, zone and item names come from the game itself, in its language.
 
 ## Where the data comes from
 
-Levels, factions, rewards, XP, bosses and loot come from the WoW Forever beta client (build 1.60.1, via [ForeverChanges](https://foreverchanges.pro/dungeons)); quest chains and the NPCs that start and end each quest, with their coordinates, from [Wowhead Forever](https://www.wowhead.com/forever). Dungeon entrances, quest titles, objectives and item names come from your own game, in your language. Quests the Forever client doesn't list show a small "not verified" icon. Forever is in beta: drops and rewards can still change.
+Levels, factions, rewards, XP, bosses and loot come from the WoW Forever beta client (build 1.60.1, via [ForeverChanges](https://foreverchanges.pro/dungeons)); quest chains and the NPCs that start and end each quest, with their coordinates, from [Wowhead Forever](https://www.wowhead.com/forever). Dungeon entrances, quest titles, objectives and item names come from your own game, in your language. Quests the Forever client doesn't list show a small "not verified" icon. Forever is in beta: drops and rewards can still change. Raids come from Blizzard's roadmap and the BlizzCon demo; world event quests and the new reputations, from Wowhead Forever; the Onyxia attunement, from Wowhead Classic and Wowhead Forever.
 
 Quest descriptions are **collected in the game**:
 

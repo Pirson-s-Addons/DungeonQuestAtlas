@@ -540,6 +540,11 @@ end
 -- Panel: left = pagina izquierda (bajo la cabecera), right = pagina derecha
 -- ------------------------------------------
 
+-- La hoja de una mision, para otras paginas (requisito de acceso de las bandas):
+-- detail:Show(id); detail.dungeon, la mazmorra para "dentro de" y la entrada
+ns.CreateQuestDetail = CreateDetail
+ns.CreateQuestList = CreateQuestList -- list:Refresh(ids, questID) (Registro de viajero)
+
 function ns.CreateQuestPanel(left, right)
     local panel = { dungeon = nil, questID = nil }
 

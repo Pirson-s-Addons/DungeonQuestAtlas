@@ -145,7 +145,8 @@ end
 function ns.DungeonName(d)
     if ns.UILANG == "enUS" then return d.name end
     local name = d.instanceID and GetRealZoneText and GetRealZoneText(d.instanceID)
-    if not name or name == "" then return d.name end -- el ingles ya lleva "Lower"/"Upper"
+    -- Sin nombre del juego: el de los datos en este idioma (bandas que el cliente aun no trae)
+    if not name or name == "" then return d.names and d.names[ns.UILANG] or d.name end
     if d.part then name = name .. " (" .. L[d.part] .. ")" end
     return name
 end
@@ -171,7 +172,8 @@ function ns.QuestTitle(id)
         requested[id] = true
         C_QuestLog.RequestLoadQuestByID(id)
     end
-    return L.QUEST_FALLBACK:format(id)
+    local q = ns.Quests and ns.Quests[id]
+    return q and q.name or L.QUEST_FALLBACK:format(id)
 end
 
 -- Objetivos: lo recogido; si no, el tooltip de la mision que da el juego (en

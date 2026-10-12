@@ -24,6 +24,17 @@ local REGION = {
     BossModelButton = { 0.50585938, 0.63085938, 0.02246094, 0.08203125 },
     BossNameShadow = { 0.00195313, 0.77343750, 0.26953125, 0.33105469 },
     LeftPageHeader = { 0, 0.755859375, 0.9599609375, 1 },
+    -- Pestanas del borde derecho del libro (EncounterTabTemplate, 63x57) y sus
+    -- iconos (48x43): Up = sin elegir, Down = elegida
+    TabUp = { 0.25585938, 0.37890625, 0.90332031, 0.95898438 },
+    TabDown = { 0.12890625, 0.25195313, 0.90332031, 0.95898438 },
+    TabHighlight = { 0.00195313, 0.12500000, 0.90332031, 0.95898438 },
+    TabOverviewUp = { 0.85546875, 0.94921875, 0.52441406, 0.56640625 },
+    TabOverviewDown = { 0.90234375, 0.99609375, 0.26953125, 0.31152344 },
+    TabLootUp = { 0.73046875, 0.82421875, 0.61816406, 0.66015625 },
+    TabLootDown = { 0.63281250, 0.72656250, 0.61816406, 0.66015625 },
+    TabModelUp = { 0.90234375, 1, 0.662109375, 0.705078125 },
+    TabModelDown = { 0.8046875, 0.900390625, 0.662109375, 0.705078125 },
 }
 
 function ns.SetEJTexture(texture, name)
@@ -389,6 +400,22 @@ function ns.CreateIconToggleGroup(parent, size, options, onChange)
             end
         end
     end
+    return group
+end
+
+-- Selector de faccion (Ambas / Alianza / Horda): el mismo filtro en todas las
+-- secciones (ns.FactionFilter / ns.SetFilter "faction"). Quien lo crea lo coloca
+-- y, en su Refresh, llama a :Sync() para seguir el valor compartido.
+function ns.CreateFactionToggle(parent, size)
+    local L = ns.L
+    local A, H = ns.FACTION_CREST.Alliance, ns.FACTION_CREST.Horde
+    local group = ns.CreateIconToggleGroup(parent, size or 24, {
+        { value = "Both", tooltip = L.FACTION_ALL, crests = { A, H } },
+        { value = "Alliance", tooltip = L.FACTION_ALLIANCE, crests = { A } },
+        { value = "Horde", tooltip = L.FACTION_HORDE, crests = { H } },
+    }, function(value) ns.SetFilter("faction", value ~= "Both" and value or nil) end)
+    function group:Sync() self:SetValue(ns.FactionFilter and ns.FactionFilter() or "Both") end
+    group:Sync()
     return group
 end
 
