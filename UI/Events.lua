@@ -211,7 +211,7 @@ end
 -- Portada: una tarjeta por evento (como las de Mazmorras)
 -- ------------------------------------------
 
-local COLS, CARD_W, CARD_H, GAP_X, GAP_Y = 4, 174, 96, 14, 12
+local COLS, CARD_W, CARD_H, GAP_X, GAP_Y = 3, 236, 130, 14, 12
 
 local function CreateCard(row, onSelect)
     local card = CreateFrame("Button", nil, row)

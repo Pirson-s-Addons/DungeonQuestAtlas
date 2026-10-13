@@ -14,8 +14,8 @@ local unpack = unpack or table.unpack
 -- lateral elegida: Resumen, Botin, Modelo y, si la banda lo pide, Requisito de
 -- acceso (la cadena de misiones de la llave, por faccion).
 
-local COLS = 4
-local CARD_W, CARD_H = 174, 96 -- el boton de instancia del Diario
+local COLS = 3
+local CARD_W, CARD_H = 236, 130 -- el boton de instancia del Diario (174x96) a escala
 local GAP_X, GAP_Y = 14, 12
 local EJ = "Interface\\EncounterJournal\\"
 local DEFAULT_BG = EJ .. "UI-EJ-BACKGROUND-Default"
@@ -43,11 +43,11 @@ local ART = {
         page = { { LOADSCREEN .. "LoadScreenHyjal", CROP.loadPage } },
     },
 }
-local PANELS = { "overview", "loot", "model", "attune" }
+local PANELS = { "overview", "loot", "model", "map", "attune" }
+local TABS = { "overview", "loot", "model", "attune" } -- el mapa se abre con "Ver mapa" del Resumen
 local SIDE_ICON = { overview = "TabOverview", loot = "TabLoot", model = "TabModel" }
 local KEY_ICON = "Interface\\Icons\\INV_Misc_Key_14"
 local RAID_ICON = "Interface\\LFGFrame\\LFGIcon-Raid"
-local MODEL_DISTANCE = 2
 local SEP = "  ·  "
 
 -- ------------------------------------------
@@ -184,11 +184,11 @@ local function BossName(boss)
     return boss.npcID and ns.PlaceName and ns.PlaceName(boss) or boss.name
 end
 
--- Misiones del requisito de acceso de tu faccion (o nil si la banda no lo pide)
+-- Misiones del requisito de acceso de tu faccion (o nil si la banda o mazmorra no lo pide)
 function ns.RaidAttunement(raid, faction)
     local a = raid and raid.attunement
     if not a then return end
-    return a[faction] or a[faction == "Horde" and "Horde" or "Alliance"]
+    return a.Both or a[faction] or a[faction == "Horde" and "Horde" or "Alliance"]
 end
 
 -- Mazmorra en la que empieza una mision (pasos que van dentro: Profundidades...)
@@ -411,10 +411,52 @@ local function CreateOverview(page)
     scroll:SetScript("OnSizeChanged", Fit)
     panel.title, panel.facts, panel.note = title, facts, note
 
+    -- Botones sobre la ilustracion, los de la pagina de mazmorra (UI/OverviewPanel.lua):
+    -- el plano en la misma pagina, marcar la entrada y la ruta hasta ella
+    local map = ns.ArtButton(panel, L.VIEW_MAP, "Interface\\Icons\\INV_Misc_Map_01",
+        function() ns.ShowRaid(panel.raid, nil, "map") end,
+        function() return ns.DungeonMaps(panel.raid) and L.VIEW_MAP_TOOLTIP or L.NO_MAP end)
+    local entrance = ns.ArtButton(panel, L.MAP_ENTRANCE, "Interface\\Icons\\Spell_Arcane_TeleportIronForge", function()
+        local point = ns.Entrance(panel.raid)
+        if ns.SetWaypoint(point, ns.DungeonName(panel.raid), "entrance") then ns.OpenMapAt(point.mapID) end
+    end, function()
+        local point = panel.raid and ns.Entrance(panel.raid)
+        if not point then return L.NO_ENTRANCE:format(panel.raid and panel.raid.key or "") end
+        return L.MARK_ENTRANCE_TOOLTIP .. "\n|cffffffff" .. ns.ZoneName(point.mapID) .. " " .. ns.FormatCoords(point) .. "|r"
+    end)
+    local route = ns.ArtButton(panel, L.ROUTE, "Interface\\Icons\\INV_Misc_Spyglass_03",
+        function() ns.StartRoute(panel.raid) end,
+        function()
+            local r = panel.raid
+            return r and ns.Route(r) and L.ROUTE_TOOLTIP or L.ROUTE_NONE:format(r and r.key or "")
+        end)
+    panel.buttons = { map = map, entrance = entrance, route = route }
+    -- Sombra abajo de la ilustracion: el texto claro de los botones se lee (regla de contraste)
+    local shade = panel:CreateTexture(nil, "BORDER")
+    shade:SetPoint("BOTTOMLEFT", art)
+    shade:SetPoint("BOTTOMRIGHT", art)
+    shade:SetHeight(64)
+    if CreateColor and shade.SetGradient then
+        shade:SetColorTexture(1, 1, 1, 1)
+        shade:SetGradient("VERTICAL", CreateColor(0, 0, 0, 0.85), CreateColor(0, 0, 0, 0))
+    else
+        shade:SetColorTexture(0, 0, 0, 0.5)
+    end
+    panel.shade = shade
+    local order = { map, entrance, route }
+    for i, b in ipairs(order) do b:SetPoint("BOTTOMLEFT", art, "BOTTOMLEFT", 12 + (i - 1) * 88, 8) end
+
     function panel:Set(raid, index)
+        self.raid = raid
         SetRaidArt(art, raid, "page")
         local boss = index and raid.bosses[index]
         title:SetText(boss and BossName(boss) or ns.DungeonName(raid))
+        -- Los botones, solo en el resumen de la banda (con jefe, la ilustracion es suya)
+        for _, b in ipairs(order) do b:SetShown(not boss) end
+        shade:SetShown(not boss)
+        map:SetEnabled(ns.DungeonMaps(raid) ~= nil)
+        entrance:SetEnabled(ns.Entrance(raid) ~= nil)
+        route:SetEnabled(ns.Route(raid) ~= nil)
         local lines = {}
         if boss then
             lines[1] = L.RAID_BOSS_N:format(index, #raid.bosses) .. SEP .. ns.DungeonName(raid)
@@ -444,8 +486,13 @@ local function CreateLoot(page)
     local header = ns.CreatePaperHeader(panel, L.LOOT)
     header:SetPoint("TOPLEFT")
     header:SetPoint("TOPRIGHT")
+    -- Botin de WoW Classic mientras Forever no publique el suyo: aviso encima
+    local note = ns.PaperText(panel, "GameFontBlackSmall", ns.INK_LIGHT)
+    note:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)
+    note:SetPoint("RIGHT")
+    note:SetJustifyH("LEFT")
     local area = CreateFrame("Frame", nil, panel)
-    area:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -6)
+    area:SetPoint("TOPLEFT", note, "BOTTOMLEFT", 0, -6)
     area:SetPoint("BOTTOMRIGHT")
     local list = ns.CreateScrollList(area, ns.ITEM_ROW_HEIGHT + 2, ns.SetupItemButton, function(row, item)
         ns.SetItemButton(row, item[1], nil, item[2] and (item[2] .. "%"))
@@ -466,10 +513,127 @@ local function CreateLoot(page)
         end
         local boss = index and raid.bosses[index]
         header.text:SetText(boss and (L.LOOT .. SEP .. BossName(boss)) or L.LOOT)
+        note:SetText(raid.lootSource == "classic" and #items > 0 and L.RAID_LOOT_CLASSIC or "")
         list:SetItems(items)
         empty:SetShown(#items == 0)
     end
     return panel
+end
+
+-- Mapa: el plano de la banda (UI/DungeonMap.lua) tapando las dos paginas, como
+-- la vista de mapa de Mazmorras; sus chinchetas abren el botin del jefe
+local function CreateMapPanel(page)
+    local panel = CreateFrame("Frame", nil, page)
+    panel:SetPoint("TOPLEFT", 12, -12)
+    panel:SetPoint("BOTTOMRIGHT", -12, 12)
+    panel:SetFrameLevel(page:GetFrameLevel() + 15) -- encima del libro, bajo las pestanas
+    local bg = panel:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.03, 0.025, 0.02, 1)
+    local plan = ns.CreateDungeonPlan(panel)
+    plan.viewport:SetAllPoints()
+    plan.floorBar:SetPoint("TOPLEFT", 10, -10)
+    plan.floorBar:SetFrameLevel(plan.viewport:GetFrameLevel() + 10)
+    panel.plan = plan
+    function panel:Set(raid)
+        if plan.dungeon ~= raid then plan:SetDungeon(raid, ns.DungeonMaps(raid)) else plan:ShowFloor(plan.index) end
+    end
+    return panel
+end
+
+-- Visor del modelo. ModelScene (el del Diario de Retail): la camara se coloca a mano.
+-- Con PlayerModel la pone el propio modelo y en los enormes (Onyxia) mira desde abajo;
+-- ni SetPitch ni SetPosition lo arreglan. Aqui mira al centro del modelo desde un poco
+-- por encima (PITCH) y a la distancia que hace caber su caja entera. Los dos visores
+-- tienen Load(display), Reset() y Rotate(dx); el PlayerModel queda de respaldo.
+local PITCH, YAW = 0.32, 0.6 -- radianes: camara inclinada hacia abajo; jefe de tres cuartos
+local FRAME_MARGIN = 1.1 -- aire alrededor del modelo
+
+-- Caja del modelo como seis numeros (la API actual da dos vectores), o nil si aun carga
+local function BoundingBox(actor)
+    local x1, y1, z1, x2, y2, z2 = actor:GetActiveBoundingBox()
+    if type(x1) == "table" and type(y1) == "table" then
+        x1, y1, z1, x2, y2, z2 = x1.x, x1.y, x1.z, y1.x, y1.y, y1.z
+    end
+    if type(x1) == "number" and type(z2) == "number" and z2 > z1 then return x1, y1, z1, x2, y2, z2 end
+end
+
+local function CreateSceneModel(panel)
+    local model = CreateFrame("ModelScene", nil, panel)
+    local actor = model:CreateActor()
+    -- Girar alrededor del centro del modelo, no de sus patas: si no, se sale del recuadro al girar
+    local centered = actor.SetUseCenterForOrigin ~= nil
+    if centered then actor:SetUseCenterForOrigin(true, true, true) end
+    -- Una escena nueva no trae luz: de frente y por arriba
+    if model.SetLightVisible then
+        model:SetLightVisible(true)
+        if model.SetLightDirection then model:SetLightDirection(1, 0, -0.6) end
+        if model.SetLightAmbientColor then model:SetLightAmbientColor(0.75, 0.75, 0.75) end
+        if model.SetLightDiffuseColor then model:SetLightDiffuseColor(0.85, 0.85, 0.85) end
+    end
+    model.zoom, model.yaw = 1, YAW
+    -- true si ya pudo encuadrar (el modelo tarda en cargar: se reintenta en OnUpdate)
+    function model:ApplyView()
+        local x1, y1, z1, x2, y2, z2 = BoundingBox(actor)
+        if not x1 then return false end
+        -- La esfera que envuelve la caja: cabe entera gire como gire (alas incluidas)
+        local radius = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 2) / 2
+        -- El campo de vision es el vertical; si el recuadro es mas alto que ancho, manda el horizontal
+        local fov = (self.GetCameraFieldOfView and self:GetCameraFieldOfView()) or 0.8
+        local w, h = self:GetSize()
+        if w and h and h > 0 and w < h then fov = 2 * math.atan(math.tan(fov / 2) * w / h) end
+        local distance = radius / math.sin(fov / 2) * FRAME_MARGIN * self.zoom
+        -- Con el modelo centrado en su origen, la camara mira a (0, 0, 0); si no, al centro de la caja
+        local cz = centered and 0 or (z1 + z2) / 2
+        -- Como OrbitCameraMixin: la camara, detras del objetivo segun su orientacion
+        self:SetCameraOrientationByYawPitchRoll(0, PITCH, 0)
+        self:SetCameraPosition(-math.cos(PITCH) * distance, 0, cz + math.sin(PITCH) * distance)
+        actor:SetYaw(math.pi + self.yaw) -- yaw 0 mira hacia +x, lejos de la camara
+        return true
+    end
+    function model:Load(display)
+        self.zoom, self.yaw = 1, YAW
+        actor:SetModelByCreatureDisplayID(display)
+        self.pending = not self:ApplyView()
+    end
+    function model:Zoom(delta)
+        self.zoom = math.max(0.4, math.min(1.8, self.zoom - delta * 0.1))
+        self:ApplyView()
+    end
+    function model:Rotate(dx)
+        self.yaw = self.yaw + dx
+        actor:SetYaw(math.pi + self.yaw)
+    end
+    function model:Tick()
+        if self.pending then self.pending = not self:ApplyView() end
+    end
+    return model
+end
+
+local function CreatePlayerModel(panel)
+    local model = CreateFrame("PlayerModel", nil, panel)
+    model:SetScript("OnModelLoaded", function(self)
+        self:SetPortraitZoom(0)
+        self:SetCamDistanceScale(self.distance)
+    end)
+    function model:Load(display)
+        self.distance, self.facing = 2, YAW
+        self:ClearModel()
+        self:SetDisplayInfo(display)
+        self:SetPortraitZoom(0)
+        self:SetCamDistanceScale(self.distance)
+        self:SetFacing(self.facing)
+    end
+    function model:Zoom(delta)
+        self.distance = math.max(0.5, math.min(6, self.distance - delta * 0.3))
+        self:SetCamDistanceScale(self.distance)
+    end
+    function model:Rotate(dx)
+        self.facing = self.facing + dx
+        self:SetFacing(self.facing)
+    end
+    function model:Tick() end
+    return model
 end
 
 -- Modelo: el jefe en grande sobre el arte de la banda, con su nombre abajo
@@ -479,27 +643,25 @@ local function CreateModel(page)
     local bg = panel:CreateTexture(nil, "BACKGROUND")
     bg:SetPoint("TOPLEFT", -8, 8)
     bg:SetPoint("BOTTOMRIGHT", 8, -6)
-    local model = CreateFrame("PlayerModel", nil, panel)
+    -- Si el cliente no deja montar la escena, el visor de siempre: la ventana no se rompe
+    local ok, model = pcall(CreateSceneModel, panel)
+    if not ok then
+        if ns.db and ns.db.debug then ns.Print("ModelScene: " .. tostring(model)) end
+        model = CreatePlayerModel(panel)
+    end
     model:SetPoint("TOPLEFT", 0, -4)
     model:SetPoint("BOTTOMRIGHT", 0, 50)
-    model:SetScript("OnModelLoaded", function(self)
-        self:SetPortraitZoom(0)
-        self:SetCamDistanceScale(self.distance or MODEL_DISTANCE)
-    end)
     model:EnableMouseWheel(true)
-    model:SetScript("OnMouseWheel", function(self, delta)
-        self.distance = math.max(0.5, math.min(4, (self.distance or MODEL_DISTANCE) - delta * 0.2))
-        self:SetCamDistanceScale(self.distance)
-    end)
+    model:SetScript("OnMouseWheel", function(self, delta) self:Zoom(delta) end)
     model:EnableMouse(true)
     model:SetScript("OnMouseDown", function(self) self.dragX = GetCursorPosition() end)
     model:SetScript("OnMouseUp", function(self) self.dragX = nil end)
     model:SetScript("OnUpdate", function(self)
+        self:Tick()
         if not self.dragX then return end
         local x = GetCursorPosition()
-        self.facing = (self.facing or 0) + (x - self.dragX) / 80
+        self:Rotate((x - self.dragX) / 80)
         self.dragX = x
-        self:SetFacing(self.facing)
     end)
     -- Sin modelo: el aviso, claro sobre una caja oscura (regla de contraste)
     local none = ns.CreateDarkBox(panel)
@@ -530,13 +692,8 @@ local function CreateModel(page)
         none:SetShown(display == nil)
         if display and model.boss ~= boss then
             model.boss = boss
-            model:ClearModel()
-            model:SetDisplayInfo(display)
-            model:SetPortraitZoom(0)
-            model.distance = MODEL_DISTANCE
-            model:SetCamDistanceScale(MODEL_DISTANCE)
-            model.facing = 0.35
-            model:SetFacing(model.facing)
+            local ok, err = pcall(model.Load, model, display) -- un fallo del visor no rompe la pagina
+            if not ok and ns.db and ns.db.debug then ns.Print("Model: " .. tostring(err)) end
         end
     end
     return panel
@@ -544,8 +701,9 @@ end
 
 -- Requisito de acceso: la llave, el aviso y los pasos de tu faccion con su estado
 -- Como Misiones en las mazmorras: los pasos en la pagina izquierda (en lugar de
--- los jefes) y la hoja de la mision elegida en la derecha
-local function CreateAttune(leftPage, rightPage)
+-- los jefes) y la hoja de la mision elegida en la derecha. Tambien en el libro de
+-- mazmorras (UI/MainFrame.lua): Set / SetDungeon con cualquier tabla con attunement
+function ns.CreateAttunePanel(leftPage, rightPage)
     local panel = CreateFrame("Frame", nil, leftPage)
     panel:SetAllPoints()
     local sheet = CreateFrame("Frame", nil, rightPage)
@@ -573,7 +731,6 @@ local function CreateAttune(leftPage, rightPage)
     warn.text:SetPoint("RIGHT", -8, 0)
     warn.text:SetJustifyH("LEFT")
     warn.text:SetTextColor(unpack(ns.TEXT_ON_DARK))
-    warn.text:SetText(L.RAID_ATTUNE_WARNING)
     local area = CreateFrame("Frame", nil, panel)
     area:SetPoint("TOPLEFT", warn, "BOTTOMLEFT", 2, -6)
     area:SetPoint("BOTTOMRIGHT")
@@ -634,6 +791,8 @@ local function CreateAttune(leftPage, rightPage)
         local a = raid.attunement
         local name = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(a.item) or a.itemName
         key:SetText(L.RAID_ATTUNE_KEY:format(name))
+        -- Bandas: el aviso de Blizzard; mazmorras: basta con que la lleve uno
+        warn.text:SetText(L[a.warning or "ATTUNE_ONE_KEY"])
         warn:SetHeight(warn.text:GetStringHeight() + 14)
         local items = {}
         faction:Sync()
@@ -656,6 +815,8 @@ local function CreateAttune(leftPage, rightPage)
         detail.dungeon = self.questID and DungeonOfQuest(self.questID)
         detail:Show(self.questID)
     end
+
+    function panel:SetDungeon(d) self:Set(d) end
 
     function panel:Select(id)
         self.questID = id
@@ -729,13 +890,13 @@ local function CreatePage(parent, section)
     right:SetPoint("TOPLEFT", spine + 20, -24)
     right:SetPoint("BOTTOMRIGHT", -26, 18)
     page.panels = { overview = CreateOverview(right), loot = CreateLoot(right), model = CreateModel(right),
-        attune = CreateAttune(left, right) }
+        map = CreateMapPanel(page), attune = ns.CreateAttunePanel(left, right) }
 
     -- Pestanas del borde derecho, las del Diario (como las del libro de mazmorras)
     page.tabs = {}
     local labels = { overview = L.TAB_OVERVIEW, loot = L.LOOT, model = L.TAB_MODEL, attune = L.RAID_TAB_ATTUNE }
     local previous
-    for _, key in ipairs(PANELS) do
+    for _, key in ipairs(TABS) do
         local tab = CreateFrame("Button", nil, page)
         tab:SetSize(63, 57)
         tab:SetFrameLevel(page:GetFrameLevel() + 20) -- encima del borde de la ventana
@@ -800,11 +961,10 @@ local function CreatePage(parent, section)
                 and C_Item.GetItemIconByID(raid.attunement.item) or KEY_ICON)
         end
         if tab == "attune" and not attune then tab = "overview" end
-        self.bossArea:SetShown(tab ~= "attune")
-        for _, key in ipairs(PANELS) do
-            self.panels[key]:SetShown(key == tab)
-            self.tabs[key]:Select(key == tab)
-        end
+        if tab == "map" and not ns.DungeonMaps(raid) then tab = "overview" end
+        self.bossArea:SetShown(tab ~= "attune" and tab ~= "map")
+        for _, key in ipairs(PANELS) do self.panels[key]:SetShown(key == tab) end
+        for _, key in ipairs(TABS) do self.tabs[key]:Select(key == tab) end
         self.panels[tab]:Set(raid, index)
         return tab
     end
@@ -827,8 +987,8 @@ function ns.CreateRaidsSection(parent)
     section.home, section.page = home, page
 
     -- Abre la pagina de una banda desde otra seccion (noticias de Viajes)
-    function ns.ShowRaid(raid)
-        section.raid, section.boss, section.tab = raid, nil, "overview"
+    function ns.ShowRaid(raid, boss, tab)
+        section.raid, section.boss, section.tab = raid, boss, tab or "overview"
         ns.ShowSection("raids")
     end
 
@@ -865,6 +1025,7 @@ function ns.CreateRaidsSection(parent)
         end } }
         local boss = self.boss and raid.bosses[self.boss]
         if boss then crumbs[2] = { name = BossName(boss) } end
+        if self.tab == "map" then crumbs[#crumbs + 1] = { name = L.MAP } end
         return crumbs
     end
 

@@ -53,7 +53,7 @@ local function DefaultDungeon()
     return list[1] or ns.Dungeons[1]
 end
 
-local PANELS = { "overview", "loot", "model", "quests" }
+local PANELS = { "overview", "loot", "model", "quests", "attune" }
 -- Pestanas guardadas por versiones anteriores
 local OLD_TABS = { bosses = "loot" }
 
@@ -188,10 +188,10 @@ function ns.RefreshUI()
     -- El jefe elegido es de su mazmorra; Modelo sin jefe: el primero
     if ui.bossDungeon ~= d.key then ui.boss, ui.bossDungeon = nil, d.key end
     local tab = OLD_TABS[ns.char.tab] or ns.char.tab
-    if not tContains(PANELS, tab) then tab = "overview" end
+    if not tContains(PANELS, tab) or (tab == "attune" and not d.attunement) then tab = "overview" end
     ns.char.tab = tab
     if tab == "model" and not ui.boss and #(ns.Bosses[d.key] or {}) > 0 then ui.boss = 1 end
-    UpdateNav(d, map, tab ~= "quests" and ui.boss)
+    UpdateNav(d, map, tab ~= "quests" and tab ~= "attune" and ui.boss)
     if map then
         local plan = ui.map.plan
         if plan.dungeon ~= d then plan:SetDungeon(d, map) else plan:ShowFloor(plan.index) end -- jefes muertos al dia
@@ -211,10 +211,18 @@ function ns.RefreshUI()
     ui.subtitle:SetText(table.concat(parts, "   "))
 
     -- Izquierda: los jefes (con Misiones, la lista de misiones). Derecha: la pestana
-    ui.bossList:SetShown(tab ~= "quests")
-    if tab ~= "quests" then ui.bossList:SetDungeon(d, ui.boss) end
+    -- Requisito de acceso: como Misiones, los pasos a la izquierda (con su selector de faccion)
+    local left = tab ~= "quests" and tab ~= "attune"
+    ui.bossList:SetShown(left)
+    if left then ui.bossList:SetDungeon(d, ui.boss) end
     for _, key in ipairs(PANELS) do ui.panels[key]:SetShown(key == tab) end
-    ui.bookFaction:SetShown(tab ~= "model")
+    ui.bookFaction:SetShown(tab ~= "model" and tab ~= "attune")
+    local attune = ui.sideTabs.attune
+    attune:SetShown(d.attunement ~= nil)
+    if d.attunement then
+        attune.icon:SetTexture(C_Item and C_Item.GetItemIconByID and C_Item.GetItemIconByID(d.attunement.item)
+            or "Interface\\Icons\\INV_Misc_Key_14")
+    end
     SelectSideTab(tab)
     ui.panels[tab]:SetDungeon(d, ui.boss)
 end
@@ -480,6 +488,7 @@ local function CreateBook(area)
         loot = ns.CreateLootPanel(Page(rightPage), bar),
         model = ns.CreateModelPanel(Page(rightPage)),
         quests = ns.CreateQuestPanel(Page(leftPage), Page(body)),
+        attune = ns.CreateAttunePanel(Page(leftPage), Page(body)),
     }
 end
 
@@ -542,7 +551,8 @@ local QUEST_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 
 local function CreateSideTabs()
     ui.sideTabs = {}
-    local labels = { overview = L.TAB_OVERVIEW, loot = L.LOOT, model = L.TAB_MODEL, quests = L.TAB_QUESTS }
+    local labels = { overview = L.TAB_OVERVIEW, loot = L.LOOT, model = L.TAB_MODEL, quests = L.TAB_QUESTS,
+        attune = L.RAID_TAB_ATTUNE }
     local previous
     for _, key in ipairs(PANELS) do
         local tab = CreateFrame("Button", nil, ui.book)
@@ -563,6 +573,10 @@ local function CreateSideTabs()
         if SIDE_ICON[key] then
             tab.icon:SetSize(48, 43)
             tab.icon:SetPoint("RIGHT", -6, 0)
+        elseif key == "attune" then -- el icono de la llave, en RefreshUI
+            tab.icon:SetSize(30, 30)
+            tab.icon:SetPoint("CENTER", -2, 0)
+            tab.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask")
         else
             tab.icon:SetSize(26, 26)
             tab.icon:SetPoint("CENTER", -2, 0)
@@ -700,9 +714,17 @@ function ns.OpenDungeon(d)
     if frame:IsShown() then ns.RefreshUI() else frame:Show() end
 end
 
+-- Pagina de una banda (su entrada en el mapa del mundo)
+function ns.OpenRaid(raid, boss, tab)
+    if not frame then CreateMainFrame() end
+    ns.ShowRaid(raid, boss, tab)
+    if not frame:IsShown() then frame:Show() end
+end
+
 -- Salta a un jefe (chinchetas del mapa de la mazmorra: su botin). tab: la
 -- pestana lateral ("loot" si no se dice)
 function ns.ShowBoss(d, index, tab)
+    if d.size then return ns.OpenRaid(d, index, tab or "loot") end -- chinchetas del plano de una banda
     if not frame then CreateMainFrame() end
     ns.char.dungeon = d.key
     ui.boss, ui.bossDungeon = index, d.key

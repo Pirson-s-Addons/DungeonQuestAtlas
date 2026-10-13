@@ -18,6 +18,8 @@ local _, ns = ...
 -- Sin entrance: la del mapa del juego (GetDungeonEntrancesForMap) o /dqa entrance.
 -- quests: IDs de mision (ver Data/Quests.lua), primero las del cliente de
 -- Forever (foreverchanges) y luego las que solo estaban en AtlasQuest.
+-- attunement: la llave para entrar, como el de las bandas (Data/Raids.lua):
+-- item, itemName y las misiones en orden por faccion (Both si es la misma).
 
 ns.Dungeons = {
     { key = "ALCAZ", name = "Alcaz Prison", instanceID = nil, minLevel = 48, maxLevel = 53, isForever = true, faction = "Both",
@@ -29,10 +31,16 @@ ns.Dungeons = {
         quests = {} },
     { key = "BRD", name = "Blackrock Depths", instanceID = 230, minLevel = 52, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
-        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848 } },
+        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848 },
+        -- Llave Sombraforja: abre la puerta del fondo (basta con que la lleve uno)
+        attunement = { item = 11000, itemName = "Shadowforge Key", Both = { 3801, 3802 } } },
     { key = "DALARAN", name = "City of Dalaran", instanceID = 2959, minLevel = 28, maxLevel = 33, isForever = true, faction = "Both",
         entrance = { mapID = 1416, x = 8.0, y = 61.2 },
-        quests = { 96986, 96988, 96984, 96987, 92489, 92458, 92456, 92457 } },
+        quests = { 96986, 96988, 96984, 96987, 92489, 92458, 92456, 92457 },
+        -- Llave de las cloacas: la da Heart of Disruption (wowhead.com/forever/quest=96984); la Horda
+        -- llega a Modera por la cadena de Tarren Mill. 92432 es opcional (wowf.io, foreverwisp.com)
+        attunement = { item = 277507, itemName = "Dalaran Sewer Key", Alliance = { 92432, 92458 },
+            Horde = { 544, 93680, 545, 92434, 96984 } } },
     { key = "DM_E", name = "Dire Maul (East)", instanceID = 429, minLevel = 54, maxLevel = 60, isForever = false, faction = "Both", part = "EAST",
         entrance = { mapID = 1444, x = 64.8, y = 30.2 },
         quests = { 7488, 7489, 7441, 7499, 7505, 7498, 7502, 7504, 7500, 7506, 7503, 7501, 7462, 7877, 1318, 5528, 8948, 8949, 8950, 8967, 8990, 7463, 7507, 7508, 1193, 5526, 7481, 7482, 7483, 7484, 7485, 7581, 7631, 7703 } },
@@ -85,7 +93,11 @@ ns.Dungeons = {
         quests = { 1051, 1160, 1049, 1050, 1113, 1048, 1053 } },
     { key = "SCHOLO", name = "Scholomance", instanceID = 289, minLevel = 58, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1422, x = 69.0, y = 72.7 },
-        quests = { 5341, 5343, 5529, 5382, 5384, 5515, 5531, 4771, 5466, 8969, 8992, 5582, 7629, 7647, 8258 } },
+        quests = { 5341, 5343, 5529, 5382, 5384, 5515, 5531, 4771, 5466, 8969, 8992, 5582, 7629, 7647, 8258 },
+        -- Llave esqueleto: cadena de Classic (AzerothCore, quest_template_addon PrevQuestID)
+        attunement = { item = 13704, itemName = "Skeleton Key",
+            Alliance = { 5092, 5097, 5533, 5537, 5538, 5801, 5803, 5505 },
+            Horde = { 5096, 5098, 838, 964, 5514, 5802, 5804, 5511 } } },
     { key = "SFK", name = "Shadowfang Keep", instanceID = 33, minLevel = 22, maxLevel = 30, isForever = false, faction = "Both",
         entrance = { mapID = 1421, x = 44.6, y = 67.7 },
         quests = { 1013, 1098, 1014, 1654, 1740 } },
@@ -113,7 +125,8 @@ ns.Dungeons = {
         quests = { 2418, 704, 709, 1360, 2342, 722, 2240, 1139, 17, 2202, 2199, 2283, 2198, 2338, 2340, 2339, 2204, 2361, 2201, 2341, 2279, 2280, 721, 1192, 1956, 2200, 2278, 2284, 2318, 2398 } },
     { key = "UBRS", name = "Upper Blackrock Spire", instanceID = 229, minLevel = 59, maxLevel = 60, isForever = false, faction = "Both", part = "UPPER",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
-        quests = { 4788, 6502, 4982, 5001, 4983, 4862, 4729, 5002, 6602, 5047, 4974, 5102, 4866, 5127, 4765, 4764, 4735, 4734, 4743, 4768, 5160, 8995, 8966, 8989, 6569, 6821, 7761, 8994 } },
+        quests = { 4788, 6502, 4982, 5001, 4983, 4862, 4729, 5002, 6602, 5047, 4974, 5102, 4866, 5127, 4765, 4764, 4735, 4734, 4743, 4768, 5160, 8995, 8966, 8989, 6569, 6821, 7761, 8994 },
+        attunement = { item = 12344, itemName = "Seal of Ascension", Both = { 4742, 4743 } } },
     { key = "WC", name = "Wailing Caverns", instanceID = 43, minLevel = 17, maxLevel = 24, isForever = false, faction = "Both",
         entrance = { mapID = 1413, x = 46.0, y = 36.4 },
         quests = { 914, 1486, 1491, 962, 959, 1487, 6981 } },

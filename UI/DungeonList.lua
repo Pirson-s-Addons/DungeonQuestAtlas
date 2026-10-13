@@ -10,8 +10,8 @@ local L = ns.L
 -- su dificultad, "Nueva" si es de Forever y las misiones hechas ("! 3/7"; la
 -- marca verde si estan todas). Las filas de la lista llevan COLS tarjetas.
 
-local COLS = 4
-local CARD_W, CARD_H = 174, 96 -- el boton de instancia del Diario
+local COLS = 3
+local CARD_W, CARD_H = 236, 130 -- el boton de instancia del Diario (174x96) a escala, mismo ancho total que 4
 local GAP_X, GAP_Y = 14, 12
 local GREEN = "|cff40c040"
 

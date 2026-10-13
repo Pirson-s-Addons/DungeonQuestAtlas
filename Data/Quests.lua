@@ -339,9 +339,9 @@ ns.Quests = {
     -- Wowhead no tiene el final de casi ninguna: ends sale del PNJ que nombra el objetivo.
     [92456] = { level = 33, minLevel = 24, faction = "Alliance", choice = { 279835, 279836 }, need = { { 251983, 1 } }, xp = 9400, starts = { "npc:5502" }, ends = { "npc:5502" }, verified = true },
     [92457] = { level = 33, minLevel = 24, faction = "Both", choice = { 279837, 279838 }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
-    [92458] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 }, choice = { 279839, 279840, 279841 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
+    [92458] = { level = 33, minLevel = 24, faction = "Alliance", provided = { 277507 }, chain = { 92432, 92458, 92459 }, choice = { 279839, 279840, 279841 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:269127" }, verified = true },
     [92489] = { level = 33, minLevel = 24, faction = "Alliance", choice = { 251962, 279849 }, xp = 9400, starts = { "npc:5694" }, ends = { "npc:5694" }, verified = true },
-    [96984] = { level = 33, minLevel = 24, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, choice = { 279842, 279843, 279844 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:2410" }, verified = true },
+    [96984] = { level = 33, minLevel = 24, faction = "Horde", provided = { 277507 }, chain = { 544, 93680, 545, 92434, 96984, 97287 }, choice = { 279842, 279843, 279844 }, need = { { 251961, 1 } }, xp = 9400, starts = { "npc:269127" }, ends = { "npc:2410" }, verified = true },
     [96986] = { level = 33, minLevel = 24, faction = "Horde", choice = { 251963, 251965 }, xp = 9400, starts = { "npc:2278" }, ends = { "npc:2278" }, verified = true },
     [96987] = { level = 33, minLevel = 24, faction = "Horde", need = { { 275996, 1 } }, xp = 9400, starts = { "npc:268743" }, ends = { "npc:268743" }, verified = true },
     [96988] = { level = 33, minLevel = 24, faction = "Horde", choice = { 279847, 279848 }, need = { { 275997, 6 } }, xp = 9400, starts = { "npc:11044" }, ends = { "npc:11044" }, verified = true },

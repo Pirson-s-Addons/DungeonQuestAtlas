@@ -67,6 +67,7 @@ end
 -- derecha la faccion, la clase y el nivel. Las de una cadena llevan una franja
 -- azul a la izquierda. Las hechas, en verde suave (legibles, no transparentes).
 local ROW_H = 44
+local STEP_H, STEP_INDENT = 20, 26 -- pasos de cadena desplegados bajo la elegida
 local CHAIN_COLOR = { 0.4, 0.72, 1 }
 local CHAIN_HEX = "|cff66b8ff"
 local TITLE_COLOR = {
@@ -118,6 +119,21 @@ local function CreateQuestList(parent, onSelect)
         row.info:SetJustifyH("LEFT")
         row.info:SetWordWrap(false)
         row.info:SetTextColor(0.78, 0.74, 0.66)
+        -- Paso anterior de la cadena (desplegado bajo la elegida): mas bajo y sangrado,
+        -- en una caja oscura con la franja azul; "1. <icono> Titulo" en claro
+        row.stepBg = row:CreateTexture(nil, "BACKGROUND")
+        row.stepBg:SetPoint("TOPLEFT", STEP_INDENT, 0)
+        row.stepBg:SetPoint("BOTTOMRIGHT", -6, 0)
+        row.stepBar = row:CreateTexture(nil, "ARTWORK")
+        row.stepBar:SetPoint("TOPLEFT", row.stepBg)
+        row.stepBar:SetPoint("BOTTOMLEFT", row.stepBg)
+        row.stepBar:SetWidth(2)
+        row.stepBar:SetColorTexture(CHAIN_COLOR[1], CHAIN_COLOR[2], CHAIN_COLOR[3], 0.8)
+        row.step = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        row.step:SetPoint("LEFT", row.stepBg, "LEFT", 10, 0)
+        row.step:SetPoint("RIGHT", row.stepBg, "RIGHT", -6, 0)
+        row.step:SetJustifyH("LEFT")
+        row.step:SetWordWrap(false)
         row:SetScript("OnClick", function(self)
             if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT) end
             onSelect(self.questID)
@@ -126,12 +142,29 @@ local function CreateQuestList(parent, onSelect)
         row:SetScript("OnLeave", function() GameTooltip:Hide() end)
     end
 
+    -- Las regiones de una fila de mision o de un paso (las filas se reutilizan)
+    local QUEST_REGIONS = { "bg", "glow", "chainBar", "status", "level", "faction", "class", "label", "info" }
+    local function ShowAs(row, isStep)
+        for _, key in ipairs(QUEST_REGIONS) do row[key]:SetShown(not isStep) end
+        row.stepBg:SetShown(isStep)
+        row.stepBar:SetShown(isStep)
+        row.step:SetShown(isStep)
+    end
+
     local function Update(row, item)
         local id = item.id
         local q = ns.Quests[id] or {}
         local status = ns.QuestStatus(id)
         local isSelected = id == selected
         row.questID = id
+        ShowAs(row, item.step ~= nil)
+        if item.step then
+            row.stepBg:SetColorTexture(0.06, 0.04, 0.02, isSelected and 0.95 or 0.82)
+            local color = isSelected and "|cffffffff" or (status == ns.STATUS_COMPLETED and "|cff8cd98c" or "|cffd9c9a8")
+            row.step:SetText(("|cff9a8a70%d.|r %s %s%s|r"):format(item.step, ns.StatusMarkup(status, 12), color,
+                ns.QuestTitle(id)))
+            return
+        end
         row.bg:SetColorTexture(0.1, 0.07, 0.04, isSelected and 0.95 or 0.78)
         row.glow:SetShown(isSelected)
         ns.SetStatusIcon(row.status, status)
@@ -159,14 +192,40 @@ local function CreateQuestList(parent, onSelect)
         row.level:SetText(level and ("|c%s%d|r"):format(ns.LevelColor(level, level, UnitLevel("player")), level) or "?")
     end
 
+    -- La mision desplegada: la elegida o, si se eligio uno de sus pasos, la de antes
+    local expanded
+    local function PriorSteps(id)
+        local q = ns.Quests[id] or {}
+        local step = ChainStep(q, id)
+        if not step or step < 2 then return {} end
+        local out = {}
+        for i = 1, step - 1 do out[i] = q.chain[i] end
+        return out
+    end
+
     local list = ns.CreateScrollList(parent, ROW_H, Setup, Update)
     return {
-        -- El ScrollBox guarda tablas, no numeros sueltos
+        -- El ScrollBox guarda tablas, no numeros sueltos. Bajo la mision elegida, los
+        -- pasos anteriores de su cadena (idea de otro addon, sin su codigo):
+        -- numerados, con su estado; clic, su hoja, y la lista sigue desplegada
         Refresh = function(_, ids, questID)
             selected = questID
+            if tContains(ids, questID) then
+                expanded = questID
+            elseif not (expanded and tContains(PriorSteps(expanded), questID)) then
+                expanded = nil
+            end
             local items = {}
-            for i, id in ipairs(ids) do items[i] = { id = id } end
+            for _, id in ipairs(ids) do
+                items[#items + 1] = { id = id }
+                if id == expanded then
+                    for n, stepID in ipairs(PriorSteps(id)) do
+                        items[#items + 1] = { id = stepID, step = n, height = STEP_H }
+                    end
+                end
+            end
             list:SetItems(items)
+            return items
         end,
     }
 end
@@ -250,6 +309,30 @@ local function CreateDetail(parent)
     local objHeader = Section(L.OBJECTIVES)
     local obj = Text("QuestFont")
     obj.section = objHeader
+
+    -- Objeto proporcionado (q.provided): lo que da la mision al cogerla (la llave
+    -- de las cloacas de Dalaran), en la tarjeta de las recompensas
+    local providedHeader = Section(L.PROVIDED)
+    local provided = Add(CreateFrame("Frame", nil, content))
+    provided.section = providedHeader
+    local providedCards = {}
+    local function FillProvided(q)
+        local list = q.provided or {}
+        local half = (ns.Width(provided, 330) - 6) / 2
+        for i, itemID in ipairs(list) do
+            local card = providedCards[i] or ns.CreateRewardCard(provided)
+            providedCards[i] = card
+            card:ClearAllPoints()
+            card:SetWidth(half)
+            card:SetPoint("TOPLEFT", ((i - 1) % 2) * (half + 6), -math.floor((i - 1) / 2) * (ns.REWARD_CARD_HEIGHT + 6))
+            ns.SetRewardCard(card, itemID)
+            card:Show()
+        end
+        for i = #list + 1, #providedCards do providedCards[i]:Hide() end
+        provided:SetHeight(math.max(1, math.ceil(#list / 2) * (ns.REWARD_CARD_HEIGHT + 6)))
+        provided:SetShown(#list > 0)
+        providedHeader:SetShown(#list > 0)
+    end
 
     -- Donde ---------------------------------------------------------------
     Section(L.WHERE)
@@ -387,6 +470,8 @@ local function CreateDetail(parent)
         content:SetWidth(width)
         rewards:SetWidth(width)
         if detail.questID and rewards:IsShown() then FillRewards(ns.Quests[detail.questID] or {}, detail.questID) end
+        provided:SetWidth(width)
+        if detail.questID and provided:IsShown() then FillProvided(ns.Quests[detail.questID] or {}) end
         -- Los cuatro botones caben siempre en la pagina
         local bw = math.floor((width - GAP * (PER_ROW - 1)) / PER_ROW)
         for i, b in ipairs(row) do
@@ -520,6 +605,7 @@ local function CreateDetail(parent)
             objective = table.concat(need, "\n")
         end
         Set(obj, objective)
+        FillProvided(q)
 
         local hasRewards = FillRewards(q, id)
         rewards:SetShown(hasRewards)

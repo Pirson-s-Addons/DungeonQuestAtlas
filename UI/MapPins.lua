@@ -62,6 +62,9 @@ local function CreatePinMixin()
     function DungeonQuestAtlasPinMixin:ShouldMouseButtonBePassthrough()
         return false
     end
+    -- AcquirePin la llama siempre y en combate es protegida (ADDON_ACTION_BLOCKED
+    -- al abrir M). Ningun boton pasa al mapa, asi que no hace falta (como HereBeDragons)
+    DungeonQuestAtlasPinMixin.SetPassThroughButtons = function() end
 
     -- El mapa lo llama al soltar el clic encima del pin
     function DungeonQuestAtlasPinMixin:OnMouseClickAction(button)
@@ -99,6 +102,7 @@ end
 -- Idea de Leatrix Maps (sin su codigo): el portal de cada mazmorra en el mapa de
 -- su zona y en el del continente. Clic: su plano encima del mapa del mundo
 -- (UI/DungeonMap.lua); clic derecho: su pagina en la ventana del addon.
+-- Las bandas con entrada (Data/Raids.lua), con el mismo portal en verde; clic, su pagina.
 
 local ENTRANCE_TEMPLATE = "DungeonQuestAtlasEntrancePinTemplate"
 local entranceProvider
@@ -121,10 +125,11 @@ local function CreateEntrancePinMixin()
         SetPortal(self.Highlight)
     end
 
-    function mixin:OnAcquired(d, x, y)
-        self.dungeon = d
+    function mixin:OnAcquired(d, x, y, isRaid)
+        self.dungeon, self.isRaid = d, isRaid
         local size = ns.db.entranceSize -- el atlas trae aire alrededor: a 22 apenas se veia
         self:SetSize(size, size)
+        for _, tex in ipairs({ self.Icon, self.Highlight }) do ns.TintPortal(tex, isRaid) end
         self:SetPosition(x, y)
         -- Estrella que late unos segundos en la entrada a la que se llega desde su plano
         local h = ns.entranceHighlight
@@ -149,6 +154,20 @@ local function CreateEntrancePinMixin()
 
     function mixin:OnMouseEnter()
         local d = self.dungeon
+        if self.isRaid then
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:AddLine(ns.DungeonName(d))
+            GameTooltip:AddLine((RAID or L.TAB_RAIDS) .. " · " .. L.RAID_PLAYERS:format(d.size), 1, 1, 1)
+            GameTooltip:AddLine(" ")
+            if ns.DungeonMaps(d) then
+                GameTooltip:AddLine(L.RAID_MAP_CLICK, 0.8, 0.8, 0.8)
+                GameTooltip:AddLine(L.ENTRANCE_RCLICK, 0.8, 0.8, 0.8)
+            else
+                GameTooltip:AddLine(L.RAID_ENTRANCE_CLICK, 0.8, 0.8, 0.8)
+            end
+            GameTooltip:Show()
+            return
+        end
         local color = ns.LevelColor(d.minLevel, d.maxLevel, UnitLevel("player"))
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:AddLine(ns.DungeonName(d) .. " |c" .. color .. "(" .. d.minLevel .. "-" .. d.maxLevel .. ")|r")
@@ -168,11 +187,16 @@ local function CreateEntrancePinMixin()
     function mixin:ShouldMouseButtonBePassthrough()
         return false
     end
+    mixin.SetPassThroughButtons = function() end -- protegida en combate (ver el otro pin)
 
     -- Sin plano (las nuevas que aun no lo tienen), el clic izquierdo tambien abre la ventana
     function mixin:OnMouseClickAction(button)
         local d = self.dungeon
-        if button == "LeftButton" and ns.DungeonMaps(d) then
+        if self.isRaid and not (button == "LeftButton" and ns.DungeonMaps(d)) then
+            if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end
+            return ns.OpenRaid(d)
+        end
+        if button == "LeftButton" and ns.DungeonMaps(d) then -- mazmorras y bandas con plano
             ns.ShowDungeonOnWorldMap(d)
             return
         end
@@ -206,6 +230,11 @@ local function CreateEntranceProvider()
             local x, y
             if e then x, y = ns.TranslatePoint(e.mapID, e.x / 100, e.y / 100, mapID) end
             if x then self:GetMap():AcquirePin(ENTRANCE_TEMPLATE, d, x, y) end
+        end
+        for _, raid in ipairs(ns.Raids or {}) do
+            local e, x, y = raid.entrance
+            if e then x, y = ns.TranslatePoint(e.mapID, e.x / 100, e.y / 100, mapID) end
+            if x then self:GetMap():AcquirePin(ENTRANCE_TEMPLATE, raid, x, y, true) end
         end
     end
 

@@ -277,7 +277,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k, p in ipairs(floor.pins) do
             local pin = pins[k] or CreatePin(canvas, onPinClick)
             pins[k] = pin
-            local boss = ns.Bosses[self.dungeon.key][p[1]]
+            local boss = (ns.Bosses[self.dungeon.key] or self.dungeon.bosses)[p[1]] -- bandas: los suyos
             pin.dungeon, pin.index, pin.boss = self.dungeon, p[1], boss
             ns.SetBossPortrait(pin.portrait, boss)
             local killed = ns.IsBossKilled(self.dungeon, boss)
@@ -296,6 +296,10 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark.kind, mark.x, mark.y, mark.to = m[1], m[2], m[3], m[4]
             SetMarkIcon(mark.icon, m[1])
             SetMarkIcon(mark.glow, m[1])
+            -- Entrada de una banda (tiene size): verde, como su portal en el mapa del mundo
+            local raid = m[1] == "entrance" and self.dungeon.size ~= nil
+            ns.TintPortal(mark.icon, raid)
+            ns.TintPortal(mark.glow, raid)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
             mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or L.MAP_FLOOR_SHORT:format(m[4]))
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
@@ -407,8 +411,16 @@ local function CreateOverlay()
     end)
 end
 
+-- Banda en la que estas (Data/Raids.lua, por instanceID), o nil
+local function CurrentRaid()
+    local id = GetInstanceInfo and select(8, GetInstanceInfo())
+    for _, raid in ipairs(ns.Raids or {}) do
+        if id and raid.instanceID == id then return raid end
+    end
+end
+
 function ns.UpdateWorldMapOverlay()
-    local d = WorldMapFrame and WorldMapFrame:IsShown() and (shown or ns.CurrentDungeon())
+    local d = WorldMapFrame and WorldMapFrame:IsShown() and (shown or ns.CurrentDungeon() or CurrentRaid())
     local floors = ns.DungeonMaps(d)
     if not floors then
         if overlay then overlay:Hide(); toggle:Hide() end

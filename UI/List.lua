@@ -8,6 +8,7 @@ local _, ns = ...
 -- setup(row): crea las regiones de una fila nueva (una vez por fila).
 -- update(row, item): la rellena con un elemento.
 -- Devuelve { SetItems = function(self, items) }
+-- item.height cambia el alto de esa fila (solo con ScrollBox; con FauxScrollFrame, rowHeight).
 
 local function ModernList(parent, rowHeight, setup, update)
     local box = CreateFrame("Frame", nil, parent, "WowScrollBoxList")
@@ -18,7 +19,12 @@ local function ModernList(parent, rowHeight, setup, update)
     bar:SetPoint("BOTTOMLEFT", box, "BOTTOMRIGHT", 6, 0)
 
     local view = CreateScrollBoxListLinearView()
-    view:SetElementExtent(rowHeight)
+    -- item.height: filas mas bajas (los pasos de cadena de Misiones); si no, todas iguales
+    if view.SetElementExtentCalculator then
+        view:SetElementExtentCalculator(function(_, item) return item.height or rowHeight end)
+    else
+        view:SetElementExtent(rowHeight)
+    end
     view:SetElementInitializer("Button", function(row, item)
         if not row.dqaReady then
             setup(row)

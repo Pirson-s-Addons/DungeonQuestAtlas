@@ -278,11 +278,49 @@ function ns.DungeonLoot(d)
     return items
 end
 
-local function FilterLoot(items, filter)
-    if filter == "all" then return items end
+-- Filtro por clase, como el del Diario: lo que esa clase lleva (armadura de su
+-- tipo y armas que sabe usar, reglas de vanilla). Los guerreros y paladines ven
+-- mallas y placas (placas desde el 40); cazadores y chamanes, cuero y mallas.
+-- Cuellos, anillos, abalorios, capas y lo que no se equipa: para todas.
+ns.LOOT_CLASSES = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }
+local ARMOR = { -- subclase de armadura (classID 4) -> clases
+    [1] = "PRIEST MAGE WARLOCK", [2] = "ROGUE DRUID HUNTER SHAMAN", [3] = "HUNTER SHAMAN WARRIOR PALADIN",
+    [4] = "WARRIOR PALADIN", [6] = "WARRIOR PALADIN SHAMAN", [7] = "PALADIN", [8] = "DRUID", [9] = "SHAMAN",
+}
+local WEAPON = { -- subclase de arma (classID 2) -> clases
+    [0] = "WARRIOR PALADIN HUNTER SHAMAN", [1] = "WARRIOR PALADIN HUNTER SHAMAN",
+    [2] = "WARRIOR HUNTER ROGUE", [3] = "WARRIOR HUNTER ROGUE", [18] = "WARRIOR HUNTER ROGUE", [16] = "WARRIOR HUNTER ROGUE",
+    [4] = "WARRIOR PALADIN ROGUE SHAMAN PRIEST DRUID", [5] = "WARRIOR PALADIN SHAMAN DRUID",
+    [6] = "WARRIOR PALADIN HUNTER", [7] = "WARRIOR PALADIN HUNTER ROGUE MAGE WARLOCK", [8] = "WARRIOR PALADIN HUNTER",
+    [10] = "WARRIOR HUNTER SHAMAN DRUID PRIEST MAGE WARLOCK", [13] = "WARRIOR HUNTER ROGUE SHAMAN DRUID",
+    [15] = "WARRIOR HUNTER ROGUE SHAMAN DRUID PRIEST MAGE WARLOCK", [19] = "PRIEST MAGE WARLOCK",
+}
+local ANY_CLASS = { INVTYPE_NECK = true, INVTYPE_FINGER = true, INVTYPE_TRINKET = true, INVTYPE_CLOAK = true }
+local OFF_HAND = "PRIEST MAGE WARLOCK DRUID SHAMAN PALADIN" -- INVTYPE_HOLDABLE
+
+-- nil (sin datos del objeto): se muestra
+function ns.ClassCanUse(itemID, class)
+    local instant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    if not instant then return true end
+    local _, _, _, equipLoc, _, classID, subID = instant(itemID)
+    local list
+    if ANY_CLASS[equipLoc] then return true
+    elseif equipLoc == "INVTYPE_HOLDABLE" then list = OFF_HAND
+    elseif classID == 4 then list = ARMOR[subID]
+    elseif classID == 2 then list = WEAPON[subID]
+    end
+    if not list then return true end
+    return list:find(class, 1, true) ~= nil
+end
+
+local function FilterLoot(items, filter, class)
+    if filter == "all" and not class then return items end
     local out = {}
     for _, it in ipairs(items) do
-        if ns.LootCategory(it[1]) == filter then out[#out + 1] = it end
+        if (filter == "all" or ns.LootCategory(it[1]) == filter)
+            and (not class or ns.ClassCanUse(it[1], class)) then
+            out[#out + 1] = it
+        end
     end
     return out
 end
@@ -306,6 +344,49 @@ function ns.CreateLootPanel(page, bar)
         end)
     end
     panel.filterButton = filter
+
+    -- Clase: un desplegable mas no cabe en la franja; boton redondo con el icono
+    -- de la clase (gris = todas) y el menu con los nombres y colores del juego
+    local CIRCLES = "Interface\\TargetingFrame\\UI-Classes-Circles"
+    local classFilter = CreateFrame("DropdownButton", nil, bar)
+    classFilter:SetSize(26, 26)
+    classFilter:SetPoint("RIGHT", filter, "LEFT", -6, 0)
+    classFilter.icon = classFilter:CreateTexture(nil, "ARTWORK")
+    classFilter.icon:SetAllPoints()
+    classFilter.icon:SetTexture(CIRCLES)
+    local hl = classFilter:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+    hl:SetBlendMode("ADD")
+    function classFilter:Update()
+        local class = panel.class or select(2, UnitClass("player"))
+        local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[class]
+        if coords then self.icon:SetTexCoord(unpack(coords)) end
+        self.icon:SetDesaturated(panel.class == nil)
+        self.icon:SetAlpha(panel.class and 1 or 0.7)
+    end
+    classFilter:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        local class = panel.class
+        GameTooltip:SetText(class and ((LOCALIZED_CLASS_NAMES_MALE or {})[class] or class) or L.LOOT_CLASS_ALL)
+        GameTooltip:Show()
+    end)
+    classFilter:SetScript("OnLeave", GameTooltip_Hide)
+    classFilter:Update()
+    if classFilter.SetupMenu then
+        classFilter:SetupMenu(function(_, root)
+            root:CreateRadio(L.LOOT_CLASS_ALL, function() return panel.class == nil end,
+                function() panel.class = nil; panel:Refresh() end)
+            for _, class in ipairs(ns.LOOT_CLASSES) do
+                local name = (LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[class]) or class
+                local color = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+                if color and color.WrapTextInColorCode then name = color:WrapTextInColorCode(name) end
+                root:CreateRadio(name, function() return panel.class == class end,
+                    function() panel.class = class; panel:Refresh() end)
+            end
+        end)
+    end
+    panel.classButton = classFilter
 
     local empty = ns.PaperText(frame, "QuestFont")
     empty:SetPoint("TOP", 0, -30)
@@ -385,18 +466,20 @@ function ns.CreateLootPanel(page, bar)
     function panel:SetShown(shown)
         frame:SetShown(shown)
         filter:SetShown(shown)
+        classFilter:SetShown(shown)
     end
 
     function panel:Refresh()
         local d = self.dungeon
         local boss = d and self.index and ns.Bosses[d.key][self.index]
         local items = boss and boss.loot or ns.DungeonLoot(d)
-        items = FilterLoot(items, self.filter)
+        items = FilterLoot(items, self.filter, self.class)
+        classFilter:Update()
         allArea:SetShown(boss == nil)
         bossArea:SetShown(boss ~= nil)
         if boss then bossLoot:SetItems(items) else allLoot:SetItems(items) end
         empty:SetShown(#items == 0)
-        empty:SetText(self.filter == "all" and L.NO_BOSSES or L.LOOT_NONE)
+        empty:SetText((self.filter == "all" and not self.class) and L.NO_BOSSES or L.LOOT_NONE)
         self.items = items
     end
 

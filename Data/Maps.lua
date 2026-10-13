@@ -132,4 +132,7 @@ ns.Maps = {
         { id = "DALARAN1", pins = { { 1, 0.535, 0.505 }, { 7, 0.680, 0.177 } } },
         { id = "DALARAN2", pins = { { 2, 0.527, 0.843 }, { 3, 0.669, 0.503 }, { 4, 0.614, 0.413 }, { 5, 0.416, 0.730 }, { 6, 0.513, 0.549 }, { 8, 0.520, 0.240 } } },
     },
+    -- Guarida de Onyxia (banda, Data/Raids.lua): el mapa de Blizzard de WoW Classic (uiMap 248,
+    -- piezas 448070-448081 de wago.tools) y Onyxia en su aparicion de AzerothCore. A mano: gen.py no lo hace.
+    ONYXIA = { { id = 248, pins = { { 1, 0.685, 0.338 } } } },
 }

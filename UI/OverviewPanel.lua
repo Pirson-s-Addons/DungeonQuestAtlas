@@ -25,6 +25,7 @@ end
 
 -- Boton sobre la ilustracion, como "Mostrar mapa" del Diario: icono con marco y
 -- el texto claro a su derecha (dos lineas como mucho); gris si esta apagado
+-- (tambien en el Resumen de las bandas, UI/Raids.lua: ns.ArtButton)
 local function ArtButton(parent, text, icon, onClick, tooltip)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(84, 34)
@@ -55,6 +56,7 @@ local function ArtButton(parent, text, icon, onClick, tooltip)
     ns.AddTooltip(b, tooltip)
     return b
 end
+ns.ArtButton = ArtButton
 
 -- Historia con scroll bajo anchor (el hijo del scroll tiene que ser un Frame)
 local function LoreScroll(parent, anchor, gap)

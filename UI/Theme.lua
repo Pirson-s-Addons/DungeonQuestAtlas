@@ -403,6 +403,13 @@ function ns.CreateIconToggleGroup(parent, size, options, onChange)
     return group
 end
 
+-- Portal de entrada: azul en las mazmorras, verde en las bandas (el mismo atlas en
+-- gris y tenido). En el mapa del mundo (UI/MapPins.lua) y en los planos (UI/DungeonMap.lua).
+function ns.TintPortal(texture, isRaid)
+    texture:SetDesaturated(isRaid and true or false)
+    if isRaid then texture:SetVertexColor(0.35, 1, 0.35) else texture:SetVertexColor(1, 1, 1) end
+end
+
 -- Selector de faccion (Ambas / Alianza / Horda): el mismo filtro en todas las
 -- secciones (ns.FactionFilter / ns.SetFilter "faction"). Quien lo crea lo coloca
 -- y, en su Refresh, llama a :Sync() para seguir el valor compartido.

@@ -100,4 +100,5 @@ ns.MapMarks = {
         [1] = { { "down", 0.39, 0.083, 2 } },
         [2] = { { "up", 0.505, 0.352, 1 } },
     },
+    ONYXIA = { { { "entrance", 0.336, 0.200 } } }, -- el remolino del propio mapa
 }
