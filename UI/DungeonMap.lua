@@ -162,6 +162,15 @@ local function CreateMark(canvas, plan)
     return mark
 end
 
+-- Tamano de las caras de jefe (ns.db.mapBossScale), de 0 (escondidas) a 150 %
+local BOSS_SCALE_MAX, BOSS_SCALE_STEP = 1.5, 0.1
+local plans = {}
+local function SetBossScale(value) -- tambien ns.SetMapBossScale (Valores por defecto)
+    ns.db.mapBossScale = math.floor(math.max(0, math.min(BOSS_SCALE_MAX, value)) * 10 + 0.5) / 10
+    for _, plan in ipairs(plans) do plan:UpdateBossScale() end
+end
+ns.SetMapBossScale = SetBossScale
+
 -- Plano: viewport que recorta y, dentro, el plano a escala con sus 12 piezas
 -- (la ultima columna y la ultima fila se recortan) y las chinchetas. El plano
 -- cabe entero en el viewport (centrado si sobra sitio) y la rueda hace zoom.
@@ -199,11 +208,19 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             tile:SetSize(math.min(256, MAP_W - col * 256) * s, math.min(256, MAP_H - row * 256) * s)
             tile:SetPoint("TOPLEFT", col * 256 * s, -row * 256 * s)
         end
+        -- Caras de jefe al tamano elegido (SetScale: su punto va en su propia escala)
+        local bossScale = ns.db and ns.db.mapBossScale or 1
         for _, list in ipairs({ pins, marks }) do
             for _, pin in ipairs(list) do
                 if pin.x then
+                    local k = 1
+                    if list == pins then
+                        pin:SetShown(bossScale > 0)
+                        k = math.max(bossScale, 0.1)
+                        pin:SetScale(k)
+                    end
                     pin:ClearAllPoints()
-                    pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * mw, -pin.y * mh)
+                    pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * mw / k, -pin.y * mh / k)
                 end
             end
         end
@@ -266,6 +283,34 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     viewport:HookScript("OnSizeChanged", UpdateFloorButtons)
 
+    -- Tamano de las caras de jefe: placa abajo a la izquierda con - y + (idea de
+    -- ForeverDungeonJournal); el mismo en todos los planos
+    local sizeBar = ns.CreateDarkBox(parent, 10)
+    sizeBar:SetFrameLevel(viewport:GetFrameLevel() + 10)
+    sizeBar:SetSize(190, 30)
+    sizeBar:SetPoint("BOTTOMLEFT", viewport, "BOTTOMLEFT", 10, 10)
+    local sizeText = sizeBar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    sizeText:SetPoint("CENTER")
+    local function SizeButton(text, delta, point, x)
+        local b = CreateFrame("Button", nil, sizeBar, "UIPanelButtonTemplate")
+        b:SetSize(24, 20)
+        b:SetText(text)
+        b:SetPoint(point, x, 0)
+        b:SetScript("OnClick", function() SetBossScale(ns.db.mapBossScale + delta) end)
+        ns.AddTooltip(b, L.MAP_BOSS_ICONS_TOOLTIP)
+        return b
+    end
+    local minus = SizeButton("-", -BOSS_SCALE_STEP, "LEFT", 5)
+    local plus = SizeButton("+", BOSS_SCALE_STEP, "RIGHT", -5)
+    function plan:UpdateBossScale()
+        local v = ns.db.mapBossScale
+        sizeText:SetText(L.MAP_BOSS_ICONS:format(math.floor(v * 100 + 0.5)))
+        minus:SetEnabled(v > 0)
+        plus:SetEnabled(v < BOSS_SCALE_MAX)
+        Layout()
+    end
+    plans[#plans + 1] = plan
+
     -- Otra planta: zoom fuera. La misma (refresco de jefes muertos): se queda como esta
     function plan:ShowFloor(index)
         local floors = self.floors
@@ -316,7 +361,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
             mark:Show()
         end
-        Layout()
+        self:UpdateBossScale()
         UpdateFloorButtons()
     end
 
@@ -389,7 +434,7 @@ ns.CreateDungeonPlan = CreatePlan
 -- (UI/MapPins.lua) hasta volver, cambiar de mapa o cerrarlo.
 
 local overlay, toggle
-local wantWorld = false
+local wantWorld = false -- el mapa del mundo en vez del plano (opcion worldMapPlan apagada, o el boton)
 local shown -- mazmorra abierta desde su entrada en el mapa del mundo
 
 local function CreateOverlay()
@@ -494,6 +539,12 @@ watcher:SetScript("OnEvent", function(_, event)
         if WorldMapFrame.OnMapChanged then hooksecurefunc(WorldMapFrame, "OnMapChanged", ForgetShown) end
         return
     end
-    wantWorld = false
+    wantWorld = not ns.db.worldMapPlan
     ns.UpdateWorldMapOverlay()
 end)
+
+-- Opcion "Plano de la mazmorra en el mapa del mundo": vale ya, sin salir de la mazmorra
+function ns.ApplyWorldMapPlan()
+    wantWorld = not ns.db.worldMapPlan
+    ns.UpdateWorldMapOverlay()
+end

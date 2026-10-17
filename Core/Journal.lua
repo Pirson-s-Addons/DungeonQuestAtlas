@@ -134,6 +134,10 @@ function ns.JournalBoss(d, boss)
     return boss.display and ns.Journal(d).bosses[boss.display] or nil
 end
 
+-- Arte propio de la tarjeta (Art/UI/card_<CLAVE>, 512x256 de un dibujo de 2,2:1): el centro,
+-- a la proporcion de la tarjeta (~1,8:1). La del Resumen (lore_<CLAVE>) ya viene a su medida.
+local OWN_CROP = { 0.09, 0.91, 0, 1 }
+
 -- Candidatas de una imagen: { textura, recorte }, en orden
 local function Candidates(d, kind)
     local j, f, crop = ns.Journal(d), FILES[d.key] or {}, CROP[kind]
@@ -142,9 +146,10 @@ local function Candidates(d, kind)
         if texture then list[#list + 1] = { texture, coords } end
     end
     local load = f.load and ("Interface\\Glues\\LoadingScreens\\LoadScreen" .. f.load)
+    local own = ns.ART_FILES["card_" .. d.key]
     if kind == "banner" or kind == "card" then
         -- La tarjeta propia (Art/UI/card_<CLAVE>), si la hay: las nuevas de Forever
-        if kind == "card" and ns.ART_FILES["card_" .. d.key] then Add(ns.ART .. "card_" .. d.key) end
+        if kind == "card" and own then Add(ns.ART .. "card_" .. d.key, OWN_CROP) end
         Add(j.button, crop.button)
         Add(f.ej and (EJ .. "UI-EJ-DUNGEONBUTTON-" .. f.ej), crop.button)
         Add(load, crop.load)
@@ -155,6 +160,7 @@ local function Candidates(d, kind)
         Add(f.lfg and ("Interface\\LFGFrame\\LFGIcon-" .. f.lfg))
         Add(ns.LOGO)
     elseif kind == "lore" then
+        if ns.ART_FILES["lore_" .. d.key] then Add(ns.ART .. "lore_" .. d.key, { 0, 1, 0, 1 }) end
         Add(j.lore, crop.lore)
         Add(f.ej and (EJ .. "UI-EJ-LOREBG-" .. f.ej), crop.lore)
         Add(load, crop.load)

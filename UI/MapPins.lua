@@ -284,6 +284,10 @@ local function SetupMenu(button)
                 ns.RefreshMapPins()
             end)
         end
+        root:CreateCheckbox(L.WORLD_MAP_PLAN, function() return ns.db.worldMapPlan end, function()
+            ns.db.worldMapPlan = not ns.db.worldMapPlan
+            ns.ApplyWorldMapPlan()
+        end)
         root:CreateDivider()
         root:CreateButton(L.MAP_MENU_OPEN, function()
             if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end

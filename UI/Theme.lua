@@ -55,6 +55,13 @@ local SKIN = {
 -- aqui al anadirlas: no consta que Forever devuelva false en SetTexture con un
 -- fichero del addon que falta (con las tarjetas, no: salian en negro).
 ns.ART_FILES = {}
+-- Ilustraciones de las mazmorras nuevas de Forever (el Diario no las tiene): la tarjeta y la
+-- del Resumen, con marco como las del Diario (_project/tools/dqa_art/lore_frames.py)
+for _, key in ipairs({ "THANES", "LORDAERON", "EXCAVATION", "DALARAN", "DROWNED", "KROLDOK", "ALCAZ",
+    "BLACKMAW", "SHAPERS" }) do
+    ns.ART_FILES["card_" .. key] = true
+    ns.ART_FILES["lore_" .. key] = true
+end
 
 -- Pone en la textura la pieza "name": la de Art/UI si la hay; si no, la del juego
 function ns.SetSkin(texture, name)

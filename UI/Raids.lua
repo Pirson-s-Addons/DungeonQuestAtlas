@@ -28,19 +28,24 @@ local CROP = {
     button = { 0, 0.68359375, 0, 0.75 },
     bgCard = { 0, 0.77, 0.1, 0.6 }, bgPage = { 0, 0.77, 0.15, 0.55 },
     loadCard = { 0, 1, 0.2, 0.75 }, loadPage = { 0, 1, 0.25, 0.65 },
+    own = { 0.09, 0.91, 0, 1 }, -- Art/UI/card_<CLAVE> (2,2:1): el centro, a la proporcion de la tarjeta
 }
 local ART = {
     ONYXIA = {
         card = { { EJ .. "UI-EJ-DUNGEONBUTTON-Onyxia", CROP.button }, { EJ .. "UI-EJ-BACKGROUND-OnyxiasLair", CROP.bgCard } },
         page = { { EJ .. "UI-EJ-BACKGROUND-OnyxiasLair", CROP.bgPage } },
     },
+    -- Arte propio, provisional hasta que el Diario las traiga (_project/tools/dqa_art/lore_frames.py):
+    -- tarjeta, Resumen con marco como el del Diario (lore_) y, detras del modelo, la imagen sin marco (bg)
     HYJAL = {
-        card = { { LOADSCREEN .. "LoadScreenHyjal", CROP.loadCard } },
-        page = { { LOADSCREEN .. "LoadScreenHyjal", CROP.loadPage } },
+        card = { { ns.ART .. "card_HYJAL", CROP.own }, { LOADSCREEN .. "LoadScreenHyjal", CROP.loadCard } },
+        page = { { ns.ART .. "lore_HYJAL" }, { LOADSCREEN .. "LoadScreenHyjal", CROP.loadPage } },
+        bg = { { ns.ART .. "card_HYJAL", CROP.own } },
     },
     BARROW = { -- una de sus entradas esta en Hyjal
-        card = { { LOADSCREEN .. "LoadScreenHyjal", CROP.loadCard } },
-        page = { { LOADSCREEN .. "LoadScreenHyjal", CROP.loadPage } },
+        card = { { ns.ART .. "card_BARROW", CROP.own }, { LOADSCREEN .. "LoadScreenHyjal", CROP.loadCard } },
+        page = { { ns.ART .. "lore_BARROW" }, { LOADSCREEN .. "LoadScreenHyjal", CROP.loadPage } },
+        bg = { { ns.ART .. "card_BARROW", CROP.own } },
     },
 }
 local PANELS = { "overview", "loot", "model", "map", "attune" }
@@ -118,19 +123,26 @@ local function Valid(t) return t ~= nil and t ~= 0 and t ~= "" end
 -- El cliente tiene el fichero: GetFileIDFromPath si existe (un fichero que falta
 -- no siempre hace que SetTexture devuelva false: salia la tarjeta en negro)
 local function SetIfExists(texture, path)
+    -- Los del addon (Art/UI) no estan en los datos del juego: se sabe que van (ns.ART_FILES)
+    if type(path) == "string" and path:sub(1, #ns.ART) == ns.ART then
+        return texture:SetTexture(path) ~= false
+    end
     if type(path) == "string" and GetFileIDFromPath and not GetFileIDFromPath(path) then return false end
     return texture:SetTexture(path) ~= false
 end
 
--- Arte de la banda: kind "card" (tarjeta) o "page" (resumen y modelo)
+-- Arte de la banda: kind "card" (tarjeta), "page" (resumen) o "bg" (detras del modelo; si
+-- no tiene, el de "page")
 local chosen = {}
 local function SetRaidArt(texture, raid, kind)
     local j = JournalRaid(raid)
     local list = {}
     if j and kind == "card" and Valid(j.button) then list[#list + 1] = { j.button, CROP.button } end
     if j and kind == "page" and Valid(j.lore) then list[#list + 1] = { j.lore, { 0, 0.7617187, 0, 0.5 } } end
-    for _, c in ipairs((ART[raid.key] or {})[kind] or {}) do list[#list + 1] = c end
+    local art = ART[raid.key] or {}
+    for _, c in ipairs(art[kind] or (kind == "bg" and art.page) or {}) do list[#list + 1] = c end
     list[#list + 1] = { DEFAULT_BG, kind == "card" and CROP.bgCard or CROP.bgPage }
+    if kind == "bg" and j and Valid(j.lore) then table.insert(list, 1, { j.lore, { 0, 0.7617187, 0, 0.5 } }) end
     local key = raid.key .. kind
     local pick = chosen[key]
     for i = pick or 1, pick or #list do
@@ -277,7 +289,7 @@ local function UpdateCard(card, item)
     local raid = item.raid
     card.raid, card.title, card.season = raid, item.title, item.season
     card.lock:SetShown(raid == nil)
-    card.art:SetDesaturated(raid == nil)
+    card.art:SetDesaturated(false)
     if raid then
         SetRaidArt(card.art, raid, "card")
         card.name:SetText(ns.DungeonName(raid))
@@ -285,8 +297,14 @@ local function UpdateCard(card, item)
             .. (raid.isForever and ("  |cffd597ff" .. L.NEW_TAG .. "|r") or ""))
         card.when:SetText(WhenText(raid))
     else
-        card.art:SetTexture(DEFAULT_BG)
-        card.art:SetTexCoord(unpack(CROP.bgCard))
+        -- Las anunciadas sin nombre: la puerta sellada (arte propio; si no, el fondo del Diario en gris)
+        if SetIfExists(card.art, ns.ART .. "card_UPCOMING") then
+            card.art:SetTexCoord(unpack(CROP.own))
+        else
+            card.art:SetTexture(DEFAULT_BG)
+            card.art:SetTexCoord(unpack(CROP.bgCard))
+            card.art:SetDesaturated(true)
+        end
         card.name:SetText(item.title)
         card.info:SetText(L["RAID_SEASON_" .. item.season])
         card.when:SetText("|cffb0b0b0" .. L.RAID_TBA .. "|r")
@@ -684,7 +702,7 @@ local function CreateModel(page)
     panel.title, panel.model, panel.none = title, model, none
 
     function panel:Set(raid, index)
-        SetRaidArt(bg, raid, "page")
+        SetRaidArt(bg, raid, "bg")
         local boss = raid.bosses and raid.bosses[index or 1]
         title:SetText(boss and BossName(boss) or "")
         local display = boss and boss.display

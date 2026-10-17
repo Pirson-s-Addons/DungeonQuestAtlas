@@ -25,9 +25,10 @@ end
 
 -- Boton sobre la ilustracion, como "Mostrar mapa" del Diario: icono con marco y
 -- el texto claro a su derecha (dos lineas como mucho); gris si esta apagado
--- (tambien en el Resumen de las bandas, UI/Raids.lua: ns.ArtButton)
-local function ArtButton(parent, text, icon, onClick, tooltip)
-    local b = CreateFrame("Button", nil, parent)
+-- (tambien en el Resumen de las bandas, UI/Raids.lua: ns.ArtButton). template: la de
+-- Buscar grupo (su OnClick es el de la plantilla: onClick nil)
+local function ArtButton(parent, text, icon, onClick, tooltip, template)
+    local b = CreateFrame("Button", nil, parent, template)
     b:SetSize(84, 34)
     b.icon = b:CreateTexture(nil, "ARTWORK")
     b.icon:SetSize(30, 30)
@@ -52,7 +53,7 @@ local function ArtButton(parent, text, icon, onClick, tooltip)
     b:HookScript("OnEnable", function() b.icon:SetDesaturated(false); b.text:SetTextColor(1, 1, 1) end)
     b:HookScript("OnDisable", function() b.icon:SetDesaturated(true); b.text:SetTextColor(0.6, 0.6, 0.6) end)
     if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end -- el tooltip dice por que
-    b:SetScript("OnClick", onClick)
+    if onClick then b:SetScript("OnClick", onClick) end
     ns.AddTooltip(b, tooltip)
     return b
 end
@@ -135,8 +136,42 @@ function ns.CreateOverviewPanel(page)
         end)
     local loot = ArtButton(dungeonView, "AtlasLoot", "Interface\\Icons\\INV_Box_01",
         function() ns.OpenAtlasLoot(panel.dungeon) end, L.VIEW_LOOT_TOOLTIP)
-    local buttons = { map, entrance, route, loot }
-    panel.buttons = { map = map, entrance = entrance, route = route, loot = loot }
+    -- Buscar grupo: el ojo de la ventana del juego, como los demas botones. Pulsa el boton
+    -- del micromenu (InsecureActionButtonTemplate, como la flecha: solo fuera de combate y
+    -- sin volver protegida la ventana) y, con la ventana ya abierta, pide los grupos de la
+    -- mazmorra (idea de ForeverDungeonJournal). Con AtlasLoot (cinco botones), sin texto.
+    local lfg = ArtButton(dungeonView, L.FIND_GROUP, "Interface\\LFGFrame\\LFG-Eye", nil, function()
+        return L.FIND_GROUP .. "\n|cffffffff" .. (panel.dungeon and panel.dungeon.instanceID
+            and L.FIND_GROUP_TOOLTIP or L.FIND_GROUP_NONE) .. "|r"
+    end, "InsecureActionButtonTemplate")
+    lfg.icon:SetTexCoord(0, 0.125, 0, 0.25) -- primer fotograma (64x64 de 512x256)
+    local eyeBg = lfg:CreateTexture(nil, "BACKGROUND")
+    eyeBg:SetAllPoints(lfg.icon)
+    eyeBg:SetColorTexture(0, 0, 0, 0.8) -- el ojo trae fondo transparente
+    lfg:RegisterForClicks("LeftButtonUp")
+    lfg:SetAttribute("useOnKeyDown", false)
+    lfg:SetAttribute("macrotext", "/click LFDMicroButton")
+    local buttons = { map, entrance, route, lfg, loot }
+    -- Abierta: no se vuelve a pulsar (la cerraria), solo se busca. La ventana se abre en la
+    -- ultima pestana usada y la de buscar grupos (la lupa) no se puede pulsar desde un addon
+    -- (es un Frame, no un Button): si no esta a la vista, un aviso junto a ella y se vuelve a
+    -- pulsar el ojo. La busqueda solo vale en el clic del jugador, no en un temporizador.
+    -- DQA sigue abierta (como en ForeverDungeonJournal), para buscar otra mazmorra.
+    lfg:SetScript("PreClick", function(self)
+        if not InCombatLockdown() then self:SetAttribute("type", not ns.GroupFinderShown() and "macro" or nil) end
+    end)
+    lfg:SetScript("PostClick", function()
+        if not ns.GroupFinderShown() then return end
+        -- Por encima de DQA (va en HIGH): si se pisan, que se vea la ventana del juego
+        local main = DungeonQuestAtlasFrame
+        if main and not InCombatLockdown() and LFGParentFrame:GetFrameStrata() ~= main:GetFrameStrata() then
+            LFGParentFrame:SetFrameStrata(main:GetFrameStrata())
+            LFGParentFrame:SetFrameLevel(main:GetFrameLevel() + 50)
+        end
+        if not ns.GroupBrowserShown() then return ns.ShowGroupBrowserHint() end
+        ns.SearchGroups(panel.dungeon)
+    end)
+    panel.buttons = { map = map, entrance = entrance, route = route, loot = loot, lfg = lfg }
 
     local facts = ns.PaperText(dungeonView, "GameFontBlack")
     facts:SetPoint("TOPLEFT", art, "BOTTOMLEFT", 8, -8)
@@ -207,12 +242,15 @@ function ns.CreateOverviewPanel(page)
         entrance:SetEnabled(point ~= nil)
         route:SetEnabled(ns.Route(d) ~= nil)
         loot:SetShown(ns.AtlasLootAvailable())
+        lfg:SetEnabled(d.instanceID ~= nil)
+        lfg.text:SetShown(not loot:IsShown())
+        lfg:SetWidth(loot:IsShown() and 34 or 84)
         local x = 6
         for _, b in ipairs(buttons) do
             if b:IsShown() then
                 b:ClearAllPoints()
                 b:SetPoint("BOTTOMLEFT", art, "BOTTOMLEFT", x + 6, 8)
-                x = x + 88
+                x = x + b:GetWidth() + 4
             end
         end
         ns.SetDungeonArt(art, d, "lore")

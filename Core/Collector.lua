@@ -74,8 +74,8 @@ function ns.CollectQuestDetail(full)
     entry.text = entry.text or {}
     entry.text[ns.LOCALE] = {
         title = GetTitleText(),
-        desc = GetQuestText(),
-        obj = GetObjectiveText(),
+        desc = ns.HideName(GetQuestText()),
+        obj = ns.HideName(GetObjectiveText()),
         giverName = UnitExists("npc") and UnitName("npc") or nil,
     }
     if full then
@@ -105,7 +105,7 @@ function ns.CollectFromLog(id)
     entry.text = entry.text or {}
     local text = entry.text[ns.LOCALE] or {}
     text.title = text.title or (log.GetTitleForQuestID and log.GetTitleForQuestID(id)) or nil
-    text.desc, text.obj = desc, ns.PlainText(obj) or text.obj
+    text.desc, text.obj = ns.HideName(desc), ns.HideName(ns.PlainText(obj)) or text.obj
     entry.text[ns.LOCALE] = text
     db[id] = Stamp(entry)
     ns.Debug("texto de %d desde el registro", id)

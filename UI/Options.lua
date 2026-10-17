@@ -107,6 +107,8 @@ local function CreateGeneral()
     Checkbox("minimap", L.SHOW_MINIMAP, L.SHOW_MINIMAP_TOOLTIP, -251, ns.UpdateMinimapButton,
         function() return not db.minimap.hide end, function(v) db.minimap.hide = not v end)
     Checkbox("chainGuide", L.CHAIN_GUIDE, L.CHAIN_GUIDE_TOOLTIP, -277)
+    -- Debajo, en la izquierda: a la derecha pisaba el logo
+    Checkbox("worldMapPlan", L.WORLD_MAP_PLAN, L.WORLD_MAP_PLAN_TOOLTIP, -303, ns.ApplyWorldMapPlan)
     -- Entradas en zonas y en continentes, a la derecha: abajo ya no cabe nada.
     -- Las mismas que el boton del mapa del mundo (clic derecho y clic).
     local entranceSize -- atenuado si no hay entradas en ningun mapa
@@ -149,21 +151,21 @@ local function CreateGeneral()
     end
 
     -- Sin TomTom cargado, su opcion sale desactivada en la lista
-    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -311, {
+    Dropdown("waypointMode", L.GUIDE, L.GUIDE_TOOLTIP, -337, {
         { "own", L.GUIDE_OWN },
         { "native", L.GUIDE_NATIVE },
         { "tomtom", L.GUIDE_TOMTOM, disabled = function() return not TomTomLoaded() end },
     })
-    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -343, {
+    Dropdown("wowheadLang", L.WOWHEAD_LANG, L.WOWHEAD_LANG_TOOLTIP, -369, {
         { "auto", L.LANG_AUTO },
         { "en", L.LANG_ENGLISH },
     })
     -- Los dos tamanos lado a lado: abajo ya no cabe nada
     local function Px(v) return tostring(math.floor(v + 0.5)) end
-    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -396, 10, 32, 1, Px, ns.ApplyPinSize):SetWidth(190)
-    entranceSize = Slider("entranceSize", L.ENTRANCE_SIZE, L.ENTRANCE_SIZE_TOOLTIP, -396, 16, 56, 1, Px, ns.RefreshMapPins)
+    Slider("pinSize", L.PIN_SIZE, L.PIN_SIZE_TOOLTIP, -422, 10, 32, 1, Px, ns.ApplyPinSize):SetWidth(190)
+    entranceSize = Slider("entranceSize", L.ENTRANCE_SIZE, L.ENTRANCE_SIZE_TOOLTIP, -422, 16, 56, 1, Px, ns.RefreshMapPins)
     entranceSize:SetWidth(190)
-    entranceSize:SetPoint("TOPLEFT", X + 310, -396)
+    entranceSize:SetPoint("TOPLEFT", X + 310, -422)
     local refreshSize = entranceSize.Refresh
     entranceSize.Refresh = function(self)
         refreshSize(self)
@@ -171,13 +173,13 @@ local function CreateGeneral()
         self:SetEnabled(on)
         self:SetAlpha(on and 1 or 0.5)
     end
-    Separator(panel, -429)
+    Separator(panel, -455)
 
     -- Recolector ----------------------------------------------------------------
-    Header(panel, -444, L.HEADER_COLLECTOR)
-    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -466)
-    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -492)
-    Separator(panel, -526)
+    Header(panel, -470, L.HEADER_COLLECTOR)
+    Checkbox("collect", L.COLLECT, L.COLLECT_TOOLTIP, -492)
+    Checkbox("debug", L.DEBUG, L.DEBUG_TOOLTIP, -518)
+    Separator(panel, -552)
 
     local function Refresh()
         for _, widget in ipairs(widgets) do widget:Refresh() end
@@ -186,13 +188,15 @@ local function CreateGeneral()
 
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -539) -- todo dentro del alto que da el juego
+    reset:SetPoint("TOPLEFT", X, -565) -- todo dentro del alto que da el juego
     reset:SetText(L.DEFAULTS)
     reset:SetScript("OnClick", function()
         ns.ResetOptions()
         ns.ApplyScale()
         ns.ApplyPinSize()
         ns.RefreshMapPins()
+        ns.ApplyWorldMapPlan()
+        ns.SetMapBossScale(ns.db.mapBossScale)
         ns.UpdateMinimapButton()
         ns.SetLanguage(ns.db.language) -- vuelve al idioma del juego
         ns.RefreshUI()

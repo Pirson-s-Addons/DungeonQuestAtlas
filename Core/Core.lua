@@ -27,6 +27,10 @@ local DEFAULTS = {
     mapEntrances = true,
     mapEntrancesContinent = true,
     entranceSize = 34,    -- tamano de su icono (px)
+    -- Planos de mazmorra (UI/DungeonMap.lua): el plano tapa M dentro de la mazmorra, y
+    -- tamano de las caras de jefe (1 = 100 %; 0 las esconde)
+    worldMapPlan = true,
+    mapBossScale = 1,
     wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
     language = "auto",    -- idioma de la ventana: "auto" (el del juego) o "deDE", "enUS"...
     collect = false,
@@ -151,14 +155,37 @@ function ns.DungeonName(d)
     return name
 end
 
+-- El nombre del personaje no se guarda en los textos de mision (los comparten todos
+-- los personajes y salen en /dqa export): va como "$N", igual que en los datos del
+-- juego, y al leerlo se pone el de quien lo lee
+local function PlayerName()
+    local name = UnitName and ns.PlainText(UnitName("player"))
+    return type(name) == "string" and name ~= "" and name or nil
+end
+
+function ns.HideName(text)
+    local name = PlayerName()
+    if type(text) ~= "string" or not name then return text end
+    return (text:gsub(name:gsub("%W", "%%%0"), "$N"))
+end
+
+local function ShowName(t)
+    local function Has(s) return type(s) == "string" and s:find("$N", 1, true) end
+    if not (Has(t.desc) or Has(t.obj)) then return t end
+    local name = (PlayerName() or ""):gsub("%%", "%%%%")
+    local copy = {}
+    for k, v in pairs(t) do copy[k] = Has(v) and v:gsub("%$N", name) or v end
+    return copy
+end
+
 -- Texto de mision: lo recogido en este cliente, luego Data/QuestText.lua
 function ns.QuestText(id)
     local mine = Collected().quests and Collected().quests[id]
     local texts = mine and mine.text or {}
     -- Primero en el idioma de la ventana (si se ha recogido), luego en el del juego
     local chosen = ns.QuestTextData.byLocale[ns.UILANG or ns.LOCALE]
-    return texts[ns.UILANG] or (chosen and chosen[id]) or texts[ns.LOCALE] or ns.QuestTextData.active[id]
-        or ns.QuestTextData.fallback[id] or {}
+    return ShowName(texts[ns.UILANG] or (chosen and chosen[id]) or texts[ns.LOCALE] or ns.QuestTextData.active[id]
+        or ns.QuestTextData.fallback[id] or {})
 end
 
 local requested = {}
@@ -339,6 +366,12 @@ On("PLAYER_LOGIN", function()
     DungeonQuestAtlasCollectorDB.quests = DungeonQuestAtlasCollectorDB.quests or {}
     DungeonQuestAtlasCollectorDB.entrances = DungeonQuestAtlasCollectorDB.entrances or {}
     DungeonQuestAtlasCollectorDB.routes = DungeonQuestAtlasCollectorDB.routes or {}
+    -- Textos guardados antes de la 2.13 con el nombre de este personaje dentro
+    for _, entry in pairs(DungeonQuestAtlasCollectorDB.quests) do
+        for _, text in pairs(entry.text or {}) do
+            text.desc, text.obj = ns.HideName(text.desc), ns.HideName(text.obj)
+        end
+    end
 
     -- Las opciones del juego, en el idioma del juego (L sigue en el del cliente
     -- aqui); el selector de idioma solo cambia la ventana del addon

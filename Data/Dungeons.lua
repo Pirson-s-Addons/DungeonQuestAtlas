@@ -18,16 +18,22 @@ local _, ns = ...
 -- Sin entrance: la del mapa del juego (GetDungeonEntrancesForMap) o /dqa entrance.
 -- quests: IDs de mision (ver Data/Quests.lua), primero las del cliente de
 -- Forever (foreverchanges) y luego las que solo estaban en AtlasQuest.
+-- names: nombre por idioma mientras el cliente no traiga la mazmorra (traduccion nuestra,
+-- provisional; los idiomas sin cliente oficial, en ingles). Lo usa ns.DungeonName.
 -- attunement: la llave para entrar, como el de las bandas (Data/Raids.lua):
 -- item, itemName y las misiones en orden por faccion (Both si es la misma).
 
 ns.Dungeons = {
     { key = "ALCAZ", name = "Alcaz Prison", instanceID = nil, minLevel = 48, maxLevel = 53, isForever = true, faction = "Both",
+        names = { esES = "Prisión de Alcaz", deDE = "Gefängnis von Alcaz", frFR = "Prison d'Alcaz", itIT = "Prigione di Alcaz", ptBR = "Prisão de Alcaz",
+            ruRU = "Тюрьма Алказ", koKR = "알카즈 감옥", zhCN = "奥卡兹监狱", zhTW = "奧卡茲監獄" },
         quests = {} },
     { key = "BFD", name = "Blackfathom Deeps", instanceID = 48, minLevel = 24, maxLevel = 32, isForever = false, faction = "Both",
         entrance = { mapID = 1440, x = 14.5, y = 14.2 },
         quests = { 971, 6564, 6563, 6565, 1275, 1200, 6561, 1199, 6921, 1198, 1740 } },
     { key = "BLACKMAW", name = "Blackmaw Hold", instanceID = nil, minLevel = 55, maxLevel = 60, isForever = true, faction = "Both",
+        names = { esES = "Bastión Fauce Negra", deDE = "Schwarzmaulfeste", frFR = "Fort Gueule-Noire", itIT = "Fortezza Fauce Nera", ptBR = "Fortaleza Bocanegra",
+            ruRU = "Оплот Черной Пасти", koKR = "검은아귀 요새", zhCN = "黑口要塞", zhTW = "黑口要塞" },
         quests = {} },
     { key = "BRD", name = "Blackrock Depths", instanceID = 230, minLevel = 52, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
@@ -60,6 +66,8 @@ ns.Dungeons = {
         entrance = { mapID = 1455, x = 43.5, y = 52.0 },
         quests = { 96393, 96394, 96395, 96403, 98423 } },
     { key = "KROLDOK", name = "Krol'dok Stronghold", instanceID = nil, minLevel = 40, maxLevel = 45, isForever = true, faction = "Both",
+        names = { esES = "Bastión Krol'dok", deDE = "Festung Krol'dok", frFR = "Bastion de Krol'dok", itIT = "Roccaforte di Krol'dok", ptBR = "Fortaleza Krol'dok",
+            ruRU = "Крепость Крол'док", koKR = "크롤도크 요새", zhCN = "克罗多克要塞", zhTW = "克羅多克要塞" },
         quests = {} },
     { key = "LBRS", name = "Lower Blackrock Spire", instanceID = 229, minLevel = 55, maxLevel = 60, isForever = false, faction = "Both", part = "LOWER",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
@@ -102,6 +110,8 @@ ns.Dungeons = {
         entrance = { mapID = 1421, x = 44.6, y = 67.7 },
         quests = { 1013, 1098, 1014, 1654, 1740 } },
     { key = "SHAPERS", name = "Shaper's Terrace", instanceID = nil, minLevel = 58, maxLevel = 60, isForever = true, faction = "Both",
+        names = { esES = "Terraza del Modelador", deDE = "Terrasse des Formers", frFR = "Terrasse du Façonneur", itIT = "Terrazza del Plasmatore", ptBR = "Terraço do Moldador",
+            ruRU = "Терраса Ваятеля", koKR = "조형자의 테라스", zhCN = "塑造者平台", zhTW = "塑造者平臺" },
         quests = {} },
     { key = "STRAT_LIVE", name = "Stratholme (Main Gate)", instanceID = 329, minLevel = 58, maxLevel = 60, isForever = false, faction = "Both", part = "MAIN_GATE",
         entrance = { mapID = 1423, x = 27.8, y = 11.6 },
@@ -116,6 +126,8 @@ ns.Dungeons = {
         entrance = { mapID = 1436, x = 42.5, y = 71.7 },
         quests = { 214, 168, 166, 167, 2040, 373, 1654 } },
     { key = "DROWNED", name = "The Drowned City", instanceID = nil, minLevel = 35, maxLevel = 40, isForever = true, faction = "Both",
+        names = { esES = "La Ciudad Sumergida", deDE = "Die versunkene Stadt", frFR = "La Cité engloutie", itIT = "La Città Sommersa", ptBR = "A Cidade Submersa",
+            ruRU = "Затонувший город", koKR = "수몰된 도시", zhCN = "沉没之城", zhTW = "沉沒之城" },
         quests = {} },
     { key = "STOCKS", name = "The Stockade", instanceID = 34, minLevel = 24, maxLevel = 32, isForever = false, faction = "Alliance",
         entrance = { mapID = 1453, x = 39.6, y = 53.9 },
