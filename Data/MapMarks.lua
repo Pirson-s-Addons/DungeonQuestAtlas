@@ -5,7 +5,8 @@ local _, ns = ...
 -- planta en el orden de Data/Maps.lua). Tipos:
 --   "entrance": la entrada de la mazmorra;
 --   "up" / "down": escalera o rampa que sube o baja a otra planta;
---   "floor": paso a otra planta sin saber si sube o baja.
+--   "floor": paso a otra planta sin saber si sube o baja;
+--   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista }.
 -- Sitios de ForeverDungeonJournal (Core/Journal.lua, 08-10-2026; solo los datos,
 -- comprobados sobre cada plano). Sube o baja solo donde FDJ lo dice (Colmillo
 -- Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las cloacas).
@@ -57,7 +58,16 @@ ns.MapMarks = {
     RFK = { { { "entrance", 0.714, 0.840 } } },
     SM_GY = { { { "entrance", 0.841, 0.831 } } },
     THANES = { { { "entrance", 0.510, 0.944 } } },
-    LORDAERON = { { { "entrance", 0.612, 0.214 } } },
+    -- Blason de Lordaeron (inicia 95189/95204): sale en uno de 5 sitios al azar (guia de
+    -- Warcraft Tavern, 17-10-2026). Puestos a ojo sobre el plano siguiendo su recorrido.
+    LORDAERON = { {
+        { "entrance", 0.612, 0.214 },
+        { "item", 0.568, 0.598, 275521, "MAP_ITEM_CRYPT" },
+        { "item", 0.455, 0.255, 275521, "MAP_ITEM_FLOOR" },
+        { "item", 0.346, 0.222, 275521, "MAP_ITEM_WALL" },
+        { "item", 0.672, 0.272, 275521, "MAP_ITEM_TOP" },
+        { "item", 0.370, 0.430, 275521, "MAP_ITEM_TOP" },
+    } },
     EXCAVATION = { { { "entrance", 0.077, 0.610 } } },
     DALARAN = {
         { { "entrance", 0.190, 0.838 }, { "up", 0.642, 0.593, 2 } },

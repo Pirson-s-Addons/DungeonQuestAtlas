@@ -112,9 +112,11 @@ local MARK_ICON = {
     up = { atlas = "poi-door-up", file = "Interface\\Buttons\\Arrow-Up-Up", size = 28 },
     down = { atlas = "poi-door-down", file = "Interface\\Buttons\\Arrow-Down-Up", size = 28 },
     floor = { atlas = "poi-door", file = "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up", size = 28 },
+    item = { size = 16 }, -- el icono del propio objeto
 }
 
-local function SetMarkIcon(texture, kind)
+local function SetMarkIcon(texture, kind, itemID)
+    if kind == "item" then return texture:SetTexture(ns.ItemInfo(itemID).icon) end
     local icon = MARK_ICON[kind]
     if texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(icon.atlas) then
         texture:SetAtlas(icon.atlas)
@@ -138,6 +140,7 @@ local function CreateMark(canvas, plan)
     mark.label:SetPoint("TOP", mark, "BOTTOM", 0, -1)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
+        if self.kind == "item" then return end
         if self.to and plan.floors[self.to] then plan:ShowFloor(self.to) end
     end)
     ns.AddTooltip(mark, function()
@@ -146,6 +149,11 @@ local function CreateMark(canvas, plan)
             return L.MAP_ENTRANCE .. (point and ("\n|cffffffff" .. ns.ZoneName(point.mapID) .. " "
                 .. ns.FormatCoords(point) .. "|r\n"
                 .. (ns.db.mapEntrances and L.MAP_ENTRANCE_SHOW or L.MARK_ENTRANCE_TOOLTIP)) or "")
+        end
+        if mark.kind == "item" then
+            local item = ns.ItemInfo(mark.itemID)
+            return ns.QualityColor(item.quality) .. (item.name or ("#" .. mark.itemID)) .. "|r\n|cffffffff"
+                .. L[mark.hint] .. "\n" .. L.MAP_ITEM_SPOT .. "|r"
         end
         local title = (mark.kind == "up" and L.MAP_UP) or (mark.kind == "down" and L.MAP_DOWN)
             or L.MAP_FLOOR_SHORT:format(mark.to)
@@ -293,15 +301,18 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k, m in ipairs(floorMarks) do
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
-            mark.kind, mark.x, mark.y, mark.to = m[1], m[2], m[3], m[4]
-            SetMarkIcon(mark.icon, m[1])
-            SetMarkIcon(mark.glow, m[1])
+            local item = m[1] == "item"
+            mark.kind, mark.x, mark.y = m[1], m[2], m[3]
+            mark.to = not item and m[4] or nil
+            mark.itemID, mark.hint = item and m[4] or nil, m[5]
+            SetMarkIcon(mark.icon, m[1], mark.itemID)
+            SetMarkIcon(mark.glow, m[1], mark.itemID)
             -- Entrada de una banda (tiene size): verde, como su portal en el mapa del mundo
             local raid = m[1] == "entrance" and self.dungeon.size ~= nil
             ns.TintPortal(mark.icon, raid)
             ns.TintPortal(mark.glow, raid)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
-            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or L.MAP_FLOOR_SHORT:format(m[4]))
+            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or item and "" or L.MAP_FLOOR_SHORT:format(m[4]))
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
             mark:Show()
         end
@@ -354,14 +365,15 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         self:SetScript("OnUpdate", nil)
         if onIdleDrag then onIdleDrag(false) end
     end)
-    -- Clic derecho: planta siguiente; izquierdo: la anterior (no al soltar un arrastre)
+    -- Clic derecho: atras, al mapa del mundo en la zona de la entrada (como el mapa de
+    -- Retail); izquierdo: planta siguiente, y de la ultima a la 1 (no al soltar un arrastre)
     local downX, downY
     viewport:HookScript("OnMouseDown", function() downX, downY = GetCursorPosition() end)
     viewport:HookScript("OnMouseUp", function(_, button)
         local x, y = GetCursorPosition()
         if not downX or math.abs(x - downX) + math.abs(y - downY) > 8 then return end
-        local step = (button == "RightButton" and 1) or (button == "LeftButton" and -1) or 0
-        if step ~= 0 and plan.floors[plan.index + step] then plan:ShowFloor(plan.index + step) end
+        if button == "RightButton" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
+        if button == "LeftButton" and #plan.floors > 1 then plan:ShowFloor(plan.index % #plan.floors + 1) end
     end)
     return plan
 end
