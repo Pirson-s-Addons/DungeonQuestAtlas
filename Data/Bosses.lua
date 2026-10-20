@@ -92,8 +92,8 @@ ns.Bosses = {
     },
     -- Ciudad de Dalaran (09-10-2026, ya abierta): orden de la guia de Wowhead (Mana Devourer,
     -- que no sale en ella, antes de Fel Ancient: este se abre al matar a los de alrededor).
-    -- Display y nivel de foreverchanges.pro y ForeverDungeonJournal (Lyn sin nivel). Botin de
-    -- ForeverDungeonJournal 1.6.2 con los itemID de Wowhead Forever; aun sin probabilidad.
+    -- Display y nivel de foreverchanges.pro (Lyn sin nivel). Botin con los itemID de Wowhead
+    -- Forever; aun sin probabilidad.
     DALARAN = {
         { name = "Atrexis the Grave Knight", npcID = 247126, display = 145787, level = 29, loot = { { 273032 }, { 273036 }, { 273033 } } },
         { name = "Arcane Anomaly", npcID = 245999, display = 129891, level = 30, loot = { { 273034 }, { 273031 }, { 273035 } } },
@@ -121,7 +121,7 @@ ns.Bosses = {
         { name = "Trash mobs", kind = "trash", loot = { { 9508 }, { 9491 }, { 9509 }, { 9510 }, { 9487 }, { 9485 }, { 9488 }, { 9486 }, { 9490 }, { 9489, 0.1 }, { 11827 }, { 9327 }, { 7191 }, { 9308 }, { 9326 }, { 9279 }, { 9280 }, { 9282 }, { 9281 }, { 9316 } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 253978, 0.33, from = { 6 } } } },
     },
-    -- Niveles de Salas de los Thanes: ForeverDungeonJournal (08-10-2026); Wowhead Forever aun no los tiene
+    -- Niveles de Salas de los Thanes (08-10-2026); Wowhead Forever aun no los tiene
     THANES = {
         { name = "Faldrim Anvilmar", npcID = 261306, display = 142826, level = 16, loot = { { 270227 }, { 271096 }, { 271097 } } },
         { name = "Magmatus", npcID = 261316, display = 1070, level = 16, loot = { { 270230 }, { 270231 }, { 271095 } } },

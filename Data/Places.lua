@@ -338,7 +338,7 @@ ns.Places = {
     ["npc:956"] = { npcID = 956, name = "Dorin Songblade", mapID = 1433, x = 30.8, y = 46.6 },
     ["name:Titan Relic"] = { name = "Titan Relic", inside = true },
     -- Ciudad de Dalaran (Wowhead Forever, 08-10-2026). Ventormenta: la del puerto de Forever
-    -- (Wowhead mezcla las de Classic; ForeverDungeonJournal da las mismas)
+    -- (Wowhead mezcla las de Classic)
     ["npc:2278"] = { npcID = 2278, name = "Melisara", mapID = 1424, x = 62.5, y = 20.5 },
     ["npc:2410"] = { npcID = 2410, name = "Magus Wordeen Voidglare", mapID = 1424, x = 61.6, y = 20.6 },
     ["npc:5502"] = { npcID = 5502, name = "Shylamiir", mapID = 1453, x = 31.4, y = 62.8 },

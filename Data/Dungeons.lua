@@ -14,10 +14,10 @@ local _, ns = ...
 -- areatrigger_teleport de AzerothCore y pasado a la zona con UiMapAssignment.
 -- Portal bajo tierra (Minas, Cuevas, Gnomeregan, Uldaman, Maraudon, Templo,
 -- Roca Negra, Stratholme, BFD): la boca de la cueva / el icono de mazmorra del
--- mapa. Nuevas de Forever: guias de Wowhead Forever (Thanes: ForeverDungeonJournal).
+-- mapa. Nuevas de Forever: guias de Wowhead Forever.
 -- Sin entrance: la del mapa del juego (GetDungeonEntrancesForMap) o /dqa entrance.
 -- quests: IDs de mision (ver Data/Quests.lua), primero las del cliente de
--- Forever (foreverchanges) y luego las que solo estaban en AtlasQuest.
+-- Forever (foreverchanges) y luego las de fuentes anteriores.
 -- names: nombre por idioma mientras el cliente no traiga la mazmorra (traduccion nuestra,
 -- provisional; los idiomas sin cliente oficial, en ingles). Lo usa ns.DungeonName.
 -- attunement: la llave para entrar, como el de las bandas (Data/Raids.lua):

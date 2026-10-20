@@ -4,7 +4,7 @@ local L = ns.L
 -- ==========================================
 -- GUIA PROPIA: MARCADORES Y FLECHA
 -- ==========================================
--- Sin TomTom ni HereBeDragons. Todo se calcula en el mapa del continente, con
+-- Sin TomTom ni librerias de mapas. Todo se calcula en el mapa del continente, con
 -- APIs del cliente: la posicion del jugador (GetPlayerMapPosition), la del
 -- marcador pasada de su zona al continente (GetMapRectOnMap) y el tamano del
 -- continente en yardas (GetMapWorldSize). Asi no hacen falta tablas de mapas.

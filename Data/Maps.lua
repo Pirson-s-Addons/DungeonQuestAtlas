@@ -5,7 +5,7 @@ local _, ns = ...
 -- Cada planta es su uiMapID de Blizzard; su dibujo son 12 piezas de 256x256
 -- (4x3) en Art/Maps/<id>_<1-12>.blp, de las que se ven 1002x668.
 -- tex: las mismas piezas en el cliente (Interface\WorldMap; %d = 1-12). Forever
--- las trae aunque no tenga los uiMap; ForeverDungeonJournal las usa. Si el
+-- las trae aunque no tenga los uiMap. Si el
 -- cliente no tiene una, se usa la del addon.
 -- pins: { indice del jefe en Data/Bosses.lua, x, y } (0-1 sobre la planta).
 -- Posiciones: aparicion del jefe en AzerothCore pasada a la planta con
@@ -126,8 +126,8 @@ ns.Maps = {
     EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
     THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },
-    -- Dalaran: planta 1 las cloacas (la entrada), planta 2 la ciudad. Jefes de
-    -- ForeverDungeonJournal 1.6.2 (todos, con la mazmorra ya abierta)
+    -- Dalaran: planta 1 las cloacas (la entrada), planta 2 la ciudad. Todos los
+    -- jefes, con la mazmorra ya abierta
     DALARAN = {
         { id = "DALARAN1", pins = { { 1, 0.535, 0.505 }, { 7, 0.680, 0.177 } } },
         { id = "DALARAN2", pins = { { 2, 0.527, 0.843 }, { 3, 0.669, 0.503 }, { 4, 0.614, 0.413 }, { 5, 0.416, 0.730 }, { 6, 0.513, 0.549 }, { 8, 0.520, 0.240 } } },

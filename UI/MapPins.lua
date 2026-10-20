@@ -101,7 +101,7 @@ local function CreatePinMixin()
         return false
     end
     -- AcquirePin la llama siempre y en combate es protegida (ADDON_ACTION_BLOCKED
-    -- al abrir M). Ningun boton pasa al mapa, asi que no hace falta (como HereBeDragons)
+    -- al abrir M). Ningun boton pasa al mapa, asi que no hace falta
     DungeonQuestAtlasPinMixin.SetPassThroughButtons = function() end
 
     -- El mapa lo llama al soltar el clic encima del pin
@@ -137,7 +137,7 @@ end
 -- ==========================================
 -- ENTRADAS DE MAZMORRA EN EL MAPA DEL MUNDO
 -- ==========================================
--- Idea de Leatrix Maps (sin su codigo): el portal de cada mazmorra en el mapa de
+-- El portal de cada mazmorra en el mapa de
 -- su zona y en el del continente. Clic: su plano encima del mapa del mundo
 -- (UI/DungeonMap.lua); clic derecho: su pagina en la ventana del addon.
 -- Las bandas con entrada (Data/Raids.lua), con el mismo portal en verde; clic, su pagina.
@@ -288,10 +288,10 @@ function ns.RefreshMapPins()
     end
 end
 
--- Boton redondo del mapa del mundo (idea de RareScanner, sin su codigo): un
+-- Boton redondo del mapa del mundo: un
 -- desplegable con todos los ajustes de las entradas, con el menu del juego
 -- (DropdownButton + SetupMenu). Va en la columna de botones de arriba a la
--- izquierda; si otro addon trae Krowi_WorldMapButtons, se apila con la suya para
+-- izquierda; si otro addon trae una libreria de botones del mapa, se apila con ella para
 -- no pisar su boton. Queda por debajo del plano de mazmorra (UI/DungeonMap.lua).
 local ENTRANCE_SIZES = { 24, 28, 34, 40, 48, 56 }
 local mapButton
@@ -363,7 +363,7 @@ local function CreateMapButton()
         GameTooltip:Show()
     end
     function DungeonQuestAtlasMapButtonMixin:OnLeave() GameTooltip:Hide() end
-    function DungeonQuestAtlasMapButtonMixin:Refresh() end -- la llama Krowi al cambiar de mapa
+    function DungeonQuestAtlasMapButtonMixin:Refresh() end -- la llama la libreria de botones al cambiar de mapa
 
     local krowi = LibStub and LibStub("Krowi_WorldMapButtons-1.4", true)
     if krowi then
@@ -377,7 +377,7 @@ local function CreateMapButton()
 end
 
 -- Al abrir el mapa la primera vez: para entonces ya han cargado los demas addons
--- (si alguno trae Krowi_WorldMapButtons, el boton se pone en su columna)
+-- (si alguno trae una libreria de botones del mapa, el boton se pone en su columna)
 local function MapButtonOnFirstShow()
     if mapButton or not WorldMapFrame.GetCanvasContainer then return end
     local ok, err = pcall(CreateMapButton)

@@ -139,7 +139,7 @@ function ns.CreateOverviewPanel(page)
     -- Buscar grupo: el ojo de la ventana del juego, como los demas botones. Pulsa el boton
     -- del micromenu (InsecureActionButtonTemplate, como la flecha: solo fuera de combate y
     -- sin volver protegida la ventana) y, con la ventana ya abierta, pide los grupos de la
-    -- mazmorra (idea de ForeverDungeonJournal). Con AtlasLoot (cinco botones), sin texto.
+    -- mazmorra. Con AtlasLoot (cinco botones), sin texto.
     local lfg = ArtButton(dungeonView, L.FIND_GROUP, "Interface\\LFGFrame\\LFG-Eye", nil, function()
         return L.FIND_GROUP .. "\n|cffffffff" .. (panel.dungeon and panel.dungeon.instanceID
             and L.FIND_GROUP_TOOLTIP or L.FIND_GROUP_NONE) .. "|r"
@@ -156,7 +156,7 @@ function ns.CreateOverviewPanel(page)
     -- ultima pestana usada y la de buscar grupos (la lupa) no se puede pulsar desde un addon
     -- (es un Frame, no un Button): si no esta a la vista, un aviso junto a ella y se vuelve a
     -- pulsar el ojo. La busqueda solo vale en el clic del jugador, no en un temporizador.
-    -- DQA sigue abierta (como en ForeverDungeonJournal), para buscar otra mazmorra.
+    -- DQA sigue abierta, para buscar otra mazmorra.
     lfg:SetScript("PreClick", function(self)
         if not InCombatLockdown() then self:SetAttribute("type", not ns.GroupFinderShown() and "macro" or nil) end
     end)

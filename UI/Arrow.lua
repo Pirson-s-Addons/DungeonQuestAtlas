@@ -8,7 +8,7 @@ local L = ns.L
 -- y la distancia; al llegar, el marcador se quita solo. Arrastrar para moverla,
 -- clic derecho para quitar el marcador. Solo se actualiza mientras se ve.
 -- Clic izquierdo, si el marcador es un PNJ: lo selecciona y le pone una
--- estrella (/targetexact + /tm). Como en ForeverDungeonJournal: un
+-- estrella (/targetexact + /tm). Un
 -- InsecureActionButtonTemplate hace la accion con el clic del jugador, fuera de
 -- combate, sin volver protegida la flecha (se puede mover y ocultar en combate).
 -- Arte propio (img/): la flecha y la gema de los marcadores.

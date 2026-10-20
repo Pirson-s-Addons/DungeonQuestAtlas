@@ -244,8 +244,8 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     plan.Zoom = function(_, ...) Zoom(...) end
 
-    -- Plantas: un boton del juego por planta, en columna sobre una placa oscura
-    -- (idea de ForeverDungeonJournal); la de ahora, iluminada y en blanco. Solo si
+    -- Plantas: un boton del juego por planta, en columna sobre una placa oscura;
+    -- la de ahora, iluminada y en blanco. Solo si
     -- hay mas de una. Caben todas: si no hay alto para 22 px por boton, menguan
     -- (minimo 16). Lo coloca quien crea el plano (plan.floorBar, anclado por arriba).
     local floorBar = ns.CreateDarkBox(parent, 10)
@@ -289,8 +289,8 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     viewport:HookScript("OnSizeChanged", UpdateFloorButtons)
 
-    -- Tamano de las caras de jefe: placa abajo a la izquierda con - y + (idea de
-    -- ForeverDungeonJournal); el mismo en todos los planos
+    -- Tamano de las caras de jefe: placa abajo a la izquierda con - y +; el mismo
+    -- en todos los planos
     local sizeBar = ns.CreateDarkBox(parent, 10)
     sizeBar:SetFrameLevel(viewport:GetFrameLevel() + 10)
     sizeBar:SetSize(190, 30)
@@ -434,7 +434,7 @@ ns.CreateDungeonPlan = CreatePlan
 -- ==========================================
 -- EN EL MAPA DEL MUNDO (M), DENTRO DE LA MAZMORRA
 -- ==========================================
--- Idea de ForeverDungeonJournal (sin su codigo): al abrir el mapa del mundo
+-- Al abrir el mapa del mundo
 -- dentro de una mazmorra con plano, el plano tapa el mapa. Un boton vuelve al
 -- mapa del mundo; al entrar en otra mazmorra se empieza otra vez por el plano.
 -- Fuera de ella, el plano de la mazmorra cuya entrada pulses en el mapa

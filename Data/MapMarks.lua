@@ -9,19 +9,17 @@ local _, ns = ...
 --   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista };
 --   "note": como llegar a un jefe { "note", x, y, indice del jefe, clave de L con %s = su nombre }.
 --   Horado Rajacieno: salto y liana hasta Roogug.
--- Sitios de ForeverDungeonJournal (Core/Journal.lua, 08-10-2026; solo los datos,
--- comprobados sobre cada plano). Sube o baja solo donde FDJ lo dice (Colmillo
--- Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las cloacas).
--- Excavacion: el remolino del mapa del autor (el de FDJ es otro dibujo).
+-- Sitios comprobados sobre cada plano (08-10-2026). Sube o baja solo donde se sabe
+-- (Colmillo Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las
+-- cloacas). Excavacion: el remolino del mapa del autor.
 -- Pasos entre plantas de Colmillo Oscuro, Scholomance, Profundidades y Cumbre de Roca Negra,
 -- La Masacre, Maraudon y Uldaman (08-10-2026): calculados con datos del cliente. Un grupo del
 -- modelo (WMOGroupID) que UiMapAssignment pinta en dos plantas es la escalera o rampa que
 -- las une; su caja, pasada al mundo con la colocacion del modelo, da el sitio en cada planta,
 -- y la altura media de cada planta dice si sube o baja. Sin grupo compartido, el sitio donde
--- un grupo de cada planta se tocan. Modelos de Retail via el descubrimiento de DungeonLens
--- (github.com/denisanzora/DungeonLens, MIT); el sitio es el centro del grupo (aproximado
--- dentro de la sala). Gnomeregan, Las Minas y Brazanegra: los de FDJ, comprobados igual.
--- FDJ solo marca un sentido. Las vueltas (planta de destino -> la de antes) salen de
+-- un grupo de cada planta se tocan. Modelos de Retail; el sitio es el centro del grupo
+-- (aproximado dentro de la sala). Gnomeregan, Las Minas y Brazanegra: comprobados igual.
+-- Las vueltas (planta de destino -> la de antes) salen de
 -- pasar su punto al mundo y del mundo a la otra planta con los rectangulos de
 -- UiMapAssignment (_project/tools/dqa_maps/regions.json). Sin vuelta: el salto de
 -- la Sala de Engranajes (solo baja) y Colmillo Oscuro (el punto cae fuera de la

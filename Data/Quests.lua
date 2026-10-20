@@ -14,7 +14,7 @@ local _, ns = ...
 -- del inventario con el que empieza o termina).
 -- Fuentes (26-09-2026): foreverchanges.pro/dungeons (lee el cliente de Forever
 -- 1.60.1.70009: niveles, faccion, recompensas, XP, dinero) y Wowhead Forever
--- (serie, inicio y final). Las que solo estaban en AtlasQuest siguen aqui.
+-- (serie, inicio y final). Las de fuentes anteriores siguen aqui.
 -- verified = true: el cliente de Forever tiene la mision (foreverchanges).
 
 ns.Quests = {
@@ -530,7 +530,7 @@ ns.Quests = {
     [92459] = { level = 33, minLevel = 24, faction = "Alliance", chain = { 92432, 92458, 92459 } },
     [92434] = { level = 34, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:269127" } },
     [97287] = { level = 33, minLevel = 24, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 } },
-    -- Llave de Dalaran de la Horda: guia de Wowhead y ForeverDungeonJournal (544 y 93680 a la vez)
+    -- Llave de Dalaran de la Horda: guia de Wowhead (544 y 93680 a la vez)
     [544] = { level = 34, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
     [93680] = { level = 33, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
     [545] = { level = 35, minLevel = 30, faction = "Horde", chain = { 544, 93680, 545, 92434, 96984, 97287 }, starts = { "npc:2410" }, ends = { "npc:2410" } },
