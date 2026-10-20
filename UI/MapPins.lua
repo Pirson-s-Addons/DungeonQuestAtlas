@@ -11,12 +11,12 @@ local L = ns.L
 local TEMPLATE = "DungeonQuestAtlasPinTemplate"
 local provider
 
--- Con OpenMap, sus iconos van en una capa suya sobre el ScrollContainer, no en el
--- lienzo: tapan cualquier pin del lienzo, sea cual sea su nivel (visto en el juego).
--- Cada pin pasa su dibujo y su raton a un boton de una capa nuestra al mismo nivel,
--- por encima de la suya y bajo sus barras, su plano y la flecha del jugador
--- (sc + 8800 / 9000 / 9500 en su Map/*.lua). El boton sigue al pin (dos anclas:
--- posicion y tamano con el zoom) y se ve solo mientras se ve el pin.
+-- Con un addon de mapa que pinta sus iconos en una capa propia sobre el
+-- ScrollContainer (no en el lienzo), esos iconos tapan cualquier pin del lienzo, sea
+-- cual sea su nivel. Cada pin pasa su dibujo y su raton a un boton de una capa nuestra
+-- al mismo nivel, por encima de la suya y bajo sus barras y la flecha del jugador
+-- (8800-9500). El boton sigue al pin (dos anclas: posicion y tamano con el zoom) y se
+-- ve solo mientras se ve el pin.
 local lift
 
 local function Lift(pin)

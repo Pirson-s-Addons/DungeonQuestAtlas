@@ -8,7 +8,7 @@ local _, ns = ...
 --   "floor": paso a otra planta sin saber si sube o baja;
 --   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista };
 --   "note": como llegar a un jefe { "note", x, y, indice del jefe, clave de L con %s = su nombre }.
---   Horado Rajacieno: salto y liana hasta Roogug, de ForeverDungeonJournal 1.6.5 (mismo plano de Blizzard).
+--   Horado Rajacieno: salto y liana hasta Roogug.
 -- Sitios de ForeverDungeonJournal (Core/Journal.lua, 08-10-2026; solo los datos,
 -- comprobados sobre cada plano). Sube o baja solo donde FDJ lo dice (Colmillo
 -- Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las cloacas).

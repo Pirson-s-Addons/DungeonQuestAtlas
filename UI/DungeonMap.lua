@@ -448,8 +448,8 @@ local function CreateOverlay()
     local host = WorldMapFrame.ScrollContainer or WorldMapFrame
     overlay = CreateFrame("Frame", nil, WorldMapFrame)
     overlay:SetAllPoints(host)
-    -- Encima de los pines del mapa. OpenMap (su plano hasta 9800, su tarjeta 9950) y
-    -- ForeverDungeonJournal (hasta 8000) ponen el suyo ahi: el nuestro, por delante
+    -- Encima de los pines del mapa; con otro addon que pone su propio plano encima del
+    -- mapa (hasta el nivel 9950), el nuestro por delante
     local loaded = C_AddOns and C_AddOns.IsAddOnLoaded
     local rivals = loaded and (loaded("OpenMap") or loaded("ForeverDungeonJournal"))
     overlay:SetFrameLevel(rivals and math.min(host:GetFrameLevel() + 9900, 9960) or host:GetFrameLevel() + 20)
