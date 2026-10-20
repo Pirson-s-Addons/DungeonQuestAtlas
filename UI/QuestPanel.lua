@@ -577,8 +577,10 @@ local function CreateDetail(parent)
             link:Show()
         end
         Set(chainNote, q.chain == true and L.CHAIN_UNKNOWN or nil)
-        -- El paso anterior sin hacer: lo primero que hay que saber
+        -- El paso anterior sin hacer: lo primero que hay que saber (salvo si es opcional:
+        -- `breadcrumb`, una que solo te manda al PNJ de la siguiente)
         local previous = current > 1 and steps[current - 1]
+        if previous and ns.Quests[previous] and ns.Quests[previous].breadcrumb then previous = nil end
         Set(requires, previous and ns.QuestStatus(previous) ~= ns.STATUS_COMPLETED
             and ("|cff8c1a0d" .. L.CHAIN_REQUIRES:format(ns.QuestTitle(previous)) .. "|r") or nil)
 

@@ -11,6 +11,43 @@ local L = ns.L
 local TEMPLATE = "DungeonQuestAtlasPinTemplate"
 local provider
 
+-- Con OpenMap, sus iconos van en una capa suya sobre el ScrollContainer, no en el
+-- lienzo: tapan cualquier pin del lienzo, sea cual sea su nivel (visto en el juego).
+-- Cada pin pasa su dibujo y su raton a un boton de una capa nuestra al mismo nivel,
+-- por encima de la suya y bajo sus barras, su plano y la flecha del jugador
+-- (sc + 8800 / 9000 / 9500 en su Map/*.lua). El boton sigue al pin (dos anclas:
+-- posicion y tamano con el zoom) y se ve solo mientras se ve el pin.
+local lift
+
+local function Lift(pin)
+    if pin.lifted or not (C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("OpenMap")) then return end
+    if not lift then
+        local sc = WorldMapFrame.ScrollContainer
+        lift = CreateFrame("Frame", nil, sc)
+        lift:SetAllPoints(sc)
+        lift:SetClipsChildren(true) -- como el lienzo: nada fuera del mapa
+        lift:SetFrameLevel(math.min(sc:GetFrameLevel() + 8500, 8900))
+    end
+    local b = CreateFrame("Button", nil, lift)
+    b:SetPoint("TOPLEFT", pin)
+    b:SetPoint("BOTTOMRIGHT", pin)
+    b:SetFrameLevel(lift:GetFrameLevel() + 1)
+    b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    b:SetScript("OnEnter", function() pin:OnMouseEnter() end)
+    b:SetScript("OnLeave", function() pin:OnMouseLeave() end)
+    b:SetScript("OnClick", function(_, button) pin:OnMouseClickAction(button) end)
+    for _, region in ipairs({ pin:GetRegions() }) do region:SetParent(b) end
+    pin:HookScript("OnShow", function() b:Show() end)
+    pin:HookScript("OnHide", function() b:Hide() end)
+    b:SetShown(pin:IsShown())
+    pin.lifted = b
+end
+
+local function ApplyFrameLevel(pin)
+    MapCanvasPinMixin.ApplyFrameLevel(pin)
+    Lift(pin)
+end
+
 -- El mixin lo pide la plantilla de UI/MapPins.xml por su nombre global. Se crea
 -- al entrar al juego: MapCanvasPinMixin es de Blizzard_MapCanvas.
 local function CreatePinMixin()
@@ -19,6 +56,7 @@ local function CreatePinMixin()
         self:UseFrameLevelType("PIN_FRAME_LEVEL_TOPMOST")
         self:SetScalingLimits(1, 1.0, 1.2)
     end
+    DungeonQuestAtlasPinMixin.ApplyFrameLevel = ApplyFrameLevel
 
     function DungeonQuestAtlasPinMixin:OnAcquired(marker, x, y)
         self.marker = marker
@@ -124,6 +162,7 @@ local function CreateEntrancePinMixin()
         SetPortal(self.Icon)
         SetPortal(self.Highlight)
     end
+    mixin.ApplyFrameLevel = ApplyFrameLevel
 
     function mixin:OnAcquired(d, x, y, isRaid)
         self.dungeon, self.isRaid = d, isRaid

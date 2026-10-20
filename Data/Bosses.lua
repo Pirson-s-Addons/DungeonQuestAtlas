@@ -103,7 +103,7 @@ ns.Bosses = {
         { name = "Fel Ancient", npcID = 246003, display = 129894, level = 32, loot = { { 273037 }, { 273039 }, { 273038 } } },
         { name = "Lyn the Ignored", npcID = 247032, kind = "rare", display = 130235, loot = { { 273055 }, { 273054 }, { 273053 } } },
         { name = "Shade of the Archmage", npcID = 246020, display = 130061, level = 33, loot = { { 273052 }, { 273049 }, { 273051 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 286987 }, { 286989 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 286987 }, { 286988 }, { 286989 } } },
     },
     EXCAVATION = {
         { name = "Saltspine", npcID = 260322, display = 144209, level = 28, loot = { { 273024 }, { 273022 }, { 273023 } } },
@@ -123,10 +123,10 @@ ns.Bosses = {
     },
     -- Niveles de Salas de los Thanes: ForeverDungeonJournal (08-10-2026); Wowhead Forever aun no los tiene
     THANES = {
-        { name = "Faldrim Anvilmar", display = 142826, level = 16, loot = { { 270227 }, { 271096 }, { 271097 } } },
-        { name = "Magmatus", display = 1070, level = 16, loot = { { 270230 }, { 270231 }, { 271095 } } },
+        { name = "Faldrim Anvilmar", npcID = 261306, display = 142826, level = 16, loot = { { 270227 }, { 271096 }, { 271097 } } },
+        { name = "Magmatus", npcID = 261316, display = 1070, level = 16, loot = { { 270230 }, { 270231 }, { 271095 } } },
         { name = "Plunder", display = 142840, level = 16, loot = { { 270228 }, { 270229 }, { 271098 } } },
-        { name = "Durgen Dirgehammer", display = 142837, level = 16, loot = { { 270256 }, { 270260 }, { 270261 }, { 274286 } } },
+        { name = "Durgen Dirgehammer", npcID = 261319, display = 142837, level = 16, loot = { { 270256 }, { 270260 }, { 270261 }, { 274286 } } },
     },
     LBRS = {
         { name = "Burning Felguard", npcID = 10263, kind = "rare", display = 5047, level = { 56, 57 }, loot = { { 13181, 31.2 }, { 13182, 32 } } },
@@ -195,13 +195,13 @@ ns.Bosses = {
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 253986, 0.23, from = { 7, 6, 4, 2 } }, { 252821, 0.11, from = { 7, 3, 1, 4, 6 } }, { 253984, 0.11, from = { 7, 2, 1 } }, { 253976, 0.11, from = { 7, 8, 4 } }, { 251379, 0.1, from = { 6, 4, 2 } }, { 252824, 0.1, from = { 6, 4, 2 } }, { 252820, 0.08, from = { 3, 1, 6 } }, { 252822, 0.07, from = { 1, 4, 2 } }, { 251378, 0.06, from = { 6, 8, 4 } }, { 252823, 0.04, from = { 1 } }, { 253982, 0.04, from = { 1, 2 } }, { 251375, 0.04, from = { 6, 2 } }, { 251376, 0.03, from = { 8, 6, 4, 2 } }, { 251377, 0.02, from = { 4, 2 } }, { 253980, 0.02, from = { 4 } }, { 253978, 0.02, from = { 8 } } } },
     },
     LORDAERON = {
-        { name = "The Baron", display = 144188, level = 17, loot = { { 271204 }, { 271205 }, { 271206 } } },
-        { name = "Witherfang", display = 144189, level = 17, loot = { { 271201 }, { 271202 }, { 271203 } } },
-        { name = "The Abandoned", display = 138667, level = 18, loot = { { 271207 }, { 271208 }, { 271216 } } },
-        { name = "Bjork", display = 144170, level = 19, loot = { { 271209 }, { 271210 }, { 271217 } } },
-        { name = "Rath'mael", display = 144175, level = 20, loot = { { 271213 }, { 271214 }, { 271215 }, { 273085 }, { 273103 } } },
-        { name = "Viktor the Vile", display = 139455, level = 19, loot = { { 271211 }, { 271212 }, { 271218 } } },
-        { name = "Lordaeron Captain", kind = "rare", display = 139050, level = 19, loot = { { 6641 }, { 6642 } } },
+        { name = "The Baron", npcID = 250660, display = 144188, level = 17, loot = { { 271204 }, { 271205 }, { 271206 } } },
+        { name = "Witherfang", npcID = 250483, display = 144189, level = 17, loot = { { 271201 }, { 271202 }, { 271203 } } },
+        { name = "The Abandoned", npcID = 250631, display = 138667, level = 18, loot = { { 271207 }, { 271208 }, { 271216 } } },
+        { name = "Bjork", npcID = 256097, display = 144170, level = 19, loot = { { 271209 }, { 271210 }, { 271217 } } },
+        { name = "Rath'mael", npcID = 250657, display = 144175, level = 20, loot = { { 271213 }, { 271214 }, { 271215 }, { 273085 }, { 273103 } } },
+        { name = "Viktor the Vile", npcID = 256035, display = 139455, level = 19, loot = { { 271211 }, { 271212 }, { 271218 } } },
+        { name = "Lordaeron Captain", npcID = 255699, kind = "rare", display = 139050, level = 19, loot = { { 6641 }, { 6642 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 286980 }, { 286979 }, { 286978 } } },
     },
     SM_ARM = {

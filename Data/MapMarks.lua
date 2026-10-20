@@ -6,7 +6,9 @@ local _, ns = ...
 --   "entrance": la entrada de la mazmorra;
 --   "up" / "down": escalera o rampa que sube o baja a otra planta;
 --   "floor": paso a otra planta sin saber si sube o baja;
---   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista }.
+--   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista };
+--   "note": como llegar a un jefe { "note", x, y, indice del jefe, clave de L con %s = su nombre }.
+--   Horado Rajacieno: salto y liana hasta Roogug, de ForeverDungeonJournal 1.6.5 (mismo plano de Blizzard).
 -- Sitios de ForeverDungeonJournal (Core/Journal.lua, 08-10-2026; solo los datos,
 -- comprobados sobre cada plano). Sube o baja solo donde FDJ lo dice (Colmillo
 -- Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las cloacas).
@@ -55,7 +57,11 @@ ns.MapMarks = {
         { { "floor", 0.370, 0.720, 4 }, { "floor", 0.274, 0.150, 2 } },
         { { "floor", 0.601, 0.772, 3 } },
     },
-    RFK = { { { "entrance", 0.714, 0.840 } } },
+    RFK = { {
+        { "entrance", 0.714, 0.840 },
+        { "note", 0.606, 0.725, 3, "MAP_NOTE_WALLJUMP" },
+        { "note", 0.626, 0.562, 3, "MAP_NOTE_VINE" },
+    } },
     SM_GY = { { { "entrance", 0.841, 0.831 } } },
     THANES = { { { "entrance", 0.510, 0.944 } } },
     -- Blason de Lordaeron (inicia 95189/95204): sale en uno de 5 sitios al azar (guia de

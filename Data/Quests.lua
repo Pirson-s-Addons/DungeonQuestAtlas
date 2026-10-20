@@ -413,7 +413,7 @@ ns.Quests = {
     [2994] = { level = 51, minLevel = 40, faction = "Alliance", chain = { 2988, 2989, 2990, 2991, 2992, 2993, 2994 }, starts = { "npc:5636" }, ends = { "npc:5636" } },
     [3444] = { level = 51, minLevel = 46, faction = "Both", chain = { 3445, 3444 }, starts = { "npc:7771" }, ends = { "npc:7771" } },
     [3520] = { level = 44, minLevel = 40, faction = "Both", chain = { 3520, 3527, 4787, 3528 }, starts = { "npc:8579" }, ends = { "npc:8579" } },
-    [3765] = { level = 24, minLevel = 18, faction = "Alliance", chain = { 3765, 1275 }, starts = { "npc:4984" }, ends = { "npc:8997" } },
+    [3765] = { breadcrumb = true, level = 24, minLevel = 18, faction = "Alliance", chain = { 3765, 1275 }, starts = { "npc:4984" }, ends = { "npc:8997" } },
     [3801] = { level = 52, minLevel = 48, faction = "Both", chain = { 3801, 3802 }, starts = { "npc:8888" }, ends = { "npc:8888" } },
     [3982] = { level = 54, minLevel = 48, faction = "Horde", chain = { 3981, 3982, 4001, 4002, 4003, 4004 }, starts = { "npc:9020" }, ends = { "npc:9020" } },
     [4001] = { level = 54, minLevel = 48, faction = "Horde", chain = { 3981, 3982, 4001, 4002, 4003, 4004 }, starts = { "npc:9020" }, ends = { "npc:4949" } },

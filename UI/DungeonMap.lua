@@ -113,12 +113,14 @@ local MARK_ICON = {
     down = { atlas = "poi-door-down", file = "Interface\\Buttons\\Arrow-Down-Up", size = 28 },
     floor = { atlas = "poi-door", file = "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up", size = 28 },
     item = { size = 16 }, -- el icono del propio objeto
+    -- Como llegar a un jefe: escalera de mano propia (_project/tools/dqa_art/ladder.py)
+    note = { file = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\ladder", size = 30 },
 }
 
 local function SetMarkIcon(texture, kind, itemID)
     if kind == "item" then return texture:SetTexture(ns.ItemInfo(itemID).icon) end
     local icon = MARK_ICON[kind]
-    if texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(icon.atlas) then
+    if icon.atlas and texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(icon.atlas) then
         texture:SetAtlas(icon.atlas)
     else
         texture:SetTexture(icon.file)
@@ -140,7 +142,7 @@ local function CreateMark(canvas, plan)
     mark.label:SetPoint("TOP", mark, "BOTTOM", 0, -1)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
-        if self.kind == "item" then return end
+        if self.kind == "item" or self.kind == "note" then return end
         if self.to and plan.floors[self.to] then plan:ShowFloor(self.to) end
     end)
     ns.AddTooltip(mark, function()
@@ -154,6 +156,10 @@ local function CreateMark(canvas, plan)
             local item = ns.ItemInfo(mark.itemID)
             return ns.QualityColor(item.quality) .. (item.name or ("#" .. mark.itemID)) .. "|r\n|cffffffff"
                 .. L[mark.hint] .. "\n" .. L.MAP_ITEM_SPOT .. "|r"
+        end
+        if mark.kind == "note" then
+            local boss = ns.Bosses[plan.dungeon.key] and ns.Bosses[plan.dungeon.key][mark.boss]
+            return "|cff59ff59" .. L[mark.hint]:format(boss and ns.BossName(boss, plan.dungeon) or "?") .. "|r"
         end
         local title = (mark.kind == "up" and L.MAP_UP) or (mark.kind == "down" and L.MAP_DOWN)
             or L.MAP_FLOOR_SHORT:format(mark.to)
@@ -346,9 +352,10 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k, m in ipairs(floorMarks) do
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
-            local item = m[1] == "item"
+            local item, note = m[1] == "item", m[1] == "note"
             mark.kind, mark.x, mark.y = m[1], m[2], m[3]
-            mark.to = not item and m[4] or nil
+            mark.to = not (item or note) and m[4] or nil
+            mark.boss = note and m[4] or nil
             mark.itemID, mark.hint = item and m[4] or nil, m[5]
             SetMarkIcon(mark.icon, m[1], mark.itemID)
             SetMarkIcon(mark.glow, m[1], mark.itemID)
@@ -357,7 +364,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             ns.TintPortal(mark.icon, raid)
             ns.TintPortal(mark.glow, raid)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
-            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or item and "" or L.MAP_FLOOR_SHORT:format(m[4]))
+            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
             mark:Show()
         end
@@ -441,7 +448,11 @@ local function CreateOverlay()
     local host = WorldMapFrame.ScrollContainer or WorldMapFrame
     overlay = CreateFrame("Frame", nil, WorldMapFrame)
     overlay:SetAllPoints(host)
-    overlay:SetFrameLevel(host:GetFrameLevel() + 20) -- encima de los pines del mapa
+    -- Encima de los pines del mapa. OpenMap (su plano hasta 9800, su tarjeta 9950) y
+    -- ForeverDungeonJournal (hasta 8000) ponen el suyo ahi: el nuestro, por delante
+    local loaded = C_AddOns and C_AddOns.IsAddOnLoaded
+    local rivals = loaded and (loaded("OpenMap") or loaded("ForeverDungeonJournal"))
+    overlay:SetFrameLevel(rivals and math.min(host:GetFrameLevel() + 9900, 9960) or host:GetFrameLevel() + 20)
     overlay:EnableMouse(true) -- que los clics no lleguen al mapa de debajo
     local bg = overlay:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
