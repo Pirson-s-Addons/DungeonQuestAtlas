@@ -197,7 +197,6 @@ local function CreateGeneral()
         ns.RefreshMapPins()
         ns.ApplyWorldMapPlan()
         ns.SetMapBossScale(ns.db.mapBossScale)
-        ns.RefreshMapPlans()
         ns.UpdateMinimapButton()
         ns.SetLanguage(ns.db.language) -- vuelve al idioma del juego
         ns.RefreshUI()
