@@ -115,6 +115,7 @@ local MARK_ICON = {
     item = { size = 16 }, -- el icono del propio objeto
     -- Como llegar a un jefe: escalera de mano propia (_project/tools/dqa_art/ladder.py)
     note = { file = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\ladder", size = 30 },
+    pull = { file = "Interface\\TargetingFrame\\UI-TargetingFrame-Skull", size = 16 }, -- Data/Pulls.lua
 }
 
 local function SetMarkIcon(texture, kind, itemID)
@@ -142,7 +143,7 @@ local function CreateMark(canvas, plan)
     mark.label:SetPoint("TOP", mark, "BOTTOM", 0, -1)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
-        if self.kind == "item" or self.kind == "note" then return end
+        if self.kind == "item" or self.kind == "note" or self.kind == "pull" then return end
         if self.to and plan.floors[self.to] then plan:ShowFloor(self.to) end
     end)
     ns.AddTooltip(mark, function()
@@ -161,6 +162,9 @@ local function CreateMark(canvas, plan)
             local boss = ns.Bosses[plan.dungeon.key] and ns.Bosses[plan.dungeon.key][mark.boss]
             return "|cff59ff59" .. L[mark.hint]:format(boss and ns.BossName(boss, plan.dungeon) or "?") .. "|r"
         end
+        if mark.kind == "pull" then
+            return L.MAP_PULL:format(mark.count) .. (mark.step and ("\n|cffffffff" .. L.MAP_ROUTE_STEP:format(mark.step) .. "|r") or "")
+        end
         local title = (mark.kind == "up" and L.MAP_UP) or (mark.kind == "down" and L.MAP_DOWN)
             or L.MAP_FLOOR_SHORT:format(mark.to)
         return title .. "\n|cffffffff" .. L.MAP_GO_FLOOR:format(mark.to) .. "|r"
@@ -176,6 +180,13 @@ local function SetBossScale(value) -- tambien ns.SetMapBossScale (Valores por de
     for _, plan in ipairs(plans) do plan:UpdateBossScale() end
 end
 ns.SetMapBossScale = SetBossScale
+
+-- Repinta la planta de cada plano abierto (opciones de pulls y ruta, Valores por defecto)
+function ns.RefreshMapPlans()
+    for _, plan in ipairs(plans) do
+        if plan.dungeon then plan:ShowFloor(plan.index) end
+    end
+end
 
 -- Plano: viewport que recorta y, dentro, el plano a escala con sus 12 piezas
 -- (la ultima columna y la ultima fila se recortan) y las chinchetas. El plano
@@ -194,7 +205,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         local w, h = math.min(256, MAP_W - (n - 1) % 4 * 256), math.min(256, MAP_H - math.floor((n - 1) / 4) * 256)
         tiles[n]:SetTexCoord(0, w / 256, 0, h / 256)
     end
-    local pins, marks = {}, {}
+    local pins, marks, lines = {}, {}, {}
     local zoom, ox, oy = 1, 0, 0
 
     -- Coloca piezas y chinchetas para el zoom y el desplazamiento actuales
@@ -228,6 +239,13 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
                     pin:ClearAllPoints()
                     pin:SetPoint("CENTER", canvas, "TOPLEFT", pin.x * mw / k, -pin.y * mh / k)
                 end
+            end
+        end
+        -- Ruta: lineas del plano (debajo de caras y marcas, que son marcos)
+        for _, line in ipairs(lines) do
+            if line.from then
+                line:SetStartPoint("TOPLEFT", canvas, line.from[1] * mw, -line.from[2] * mh)
+                line:SetEndPoint("TOPLEFT", canvas, line.to[1] * mw, -line.to[2] * mh)
             end
         end
     end
@@ -308,11 +326,44 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     local minus = SizeButton("-", -BOSS_SCALE_STEP, "LEFT", 5)
     local plus = SizeButton("+", BOSS_SCALE_STEP, "RIGHT", -5)
+    -- Pulls y ruta (Data/Pulls.lua): placa a la derecha de la de las caras, con un
+    -- boton para cada uno (encendido: iluminado y en blanco, como el de la planta).
+    -- Solo en las mazmorras con pulls; el mismo valor en todos los planos.
+    local pullBar = ns.CreateDarkBox(parent, 10)
+    pullBar:SetFrameLevel(viewport:GetFrameLevel() + 10)
+    pullBar:SetSize(160, 30)
+    pullBar:SetPoint("LEFT", sizeBar, "RIGHT", 6, 0)
+    local pullButtons = {}
+    local function PullButton(key, text, tooltip, point, x)
+        local b = CreateFrame("Button", nil, pullBar, "UIPanelButtonTemplate")
+        b:SetSize(72, 20)
+        b:SetText(text)
+        b:SetPoint(point, x, 0)
+        b:SetScript("OnClick", function()
+            ns.db[key] = not ns.db[key]
+            ns.RefreshMapPlans()
+        end)
+        ns.AddTooltip(b, tooltip)
+        b.key = key
+        pullButtons[#pullButtons + 1] = b
+    end
+    PullButton("mapPulls", L.MAP_PULLS, L.MAP_PULLS_TOOLTIP, "LEFT", 6)
+    PullButton("mapRoute", L.MAP_ROUTE, L.MAP_ROUTE_TOOLTIP, "RIGHT", -6)
+
     function plan:UpdateBossScale()
         local v = ns.db.mapBossScale
         sizeText:SetText(L.MAP_BOSS_ICONS:format(math.floor(v * 100 + 0.5)))
         minus:SetEnabled(v > 0)
         plus:SetEnabled(v < BOSS_SCALE_MAX)
+        pullBar:SetShown(self.dungeon and ns.Pulls[self.dungeon.key] ~= nil)
+        for _, b in ipairs(pullButtons) do
+            local on = ns.db[b.key]
+            if on then b:LockHighlight() else b:UnlockHighlight() end
+            local text = b:GetFontString()
+            if text then
+                if on then text:SetTextColor(1, 1, 1) else text:SetTextColor(1, 0.82, 0) end
+            end
+        end
         Layout()
     end
     plans[#plans + 1] = plan
@@ -349,13 +400,20 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k = #floor.pins + 1, #pins do pins[k].x = nil end
         for _, mark in ipairs(marks) do mark:Hide(); mark.x = nil end
         local floorMarks = ns.MapMarks[self.dungeon.key] and ns.MapMarks[self.dungeon.key][index] or {}
-        for k, m in ipairs(floorMarks) do
+        -- Pulls de la planta (Data/Pulls.lua) delante: las demas marcas quedan encima
+        local pulls = ns.Pulls[self.dungeon.key]
+        local floorPulls = ns.db.mapPulls and pulls and pulls[index] or {}
+        local all = {}
+        for _, p in ipairs(floorPulls) do all[#all + 1] = { "pull", p[1], p[2], p[3], p[4] } end
+        for _, m in ipairs(floorMarks) do all[#all + 1] = m end
+        for k, m in ipairs(all) do
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
-            local item, note = m[1] == "item", m[1] == "note"
+            local item, note, pull = m[1] == "item", m[1] == "note", m[1] == "pull"
             mark.kind, mark.x, mark.y = m[1], m[2], m[3]
-            mark.to = not (item or note) and m[4] or nil
+            mark.to = not (item or note or pull) and m[4] or nil
             mark.boss = note and m[4] or nil
+            mark.count, mark.step = pull and m[4] or nil, pull and m[5] or nil
             mark.itemID, mark.hint = item and m[4] or nil, m[5]
             SetMarkIcon(mark.icon, m[1], mark.itemID)
             SetMarkIcon(mark.glow, m[1], mark.itemID)
@@ -364,9 +422,40 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             ns.TintPortal(mark.icon, raid)
             ns.TintPortal(mark.glow, raid)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
-            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
-            mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
+            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE
+                or pull and (ns.db.mapRoute and mark.step and tostring(mark.step) or "")
+                or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
+            mark:SetFrameLevel(canvas:GetFrameLevel() + (pull and 1 or 2)) -- encima de las caras si coinciden; los pulls no
             mark:Show()
+        end
+        -- Ruta: una linea entre dos pasos seguidos de esta planta (pulls y jefes). El
+        -- paso siguiente en otra planta no se une: alli se llega por la escalera.
+        for _, line in ipairs(lines) do line:Hide(); line.from = nil end
+        if ns.db.mapRoute and pulls and canvas.CreateLine then
+            local steps = {}
+            for _, p in ipairs(pulls[index] or {}) do
+                if p[4] then steps[p[4]] = { p[1], p[2] } end
+            end
+            for _, p in ipairs(floor.pins) do
+                local step = pulls.bosses and pulls.bosses[p[1]]
+                if step then steps[step] = { p[2], p[3] } end
+            end
+            local n = 0
+            for step, from in pairs(steps) do
+                local to = steps[step + 1]
+                if to then
+                    n = n + 1
+                    local line = lines[n]
+                    if not line then
+                        line = canvas:CreateLine(nil, "ARTWORK")
+                        line:SetThickness(3)
+                        line:SetColorTexture(1, 0.82, 0, 0.8)
+                        lines[n] = line
+                    end
+                    line.from, line.to = from, to
+                    line:Show()
+                end
+            end
         end
         self:UpdateBossScale()
         UpdateFloorButtons()
