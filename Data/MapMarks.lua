@@ -41,7 +41,9 @@ ns.MapMarks = {
         [4] = { { "up", 0.506, 0.831, 5 }, { "down", 0.564, 0.401, 3 } },
         [5] = { { "down", 0.506, 0.831, 4 }, { "up", 0.439, 0.729, 6 }, { "up", 0.546, 0.539, 6 } },
         [6] = { { "down", 0.42, 0.76, 5 }, { "down", 0.546, 0.539, 5 }, { "up", 0.5, 0.69, 7 } },
-        [7] = { { "down", 0.453, 0.873, 6 } },
+        -- Tomo negro (276561): en la mesa de la sala de Arugal; invoca a Lyn el Ignorado
+        -- en Ciudad de Dalaran. Sitio de una captura del autor desde dentro (22-10-2026).
+        [7] = { { "down", 0.453, 0.873, 6 }, { "item", 0.600, 0.281, 276561, "MAP_ITEM_TOME" } },
     },
     BFD = {
         { { "entrance", 0.455, 0.085 }, { "floor", 0.615, 0.700, 2 } },

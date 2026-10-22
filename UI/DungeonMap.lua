@@ -155,7 +155,7 @@ local function CreateMark(canvas, plan)
         if mark.kind == "item" then
             local item = ns.ItemInfo(mark.itemID)
             return ns.QualityColor(item.quality) .. (item.name or ("#" .. mark.itemID)) .. "|r\n|cffffffff"
-                .. L[mark.hint] .. "\n" .. L.MAP_ITEM_SPOT .. "|r"
+                .. L[mark.hint] .. (mark.spots > 1 and ("\n" .. L.MAP_ITEM_SPOT) or "") .. "|r"
         end
         if mark.kind == "note" then
             local boss = ns.Bosses[plan.dungeon.key] and ns.Bosses[plan.dungeon.key][mark.boss]
@@ -357,6 +357,11 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark.to = not (item or note) and m[4] or nil
             mark.boss = note and m[4] or nil
             mark.itemID, mark.hint = item and m[4] or nil, m[5]
+            -- Sitios del mismo objeto en la planta: con uno solo, no es "uno de estos sitios"
+            mark.spots = 0
+            for _, o in ipairs(floorMarks) do
+                if item and o[1] == "item" and o[4] == m[4] then mark.spots = mark.spots + 1 end
+            end
             SetMarkIcon(mark.icon, m[1], mark.itemID)
             SetMarkIcon(mark.glow, m[1], mark.itemID)
             -- Entrada de una banda (tiene size): verde, como su portal en el mapa del mundo
