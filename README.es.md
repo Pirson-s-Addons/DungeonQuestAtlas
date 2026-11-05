@@ -95,12 +95,15 @@ Las descripciones de las misiones se **recogen en el juego**:
 |---|---|
 | `/dqa` | Abre o cierra la ventana (también `/dungeonquest`) |
 | `/dqa config` | Abre las opciones |
+| `/dqa mode` | Elige Atlas completo o Modo aventura |
+| `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Modo recolector |
 | `/dqa export` | Muestra lo recogido, listo para copiar |
 | `/dqa entrance <clave>` | Guarda tu posición como entrada de esa mazmorra (`RFC`, `DM`, `WC`...) |
 | `/dqa route <clave> [clear]` | Guarda tu posición como siguiente parada de la ruta a esa mazmorra; el botón **Ruta** te guía parada a parada |
 | `/dqa clear` | Quita todos los marcadores |
 | `/dqa debug` | Mensajes de depuración en el chat |
+| `/dqa bug` | Muestra la dirección para informar de un fallo |
 
 ## Instalación
 

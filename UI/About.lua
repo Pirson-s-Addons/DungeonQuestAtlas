@@ -100,6 +100,7 @@ function ns.CreateAbout(info)
     local y = SectionHeader(panel, -200, L.LINKS)
     y = UrlBox(panel, y, "GitHub", info.github)
     y = UrlBox(panel, y, "CurseForge", info.curseforge)
+    if info.issues then y = UrlBox(panel, y, L.BUG_REPORT, info.issues) end
     y = SectionHeader(panel, y - 14, L.COMMANDS)
 
     for _, entry in ipairs(info.commands) do

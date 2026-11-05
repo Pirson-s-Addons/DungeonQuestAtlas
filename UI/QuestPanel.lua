@@ -310,6 +310,47 @@ local function CreateDetail(parent)
     local obj = Text("QuestFont")
     obj.section = objHeader
 
+    -- Objetos que pide (q.need), en tarjetas: los que tienen sitio conocido
+    -- (ns.ItemPlaces) llevan un marcador del mapa y, con un clic, se marcan
+    local needHeader = Section(L.NEEDS)
+    local needBlock = Add(CreateFrame("Frame", nil, content))
+    needBlock.section = needHeader
+    local needCards = {}
+    local function MarkItem(card)
+        local place = ns.ItemPlaces[card.itemID]
+        local info = ns.ItemInfo(card.itemID)
+        local mode, point = ns.MarkPlace(place, info.name or ("#" .. card.itemID), nil, "item")
+        if mode and point then ns.OpenMapAt(point.mapID) end
+    end
+    local function FillNeed(q)
+        local list = q.need or {}
+        local half = (ns.Width(needBlock, 330) - 6) / 2
+        for i, n in ipairs(list) do
+            local card = needCards[i]
+            if not card then
+                card = ns.CreateRewardCard(needBlock)
+                card.pin = card:CreateTexture(nil, "OVERLAY")
+                card.pin:SetSize(16, 16)
+                card.pin:SetPoint("TOPLEFT", card.icon, "TOPLEFT", -3, 3)
+                card.pin:SetTexture(ns.IMG .. "pin_dqa")
+                needCards[i] = card
+            end
+            card:ClearAllPoints()
+            card:SetWidth(half)
+            card:SetPoint("TOPLEFT", ((i - 1) % 2) * (half + 6), -math.floor((i - 1) / 2) * (ns.REWARD_CARD_HEIGHT + 6))
+            ns.SetRewardCard(card, n[1], n[2])
+            local known = ns.ItemPlaces[n[1]] ~= nil
+            card.pin:SetShown(known)
+            card.tipLine = known and L.ITEM_PLACE_HINT or nil
+            card.onPlainClick = known and MarkItem or nil
+            card:Show()
+        end
+        for i = #list + 1, #needCards do needCards[i]:Hide() end
+        needBlock:SetHeight(math.max(1, math.ceil(#list / 2) * (ns.REWARD_CARD_HEIGHT + 6)))
+        needBlock:SetShown(#list > 0)
+        needHeader:SetShown(#list > 0)
+    end
+
     -- Objeto proporcionado (q.provided): lo que da la mision al cogerla (la llave
     -- de las cloacas de Dalaran), en la tarjeta de las recompensas
     local providedHeader = Section(L.PROVIDED)
@@ -607,6 +648,7 @@ local function CreateDetail(parent)
             objective = table.concat(need, "\n")
         end
         Set(obj, objective)
+        FillNeed(q)
         FillProvided(q)
 
         local hasRewards = FillRewards(q, id)

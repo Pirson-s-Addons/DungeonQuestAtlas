@@ -31,6 +31,12 @@ local DEFAULTS = {
     -- tamano de las caras de jefe (1 = 100 %; 0 las esconde)
     worldMapPlan = true,
     mapBossScale = 1,
+    itemSourceTip = true, -- "Jefe - Mazmorra" en el tooltip de cualquier objeto (UI/ItemSource.lua)
+    favorites = {},       -- objetos favoritos [itemID] = true (clic derecho; UI/LootSearch.lua)
+    -- Portada: ocultar solas las mazmorras de nivel superado o con todas las misiones hechas
+    hideOutleveled = false,
+    hideDoneDungeons = false,
+    newerVersion = nil,   -- version mas nueva oida a otro jugador { version, cuando } (Core/VersionCheck.lua)
     wowheadLang = "auto", -- "auto" (idioma del cliente) o "en"
     language = "auto",    -- idioma de la ventana: "auto" (el del juego) o "deDE", "enUS"...
     collect = false,
@@ -38,8 +44,9 @@ local DEFAULTS = {
     window = {},
 }
 local CHAR_DEFAULTS = { dungeon = nil, view = "home", tab = "quests", markers = {}, target = nil,
-    kills = {}, runs = {}, left = {}, done = {} } -- jefes muertos (Core/BossKills.lua): por mazmorra,
+    kills = {}, runs = {}, left = {}, done = {}, -- jefes muertos (Core/BossKills.lua): por mazmorra,
     -- copia de la instancia, cuando saliste de ella y cuando murio el ultimo jefe
+    unlocked = {}, hiddenDungeons = {} } -- y las mazmorras ocultas a mano (clic derecho en su tarjeta) -- jefes finales muertos (UI/JournalMode.lua); journalMode: nil hasta elegirlo
 ns.DEFAULTS = DEFAULTS
 
 ns.PREFIX = "|cffd597ffDungeon Quest Atlas|r: "
@@ -430,6 +437,9 @@ function ns.CommandList()
     return {
         { "/dqa", L.CMD_TOGGLE },
         { "/dqa config", L.CMD_CONFIG },
+        { "/dqa mode", L.CMD_MODE },
+        { "/dqa rfk", L.CMD_ALIAS },
+        { "/dqa bug", L.CMD_BUG },
         { "/dqa collect on|off", L.CMD_COLLECT },
         { "/dqa export", L.CMD_EXPORT },
         { "/dqa entrance <key>", L.CMD_ENTRANCE },
@@ -446,6 +456,8 @@ function ns.HandleCommand(msg)
         ns.ToggleMainFrame()
     elseif cmd == "config" or cmd == "options" then
         ns.OpenOptions()
+    elseif cmd == "mode" then
+        ns.ShowModeChooser()
     elseif cmd == "collect" then
         local arg = rest:lower()
         if arg == "on" or arg == "off" then
@@ -466,6 +478,10 @@ function ns.HandleCommand(msg)
     elseif cmd == "debug" then
         ns.db.debug = not ns.db.debug
         ns.Print(ns.db.debug and L.DEBUG_ON or L.DEBUG_OFF)
+    elseif cmd == "bug" then
+        ns.ShowBugReport()
+    elseif ns.DungeonsByAlias(cmd) then -- /dqa rfk, /dqa stocks...
+        ns.OpenDungeon(ns.DungeonsByAlias(cmd)[1])
     else
         Help()
     end

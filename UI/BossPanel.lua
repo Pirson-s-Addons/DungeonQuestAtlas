@@ -50,6 +50,10 @@ function ns.BossInfo(boss, rarePrefix)
     local level = type(boss.level) == "table" and table.concat(boss.level, "-") or boss.level
     if level then info[#info + 1] = L.LEVEL .. " " .. level end
     if boss.kind == "rare" then info[#info + 1] = (rarePrefix or "") .. L.RARE end
+    -- Solo una faccion puede atacarlo: su emblema y "Solo Horda"
+    if boss.faction then
+        info[#info + 1] = ns.FactionMarkup(boss.faction, 14) .. (boss.faction == "Horde" and L.BOSS_HORDE_ONLY or L.BOSS_ALLIANCE_ONLY)
+    end
     info[#info + 1] = L.ITEMS:format(#boss.loot)
     return table.concat(info, SEP)
 end

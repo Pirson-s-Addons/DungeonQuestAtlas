@@ -34,6 +34,36 @@ function ns.ItemInfo(id)
     return { name = name, link = link, quality = quality, icon = icon or QUESTION, kind = kind }
 end
 
+-- ------------------------------------------
+-- Favoritos (por cuenta): clic derecho en un objeto
+-- ------------------------------------------
+function ns.IsFavorite(itemID)
+    return itemID ~= nil and ns.db ~= nil and ns.db.favorites[itemID] == true
+end
+
+function ns.ToggleFavorite(itemID)
+    ns.db.favorites[itemID] = not ns.IsFavorite(itemID) or nil
+    if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+    if GameTooltip:IsShown() and GameTooltip:GetOwner() and GameTooltip:GetOwner().UpdateTooltip then
+        GameTooltip:GetOwner():UpdateTooltip()
+    end
+    ns.RefreshUI()
+end
+
+-- Estrella dorada en la esquina del icono
+function ns.CreateFavoriteStar(parent, icon)
+    local star = parent:CreateTexture(nil, "OVERLAY", nil, 2)
+    star:SetSize(18, 18)
+    star:SetPoint("TOPRIGHT", icon, "TOPRIGHT", 5, 5)
+    if not (C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("PetJournal-FavoritesIcon")
+        and star:SetAtlas("PetJournal-FavoritesIcon") ~= false) then
+        star:SetTexture("Interface\\Common\\ReputationStar")
+        star:SetTexCoord(0, 0.5, 0, 0.5)
+    end
+    star:Hide()
+    return star
+end
+
 function ns.QualityColor(quality)
     local color = quality and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[quality]
     return color and color.hex or "|cffffffff"
@@ -57,11 +87,18 @@ local function ShowTooltip(self)
     if IsModifiedClick and IsModifiedClick("COMPAREITEMS") and GameTooltip_ShowCompareItem then
         GameTooltip_ShowCompareItem(GameTooltip)
     end
+    if self.tipLine then GameTooltip:AddLine(self.tipLine, 0.25, 1, 0.25, true) end
     GameTooltip:AddLine(L.LOOT_HINT, 0.5, 0.5, 0.5, true)
+    if ns.IsFavorite then GameTooltip:AddLine(ns.IsFavorite(self.itemID) and L.FAV_REMOVE or L.FAV_ADD, 0.5, 0.5, 0.5, true) end
     GameTooltip:Show()
 end
 
-local function OnClick(self)
+local function OnClick(self, button)
+    if button == "RightButton" then -- favoritos (UI/LootSearch.lua)
+        if self.itemID and ns.ToggleFavorite then ns.ToggleFavorite(self.itemID) end
+        return
+    end
+    if self.onPlainClick and not IsModifiedClick() then return self.onPlainClick(self, button) end
     local link = self.itemID and select(2, GetItemInfo(self.itemID))
     if link and HandleModifiedItemClick then HandleModifiedItemClick(link) end
 end
@@ -99,8 +136,10 @@ function ns.SetupItemButton(button)
     button:SetScript("OnEnter", ShowTooltip)
     button:SetScript("OnLeave", function() GameTooltip:Hide() end)
     button:SetScript("OnClick", OnClick)
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     -- GameTooltip llama a UpdateTooltip mientras se ve: pulsar Shift compara al momento
     button.UpdateTooltip = ShowTooltip
+    button.star = ns.CreateFavoriteStar(button, button.icon)
 end
 
 -- extra: texto a la derecha ("12.5%"); count: cuantos da
@@ -119,6 +158,7 @@ function ns.SetItemButton(button, id, count, extra)
     end
     button.info:SetText(info.kind or "")
     button.extra:SetText(extra or "")
+    button.star:SetShown(ns.IsFavorite(id))
 end
 
 -- Tarjeta de recompensa, como las de la ventana de misiones del juego
@@ -155,7 +195,9 @@ function ns.CreateRewardCard(parent)
     card:SetScript("OnEnter", ShowTooltip)
     card:SetScript("OnLeave", function() GameTooltip:Hide() end)
     card:SetScript("OnClick", OnClick)
+    card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     card.UpdateTooltip = ShowTooltip
+    card.star = ns.CreateFavoriteStar(card, card.icon)
     return card
 end
 
@@ -170,6 +212,7 @@ function ns.SetRewardCard(card, id, count, icon, text)
     card.iconBorder:SetShown(color and color.r ~= nil or false)
     if color and color.r then card.iconBorder:SetVertexColor(color.r, color.g, color.b) end
     card.name:SetText(info and (ns.QualityColor(info.quality) .. (info.name or ("#" .. id)) .. "|r") or text)
+    card.star:SetShown(id ~= nil and ns.IsFavorite(id))
 end
 
 function ns.CreateItemButton(parent)

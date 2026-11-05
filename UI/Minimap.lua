@@ -39,3 +39,31 @@ function ns.UpdateMinimapButton()
     if not icon then return end
     if ns.db.minimap.hide then icon:Hide(NAME) else icon:Show(NAME) end
 end
+
+-- ==========================================
+-- MENU DE ADDONS DEL MINIMAPA Y TECLAS
+-- ==========================================
+-- La entrada del addon en el menu de addons del minimapa (## AddonCompartmentFunc
+-- del .toc): los mismos clics y el mismo tooltip que el boton.
+function DungeonQuestAtlas_OnAddonCompartmentClick(_, button)
+    if button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
+end
+
+function DungeonQuestAtlas_OnAddonCompartmentEnter(_, frame)
+    GameTooltip:SetOwner(frame, "ANCHOR_LEFT")
+    GameTooltip:AddLine("|cffd597ffDungeon Quest Atlas|r |cff00ccffForever|r")
+    GameTooltip:AddLine(L.MM_PENDING:format(ns.PendingInRange()), 1, 1, 1)
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(L.MM_LEFT, 0.8, 0.8, 0.8)
+    GameTooltip:AddLine(L.MM_RIGHT, 0.8, 0.8, 0.8)
+    GameTooltip:Show()
+end
+
+function DungeonQuestAtlas_OnAddonCompartmentLeave()
+    GameTooltip:Hide()
+end
+
+-- Nombres de Bindings.xml en Opciones > Atajos de teclado (en el idioma del juego)
+BINDING_HEADER_DUNGEONQUESTATLAS = "Dungeon Quest Atlas"
+BINDING_NAME_DUNGEONQUESTATLAS_TOGGLE = L.BINDING_TOGGLE
+BINDING_NAME_DUNGEONQUESTATLAS_ITEM = L.BINDING_ITEM

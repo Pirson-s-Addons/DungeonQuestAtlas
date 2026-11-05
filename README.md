@@ -99,12 +99,15 @@ Quest descriptions are **collected in the game**:
 |---|---|
 | `/dqa` | Opens or closes the window (also `/dungeonquest`) |
 | `/dqa config` | Opens the options |
+| `/dqa mode` | Choose Full Atlas or Adventure Mode |
+| `/dqa rfk` | Opens a dungeon by its shortcut (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Collector mode |
 | `/dqa export` | Shows the collected data, ready to copy |
 | `/dqa entrance <key>` | Saves your position as that dungeon's entrance (`RFC`, `DM`, `WC`...) |
 | `/dqa route <key> [clear]` | Saves your position as the next stop of the route to that dungeon; the **Route** button guides you stop by stop |
 | `/dqa clear` | Removes all the markers |
 | `/dqa debug` | Debug messages in the chat |
+| `/dqa bug` | Shows the address to report a bug |
 
 ## Installation
 

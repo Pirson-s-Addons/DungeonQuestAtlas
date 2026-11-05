@@ -1,0 +1,10 @@
+<!-- Teclas de Dungeon Quest Atlas (Opciones > Atajos de teclado > AddOns). Los nombres,
+     en BINDING_NAME_* de UI/Minimap.lua. -->
+<Bindings>
+    <Binding name="DUNGEONQUESTATLAS_TOGGLE" header="DUNGEONQUESTATLAS" category="ADDONS">
+        DungeonQuestAtlas.ToggleMainFrame()
+    </Binding>
+    <Binding name="DUNGEONQUESTATLAS_ITEM" category="ADDONS">
+        DungeonQuestAtlas.OpenHoveredItem()
+    </Binding>
+</Bindings>

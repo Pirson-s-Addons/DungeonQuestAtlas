@@ -69,6 +69,10 @@ local function CreateGeneral()
     Checkbox("hideCompleted", L.HIDE_COMPLETED, L.HIDE_COMPLETED_TOOLTIP, -78, ns.RefreshUI)
     Checkbox("autoFaction", L.AUTO_FACTION, L.AUTO_FACTION_TOOLTIP, -104)
     Checkbox("hideOtherClasses", L.HIDE_OTHER_CLASSES, L.HIDE_OTHER_CLASSES_TOOLTIP, -130, ns.RefreshUI)
+    -- Por personaje (UI/JournalMode.lua); a la derecha, bajo el logo
+    Checkbox("journalMode", L.RPG_OPTION, L.RPG_OPTION_TOOLTIP, -130, nil,
+        function() return ns.IsRPGMode() end, function(v) ns.SetJournalMode(v and "rpg" or "full") end)
+        :SetPoint("TOPLEFT", X + 300, -130)
 
     -- "Etiqueta: valor", con el minimo y el maximo debajo
     local function Slider(key, label, tooltip, y, min, max, step, format, onChange)
@@ -109,6 +113,8 @@ local function CreateGeneral()
     Checkbox("chainGuide", L.CHAIN_GUIDE, L.CHAIN_GUIDE_TOOLTIP, -277)
     -- Debajo, en la izquierda: a la derecha pisaba el logo
     Checkbox("worldMapPlan", L.WORLD_MAP_PLAN, L.WORLD_MAP_PLAN_TOOLTIP, -303, ns.ApplyWorldMapPlan)
+    -- A su derecha, bajo las entradas: el origen en el tooltip de los objetos (UI/ItemSource.lua)
+    Checkbox("itemSourceTip", L.ITEM_SOURCE_TIP, L.ITEM_SOURCE_TIP_TOOLTIP, -303):SetPoint("TOPLEFT", X + 300, -303)
     -- Entradas en zonas y en continentes, a la derecha: abajo ya no cabe nada.
     -- Las mismas que el boton del mapa del mundo (clic derecho y clic).
     local entranceSize -- atenuado si no hay entradas en ningun mapa
@@ -212,6 +218,7 @@ function ns.CreateOptions()
         listName = "Dungeon Quest Atlas",
         logo = ns.LOGO,
         github = "https://github.com/Pirson-s-Addons/DungeonQuestAtlas",
+        issues = ns.ISSUES_URL,
         curseforge = "https://www.curseforge.com/wow/addons/dungeon-quest-atlas",
         commands = ns.CommandList(),
     })

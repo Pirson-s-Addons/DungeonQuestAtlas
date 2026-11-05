@@ -347,4 +347,19 @@ ns.Places = {
     ["npc:247264"] = { npcID = 247264, name = "Emissary Jacques", mapID = 1424, x = 48.3, y = 60.1 },
     ["npc:268743"] = { npcID = 268743, name = "Rexxie Copperclutch", inside = true },
     ["npc:269127"] = { npcID = 269127, name = "Image of Archmage Modera", mapID = 1421, x = 68.5, y = 45.3 },
+    -- Trabajos de picaro y cadenas previas de Ruinas de Lordaeron (05-11-2026)
+    ["name:Dead Drop"] = { name = "Dead Drop", mapID = 1421, x = 47.1, y = 71.1 },
+    ["npc:1937"] = { npcID = 1937, name = "Apothecary Renferrel", mapID = 1421, x = 42.8, y = 40.9 },
+    ["npc:1495"] = { npcID = 1495, name = "Deathguard Linnea", mapID = 1420, x = 65.5, y = 60.3 },
+}
+
+-- Donde se consigue un objeto que pide una mision (need): clic en su tarjeta, marcador ahi
+ns.ItemPlaces = {
+    [210186] = { mapID = 1442, x = 58.2, y = 51.7 }, -- Breaching Charge: Veenix, Sierra Espolon
+    [3254] = { mapID = 1421, x = 35.5, y = 12.0 },   -- Skittering Blood: Skittering Dark
+    [3255] = { mapID = 1421, x = 43.0, y = 73.2 },   -- Berard's Journal: posada de Pirolena
+    [3256] = { mapID = 1421, x = 72.0, y = 35.5 },   -- Lake Skulker Moss: Islas del Alba
+    [3257] = { mapID = 1421, x = 77.0, y = 25.0 },   -- Lake Creeper Moss: Islas del Alba
+    [3258] = { mapID = 1421, x = 78.5, y = 31.5 },   -- Hardened Tumor: murlocs del lago Lordamere
+    [286326] = { mapID = 1420, x = 83.9, y = 44.0 }, -- Riptear's Heart: Riptear, nordeste de Tirisfal
 }

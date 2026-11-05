@@ -10,6 +10,7 @@ local _, ns = ...
 -- por su posicion en la lista, de mas a menos probable). Las recetas, en el botin de
 -- cada jefe con su probabilidad: Wowhead Forever (veces que cayo / veces saqueado).
 -- display: CreatureDisplayID para el retrato. level: nivel del jefe.
+-- faction: solo la puede atacar esa faccion (los enanos perdidos de Uldaman son amistosos para la Alianza).
 -- loot = { { itemID, probabilidad en % (si se conoce) }, ... }
 -- Los objetos nuevos de Forever en mazmorras clasicas (sin probabilidad) y los seis cascos de
 -- cuero compartidos por varios jefes: foreverchanges.pro, revisado el 17-10-2026.
@@ -331,9 +332,9 @@ ns.Bosses = {
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 251380, 0.04, from = { 3 } }, { 253976, 0.04, from = { 4, 5 } }, { 252822, 0.03, from = { 1, 5, 4 } }, { 253980, 0.03, from = { 4, 1 } }, { 251377, 0.03, from = { 4 } }, { 252825, 0.02, from = { 5, 4, 1 } }, { 251383, 0.02, from = { 3 } }, { 252803, 0.02, from = { 3 } }, { 253942, 0.02, from = { 3 } }, { 253944, 0.02, from = { 3 } }, { 251378, 0.02, from = { 5, 4 } }, { 253986, 0.02, from = { 5, 4 } }, { 251375, 0.01, from = { 4, 1 } }, { 251379, 0.01, from = { 5, 1 } }, { 252823, 0.01, from = { 4, 1 } }, { 252824, 0.01, from = { 5, 1 } }, { 253978, 0.01, from = { 1 } }, { 253982, 0.01, from = { 1 } }, { 251382, 0.01, from = { 3 } }, { 252801, 0.01, from = { 3 } }, { 251376, 0.01, from = { 4 } }, { 252821, 0.01, from = { 5, 4 } }, { 253984, 0.01, from = { 5, 4 } }, { 252820, 0.01, from = { 5 } } } },
     },
     ULDA = {
-        { name = "Eric \"The Swift\"", display = 5708, level = 40, loot = { { 9394, 8.2 }, { 9398, 79.8 }, { 2459, 43 } } },
-        { name = "Baelog", npcID = 6906, display = 5710, level = 41, loot = { { 9401, 9.3 }, { 9399, 87.6 }, { 9400, 39.6 } } },
-        { name = "Olaf", npcID = 6908, display = 5709, level = 40, loot = { { 9404, 13.2 }, { 9403, 77.9 }, { 1177, 85.4 } } },
+        { faction = "Horde", name = "Eric \"The Swift\"", display = 5708, level = 40, loot = { { 9394, 8.2 }, { 9398, 79.8 }, { 2459, 43 } } },
+        { faction = "Horde", name = "Baelog", npcID = 6906, display = 5710, level = 41, loot = { { 9401, 9.3 }, { 9399, 87.6 }, { 9400, 39.6 } } },
+        { faction = "Horde", name = "Olaf", npcID = 6908, display = 5709, level = 40, loot = { { 9404, 13.2 }, { 9403, 77.9 }, { 1177, 85.4 } } },
         { name = "Revelosh", npcID = 6910, display = 5945, level = 40, loot = { { 9389, 23.3 }, { 9388, 21 }, { 9390, 21.1 }, { 9387, 22.7 }, { 7741, 40.2 } } },
         { name = "Ironaya", npcID = 7228, display = 6089, level = 40, loot = { { 9409, 37.7 }, { 9407, 37.7 }, { 9408, 20.5 } } },
         { name = "Obsidian Sentinel", npcID = 7023, display = 5285, level = 42, loot = { { 8053 } } },

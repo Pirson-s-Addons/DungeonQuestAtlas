@@ -38,7 +38,8 @@ end
 function ns.BossKillProgress(d)
     local done, total = 0, 0
     for _, boss in ipairs(ns.Bosses[d.key] or {}) do
-        if boss.kind == nil then
+        -- Los de la otra faccion no cuentan: no se pueden atacar
+        if boss.kind == nil and (not boss.faction or boss.faction == UnitFactionGroup("player")) then
             total = total + 1
             if ns.IsBossKilled(d, boss) then done = done + 1 end
         end
@@ -126,6 +127,7 @@ function ns.MarkBossKilled(npcID, name, encounterID, source)
             if match and boss.kind ~= "trash" and not ns.IsBossKilled(d, boss) then
                 Kills(d)[boss.name] = true
                 UpdateDone(d)
+                ns.OnBossKilled(d, boss) -- jefe final: su pagina en el modo aventura
                 marked = true
                 ns.Debug("jefe muerto (%s): %s", source or "?", boss.name)
             end

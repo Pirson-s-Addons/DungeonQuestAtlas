@@ -117,20 +117,62 @@ function ns.InRange(d, playerLevel)
     return playerLevel + 2 >= d.minLevel and playerLevel <= d.maxLevel
 end
 
+-- Atajos del buscador y de /dqa <atajo> (las claves de Data/Dungeons.lua ya valen:
+-- rfk, sfk, brd...). Un atajo puede dar varias alas.
+local ALIASES = {
+    stocks = { "STOCKS" }, stockade = { "STOCKS" }, gnomer = { "GNOMER" }, gnomeregan = { "GNOMER" },
+    vc = { "DM" }, deadmines = { "DM" }, wailing = { "WC" }, ulda = { "ULDA" }, uldaman = { "ULDA" },
+    zf = { "ZF" }, mara = { "MARA" }, sunken = { "ST" }, scholo = { "SCHOLO" }, scholomance = { "SCHOLO" },
+    strat = { "STRAT_LIVE", "STRAT_UD" }, stratlive = { "STRAT_LIVE" }, stratud = { "STRAT_UD" },
+    sm = { "SM_GY", "SM_LIB", "SM_ARM", "SM_CATH" }, smgy = { "SM_GY" }, gy = { "SM_GY" },
+    smlib = { "SM_LIB" }, lib = { "SM_LIB" }, smarm = { "SM_ARM" }, arm = { "SM_ARM" },
+    smcath = { "SM_CATH" }, cath = { "SM_CATH" },
+    diremaul = { "DM_E", "DM_W", "DM_N" }, dme = { "DM_E" }, dmw = { "DM_W" }, dmn = { "DM_N" },
+    dala = { "DALARAN" }, dalaran = { "DALARAN" }, exca = { "EXCAVATION" }, thanes = { "THANES" },
+    ruins = { "LORDAERON" }, rol = { "LORDAERON" }, drowned = { "DROWNED" }, kroldok = { "KROLDOK" },
+    alcaz = { "ALCAZ" }, blackmaw = { "BLACKMAW" }, shapers = { "SHAPERS" },
+}
+
+-- Atajo o clave -> lista de mazmorras (nil si no es ninguno)
+function ns.DungeonsByAlias(text)
+    text = (text or ""):lower()
+    local keys = ALIASES[text] or (ns.DungeonByKey[text:upper()] and { text:upper() })
+    if not keys then return end
+    local list = {}
+    for _, key in ipairs(keys) do list[#list + 1] = ns.DungeonByKey[key] end
+    return list
+end
+
+-- Oculta en la portada: a mano (clic derecho en la tarjeta) o por las opciones
+-- de nivel superado y misiones hechas (menu "Ocultas" de la portada)
+function ns.IsDungeonHidden(d)
+    if ns.char.hiddenDungeons[d.key] then return true end
+    if ns.db.hideOutleveled and UnitLevel("player") > d.maxLevel then return true end
+    if ns.db.hideDoneDungeons then
+        local done, total = ns.DungeonProgress(d, UnitFactionGroup("player"))
+        if total > 0 and done == total then return true end
+    end
+    return false
+end
+
 -- filters: { myRange, kind = "all"|"classic"|"forever", faction, search }
 function ns.FilterDungeons(filters)
     local level = UnitLevel("player")
     local search = filters.search and filters.search:lower() or ""
+    local aliased = ns.DungeonsByAlias(search) or {}
     local list = {}
+    filters.hiddenCount = 0
     for _, d in ipairs(ns.Dungeons) do
-        local ok = (not filters.myRange or ns.InRange(d, level))
+        local hidden = ns.IsDungeonHidden(d)
+        if hidden then filters.hiddenCount = filters.hiddenCount + 1 end
+        local ok = (not hidden or filters.showHidden) and (not filters.myRange or ns.InRange(d, level))
             and (filters.kind ~= "classic" or not d.isForever)
             and (filters.kind ~= "forever" or d.isForever)
             and ns.MatchesFaction(d, filters.faction)
         if ok and search ~= "" then
             ok = ns.DungeonName(d):lower():find(search, 1, true) ~= nil
                 or d.name:lower():find(search, 1, true) ~= nil
-                or d.key:lower() == search
+                or tContains(aliased, d)
             for _, boss in ipairs(not ok and ns.Bosses and ns.Bosses[d.key] or {}) do
                 if boss.name and boss.name:lower():find(search, 1, true) then ok = true break end
             end

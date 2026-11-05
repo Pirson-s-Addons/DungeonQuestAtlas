@@ -164,6 +164,9 @@ function ns.RefreshUI()
         return RefreshSection(section)
     end
     RefreshSection(nil)
+    -- Modo aventura: una mazmorra bloqueada no abre su pagina por ningun camino
+    -- (migas, mapa del mundo, saltos a un jefe): la portada
+    if ns.char.view ~= "home" and ns.IsDungeonLocked(SelectedDungeon()) then ns.char.view = "home" end
     local map = ns.char.view == "map" and ns.DungeonMaps(SelectedDungeon())
     local home = not map and ns.char.view ~= "dungeon"
     ui.home:SetShown(home)
@@ -173,8 +176,21 @@ function ns.RefreshUI()
     ui.pending:SetText(L.DUNGEON_COUNT:format(#list) .. "   |cffffd100" .. L.MM_PENDING:format(ns.PendingInRange()) .. "|r")
 
     if home then
+        local rpg = ns.IsRPGMode()
+        ui.pending:SetShown(not rpg)
+        ui.journey:SetShown(rpg)
+        if rpg then ui.journey:Update() end
+        -- Buscador de botin (UI/LootSearch.lua) en lugar de las tarjetas
+        local loot = filters.loot and true or false
+        ui.lootButton:SetChecked(loot)
+        ui.gridArea:SetShown(not loot)
+        ui.lootSearch:SetShown(loot)
+        -- Texto fijo: "Ocultas (3)", no el de las casillas marcadas
+        ui.hiddenButton:OverrideText(L.HIDDEN_MENU:format(filters.hiddenCount or 0))
+        ui.hiddenButton:SetShown(not loot)
+        if loot then ui.lootSearch:Refresh() end
         ui.grid:Refresh(list)
-        ui.noResults:SetShown(#list == 0)
+        ui.noResults:SetShown(not loot and #list == 0)
         UpdateNav(nil)
         return
     end
@@ -266,6 +282,10 @@ end
 
 -- Tarjeta de la portada: abre la mazmorra en la ultima pestana usada
 function ns.SelectDungeon(d)
+    if ns.IsDungeonLocked(d) then -- modo aventura (UI/JournalMode.lua)
+        if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_FAILED) end
+        return ns.Print(ns.LockedHint(d))
+    end
     if ui then ui.boss = nil end -- el resumen de la mazmorra, no el de un jefe
     ns.char.section = "dungeons"
     ns.char.dungeon = d and d.key
@@ -381,6 +401,8 @@ local function CreateHome(area)
     title:SetText(L.TAB_DUNGEONS)
     ui.pending = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     ui.pending:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 1, -3)
+    ui.journey = ns.CreateJourneyBar(home) -- en su sitio, en el modo aventura
+    ui.journey:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 4, -4)
 
     -- Filtros: tipo (arriba a la derecha, como "World of Warcraft" en el Diario),
     -- faccion (emblemas) y "Mi nivel", de derecha a izquierda
@@ -403,10 +425,48 @@ local function CreateHome(area)
     ui.range, ui.kind, ui.faction = range, kind, faction
 
     local gridArea = CreateFrame("Frame", nil, home)
-    gridArea:SetPoint("TOP", 0, -66)
+    gridArea:SetPoint("TOP", 0, -72)
     gridArea:SetPoint("BOTTOM", 0, 6)
     gridArea:SetWidth(ns.GRID_WIDTH + 24) -- con la barra de scroll
     ui.grid = ns.CreateDungeonGrid(gridArea, ns.SelectDungeon)
+    ui.gridArea = gridArea
+    local lootArea = CreateFrame("Frame", nil, home)
+    lootArea:SetAllPoints(gridArea)
+    ui.lootSearch = ns.CreateLootSearch(lootArea, filters)
+
+    -- Arriba, entre el titulo y los filtros: el buscador de botin (interruptor) y
+    -- el menu de las mazmorras ocultas
+    local lootButton = CreateFrame("CheckButton", nil, home, "UICheckButtonTemplate")
+    lootButton:SetSize(26, 26)
+    lootButton:SetPoint("RIGHT", range, "LEFT", -150, 0)
+    lootButton:SetScript("OnClick", function(self) ns.SetFilter("loot", self:GetChecked() and true or nil) end)
+    ns.AddTooltip(lootButton, L.LOOT_SEARCH_TOOLTIP)
+    local lootLabel = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    lootLabel:SetPoint("LEFT", lootButton, "RIGHT", 0, 0)
+    lootLabel:SetText(L.LOOT_SEARCH)
+    ui.lootButton = lootButton
+    local hiddenButton = CreateFrame("DropdownButton", nil, home, "WowStyle1DropdownTemplate")
+    hiddenButton:SetWidth(130)
+    hiddenButton:SetPoint("TOPRIGHT", -18, -40)
+    if hiddenButton.SetupMenu then
+        hiddenButton:SetupMenu(function(_, root)
+            root:CreateCheckbox(L.HIDE_SHOW, function() return filters.showHidden end,
+                function() ns.SetFilter("showHidden", not filters.showHidden or nil) end)
+            root:CreateCheckbox(L.HIDE_OUTLEVELED, function() return ns.db.hideOutleveled end,
+                function() ns.db.hideOutleveled = not ns.db.hideOutleveled; ns.RefreshUI() end)
+            root:CreateCheckbox(L.HIDE_DONE_DUNGEONS, function() return ns.db.hideDoneDungeons end,
+                function() ns.db.hideDoneDungeons = not ns.db.hideDoneDungeons; ns.RefreshUI() end)
+            root:CreateButton(L.HIDE_RESET, function() wipe(ns.char.hiddenDungeons); ns.RefreshUI() end)
+        end)
+    end
+    -- HookScript: el menu tiene su propio OnEnter (el brillo del boton)
+    hiddenButton:HookScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+        GameTooltip:SetText(L.HIDDEN_TOOLTIP, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    hiddenButton:HookScript("OnLeave", GameTooltip_Hide)
+    ui.hiddenButton = hiddenButton
     ui.noResults = home:CreateFontString(nil, "OVERLAY", "GameFontDisableLarge")
     ui.noResults:SetPoint("CENTER", 0, -20)
     ui.noResults:SetText(L.NO_RESULTS)

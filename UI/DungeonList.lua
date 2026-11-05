@@ -53,7 +53,19 @@ local function CreateCard(row, onSelect)
     card.info:SetPoint("BOTTOMLEFT", 12, 11)
     card.progress = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     card.progress:SetPoint("BOTTOMRIGHT", -12, 11)
-    card:SetScript("OnClick", function(self)
+    -- Modo aventura: candado sobre la ilustracion apagada (UI/JournalMode.lua)
+    card.lock = card:CreateTexture(nil, "OVERLAY")
+    card.lock:SetSize(34, 34)
+    card.lock:SetPoint("CENTER", 0, -8)
+    card.lock:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK")
+    card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    card:SetScript("OnClick", function(self, button)
+        if button == "RightButton" then -- ocultarla (o volver a mostrarla) en este personaje
+            local hidden = ns.char.hiddenDungeons
+            hidden[self.dungeon.key] = not hidden[self.dungeon.key] or nil
+            GameTooltip:Hide()
+            return ns.RefreshUI()
+        end
         if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN) end
         onSelect(self.dungeon)
     end)
@@ -62,10 +74,18 @@ local function CreateCard(row, onSelect)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(ns.DungeonName(d), 1, 0.82, 0)
         GameTooltip:AddLine(L.LEVEL .. " " .. d.minLevel .. "–" .. d.maxLevel, 1, 1, 1)
+        local hideHint = ns.char.hiddenDungeons[d.key] and L.CARD_UNHIDE_HINT or L.CARD_HIDE_HINT
+        if ns.IsDungeonLocked(d) then
+            GameTooltip:AddLine(L.RPG_LOCKED, 1, 0.3, 0.3)
+            GameTooltip:AddLine(ns.LockedHint(d), 1, 1, 1, true)
+            GameTooltip:AddLine(hideHint, 0.5, 0.5, 0.5)
+            return GameTooltip:Show()
+        end
         local done, total = ns.DungeonProgress(d, ns.FactionFilter())
         if total > 0 then GameTooltip:AddLine(L.PROGRESS:format(done, total), 1, 1, 1) end
         local killed, bosses = ns.BossKillProgress(d)
         if killed > 0 then GameTooltip:AddLine(L.BOSSES_PROGRESS:format(killed, bosses), 1, 0.4, 0.4) end
+        GameTooltip:AddLine(hideHint, 0.5, 0.5, 0.5)
         GameTooltip:Show()
     end)
     card:SetScript("OnLeave", GameTooltip_Hide)
@@ -86,6 +106,12 @@ local function UpdateCard(card, d)
         progress = icon .. " " .. (done == total and GREEN or "|cffffffff") .. done .. "/" .. total .. "|r"
     end
     card.progress:SetText(progress)
+    local locked = ns.IsDungeonLocked(d)
+    card.art:SetDesaturated(locked)
+    card.art:SetVertexColor(locked and 0.4 or 1, locked and 0.4 or 1, locked and 0.4 or 1)
+    card.lock:SetShown(locked)
+    if locked then card.progress:SetText("|cffff6060" .. L.RPG_LOCKED .. "|r") end
+    card:SetAlpha(ns.IsDungeonHidden(d) and 0.45 or 1) -- oculta, vista con "Mostrar ocultas"
 end
 
 function ns.CreateDungeonGrid(parent, onSelect)
