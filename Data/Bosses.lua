@@ -17,6 +17,17 @@ local _, ns = ...
 -- Nombre, icono y calidad de cada objeto los da el cliente en su idioma.
 
 ns.Bosses = {
+    -- Lo visto caer hasta ahora (07-11-2026). probable = true: objetos de la misma tanda del
+    -- cliente que nadie ha visto caer aun, a cada jefe por orden de ID y nivel (sin confirmar).
+    DROWNED = {
+        { name = "Zul'Alai", npcID = 270882, level = 37, loot = { { 274600 }, { 274598, probable = true }, { 274599, probable = true } } },
+        { name = "Var'Taka", npcID = 258924, level = 38, loot = { { 274602 }, { 274601, probable = true } } },
+        { name = "Captain Dreadrise", npcID = 270884, level = 38, loot = { { 274604 }, { 274605 }, { 274603, probable = true } } },
+        { name = "Deathless Marrow", npcID = 270885, level = 39, loot = { { 274606 }, { 274607, probable = true } } },
+        { name = "Primeval Elemental", npcID = 270887, level = 38, loot = { { 274612 }, { 274611, probable = true }, { 274613, probable = true }, { 274614, probable = true }, { 274615, probable = true } } },
+        { name = "Gill", npcID = 270888, loot = {} },
+        { name = "Min'loth the Serpent", npcID = 260274, level = 40, loot = { { 274610 }, { 274608, probable = true }, { 274609, probable = true } } },
+    },
     BFD = {
         { name = "Ghamoo-ra", npcID = 4887, display = 5027, level = 25, loot = { { 6907, 37.3 }, { 6908, 56.4 }, { 273839 }, { 251380, 0.03 }, { 251381, 0.02 }, { 251382, 0.08 }, { 252798, 0.05 }, { 252800, 0.03 }, { 252801, 0.08 }, { 252803, 0.02 }, { 253938, 0.03 }, { 253940, 0.05 }, { 253942, 0.03 }, { 253944, 0.02 }, { 253946, 0.03 } } },
         { name = "Lady Sarevess", npcID = 4831, display = 4979, level = 25, loot = { { 888, 36.9 }, { 3078, 19.6 }, { 11121, 38.8 }, { 251380, 0.02 }, { 251381, 0.02 }, { 251382, 0.08 }, { 251383, 0.04 }, { 252798, 0.06 }, { 252799, 0.04 }, { 252800, 0.02 }, { 252803, 0.02 }, { 253940, 0.04 }, { 253942, 0.06 }, { 253944, 0.06 }, { 253946, 0.02 }, { 253948, 0.04 } } },
@@ -103,7 +114,7 @@ ns.Bosses = {
         { name = "Mana Devourer", npcID = 246008, display = 129895, level = 31, loot = { { 273041 }, { 273040 }, { 273042 } } },
         { name = "Fel Ancient", npcID = 246003, display = 129894, level = 32, loot = { { 273037 }, { 273039 }, { 273038 } } },
         { name = "Lyn the Ignored", npcID = 247032, kind = "rare", display = 130235, loot = { { 273055 }, { 273054 }, { 273053 } } },
-        { name = "Shade of the Archmage", npcID = 246020, display = 130061, level = 33, loot = { { 273052 }, { 273049 }, { 273051 } } },
+        { name = "Shade of the Archmage", npcID = 246020, display = 130061, level = 33, loot = { { 273103 }, { 273052 }, { 273049 }, { 273051 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 286987 }, { 286988 }, { 286989 } } },
     },
     EXCAVATION = {
@@ -140,7 +151,7 @@ ns.Bosses = {
         { name = "Bannok Grimaxe", npcID = 9596, kind = "rare", display = 9668, level = 59, loot = { { 12637, 32.6 }, { 12634, 30.2 }, { 12621, 30.3 }, { 12838, 7.8 } } },
         { name = "Mother Smolderweb", npcID = 10596, display = 9929, level = 59, loot = { { 16715, 15.2 }, { 13244, 26.8 }, { 13213, 11.7 }, { 13183, 1.4 } } },
         { name = "Crystal Fang", npcID = 10376, kind = "rare", display = 9755, level = 60, loot = { { 13185, 34.9 }, { 13184, 31.7 }, { 13218, 15.1 } } },
-        { name = "Urok Doomhowl", npcID = 10584, display = 11583, level = 60, loot = { { 13258, 21.7 }, { 22232, 17.4 }, { 13259, 17.4 }, { 13178, 16.5 }, { 18784, 13 } } },
+        { name = "Urok Doomhowl", npcID = 10584, display = 11583, level = 60, loot = { { 13053 }, { 13258, 21.7 }, { 22232, 17.4 }, { 13259, 17.4 }, { 13178, 16.5 }, { 18784, 13 } } },
         { name = "Quartermaster Zigris", npcID = 9736, display = 9738, level = 59, loot = { { 13247, 26 }, { 13253, 14 }, { 13252, 18.5 }, { 12835, 13.6 } } },
         { name = "Halycon", npcID = 10220, display = 9567, level = 59, loot = { { 13212, 28.5 }, { 22313, 16.8 }, { 13211, 28.2 }, { 13210, 16.8 } } },
         { name = "Gizrul the Slavener", npcID = 10268, display = 9564, level = 60, loot = { { 16718, 18.2 }, { 13208, 24.4 }, { 13206, 25.8 }, { 13205, 25 } } },
@@ -203,7 +214,7 @@ ns.Bosses = {
         { name = "Rath'mael", npcID = 250657, display = 144175, level = 20, loot = { { 271213 }, { 271214 }, { 271215 }, { 273085 }, { 273103 } } },
         { name = "Viktor the Vile", npcID = 256035, display = 139455, level = 19, loot = { { 271211 }, { 271212 }, { 271218 } } },
         { name = "Lordaeron Captain", npcID = 255699, kind = "rare", display = 139050, level = 19, loot = { { 6641 }, { 6642 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 286980 }, { 286979 }, { 286978 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 286981 }, { 286977 }, { 286980 }, { 286979 }, { 286978 } } },
     },
     SM_ARM = {
         { name = "Herod", npcID = 3975, display = 2041, level = 40, loot = { { 7719, 32.8 }, { 7718, 33.7 }, { 10330, 13.9 }, { 7717, 14 } } },
@@ -258,7 +269,7 @@ ns.Bosses = {
         { name = "Odo the Blindwatcher", npcID = 4279, display = 522, level = 24, loot = { { 6318, 35.1 }, { 6319, 61.1 }, { 273645 } } },
         { name = "Deathsworn Captain", npcID = 3872, kind = "rare", display = 3224, level = 25, loot = { { 6642, 35.3 }, { 6641, 57.7 } } },
         { name = "Arugal's Voidwalker", npcID = 4627, display = 1131, level = { 24, 25 }, loot = { { 5943, 2.5 } } },
-        { name = "Fenrus the Devourer", npcID = 4274, display = 2352, level = 25, loot = { { 6340, 74.2 }, { 3230, 17.2 }, { 273646 } } },
+        { name = "Fenrus the Devourer", npcID = 4274, display = 2352, level = 25, loot = { { 251380 }, { 6340, 74.2 }, { 3230, 17.2 }, { 273646 } } },
         { name = "Wolf Master Nandos", npcID = 3927, display = 11179, level = 25, loot = { { 3748, 56.7 }, { 6314, 38.6 }, { 273647 } } },
         { name = "Archmage Arugal", npcID = 4275, display = 2353, level = 26, loot = { { 6324, 34.9 }, { 6392, 34 }, { 6220, 17.6 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 2292 }, { 1489 }, { 1974 }, { 2807 }, { 1482 }, { 1935 }, { 1483 }, { 1318 }, { 3194 }, { 2205 }, { 1484 }, { 5943, 2.4 }, { 6341, 7.8 } } },
@@ -359,6 +370,7 @@ ns.Bosses = {
         { name = "General Drakkisath", npcID = 10363, display = 10115, level = 62, loot = { { 12592, 1.1 }, { 22267, 20.8 }, { 13141, 26.2 }, { 22269, 17 }, { 13142, 23.9 }, { 13098, 22.4 }, { 22268, 7.5 }, { 22253, 21 }, { 12602, 22.6 }, { 15730, 5 }, { 13519, 4.6 }, { 16690, 10.4 }, { 16688, 9.7 }, { 16700, 13.1 }, { 16721, 9.2 }, { 16706, 13.1 }, { 16674, 9.7 }, { 16666, 5.6 }, { 16726, 7.4 }, { 16730, 13.6 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 24102 }, { 13260 }, { 16696, 2.9 }, { 16683, 3.1 }, { 16703, 3 }, { 16713, 2.7 }, { 16681 }, { 16680, 3 }, { 16673, 2.8 }, { 16735, 2.8 }, { 16247 } } },
         { name = "Darkstone Tablet", kind = "object", loot = { { 12358 } } },
+        { name = "Lord Valthalak", npcID = 16042, kind = "rare", loot = { { 22335 }, { 22336 }, { 22337 }, { 22339 }, { 22340 }, { 22342 }, { 22343 }, { 22302 } } },
     },
     WC = {
         { name = "Lord Cobrahn", npcID = 3669, display = 4213, level = 20, loot = { { 6460, 18.1 }, { 10410, 17.5 }, { 6465, 54.7 } } },
@@ -388,5 +400,6 @@ ns.Bosses = {
         { name = "Chief Ukorz Sandscalp", npcID = 7267, display = 6439, level = 48, loot = { { 9479, 9.4 }, { 9476, 33.1 }, { 9478, 23.4 }, { 9477, 24 }, { 11086, 0.9 } } },
         { name = "Zerillis", npcID = 10082, kind = "rare", display = 9293, level = 45, loot = { { 12470, 18.1 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 9512 }, { 9484 }, { 862 }, { 6440 }, { 9483 }, { 2040 }, { 5616 }, { 9511 }, { 9481 }, { 9480 }, { 9482 }, { 9243, 1.4 } } },
+        { name = "Ruuzlu", npcID = 7797, kind = "rare", level = 46, loot = {} },
     },
 }

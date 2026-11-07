@@ -5,16 +5,22 @@ local unpack = unpack or table.unpack
 -- ==========================================
 -- SECCION: VIAJES
 -- ==========================================
--- Como la pestana Viajes de Retail: "Renombres" con las reputaciones nuevas de
--- Forever (Data/Reputations.lua) en tarjetas a dos columnas, y "Proximamente"
--- con lo anunciado (ns.Raids y ns.Upcoming de Data/Raids.lua y las mazmorras
--- nuevas que se abren con el lanzamiento). Pestana de abajo de la ventana
+-- "Tu viaje": que puede hacer ahora este personaje. De arriba abajo: misiones listas
+-- para entregar, mazmorras recomendadas para su nivel, el siguiente paso de las
+-- cadenas que lleva a medias, sus reputaciones (Data/Reputations.lua; por defecto
+-- las que tiene en curso) y, en pequeno, lo anunciado que aun no ha llegado
+-- (ns.Raids y ns.Upcoming de Data/Raids.lua). Pestana de abajo de la ventana
 -- (contrato de seccion: SECTIONS en UI/MainFrame.lua).
 
 local LAUNCH = "2026-11-04"
 local LOCK = "QuestSharing-QuestLog-Padlock"
+local NEWS_ICON = "|TInterface\\Icons\\INV_Letter_15:18:18|t"
+local NEWS_LANG = { esES = "es-es", esMX = "es-mx", deDE = "de-de", frFR = "fr-fr", itIT = "it-it", ptBR = "pt-br",
+    ruRU = "ru-ru", koKR = "ko-kr", zhTW = "zh-tw", plPL = "pl-pl" }
 local ICON = "Interface\\Icons\\Achievement_Reputation_01"
-local CARD_H, GAP, ROW_H = 84, 10, 58
+local CARD_H, GAP, ROW_H = 84, 10, 34
+local STEP_H = 44                -- filas de misiones y mazmorras
+local MAX_DUNGEONS, MAX_CHAINS = 4, 6
 local GOLD = { 0.32, 0.22, 0.04 }
 local STONE = { 0.13, 0.12, 0.11 }
 -- Piezas de la tarjeta de renombre de Retail (Blizzard_Journeys.xml, rama forever:
@@ -42,13 +48,20 @@ local function FactionType(f)
     return f.pvp and "pvp" or "world"
 end
 
--- Filtro de Renombres, por personaje: show = "all" / "known" (las que tienes);
--- hidden[tipo] = true oculta ese tipo. La faccion, el selector compartido.
+-- Filtro de Renombres, por personaje: show = "active" (las que llevas en curso),
+-- "known" (las que tienes) o "all"; hidden[tipo] = true oculta ese tipo. La faccion,
+-- el selector compartido. trip: ya vio "Tu viaje" (antes el filtro empezaba en "all").
 local function Filter()
-    ns.char.journeyFilter = ns.char.journeyFilter or { show = "all", hidden = {} }
+    ns.char.journeyFilter = ns.char.journeyFilter or { hidden = {} }
     local flt = ns.char.journeyFilter
     flt.hidden = flt.hidden or {}
+    if not flt.trip then flt.show, flt.trip = "active", true end
     return flt
+end
+
+-- Reputacion en curso: la tienes, le falta para el siguiente nivel y ya has hecho algo
+local function InProgress(s)
+    return s and s.max > 0 and (s.value > 0 or (s.reaction or 0) > 4)
 end
 
 -- Si una faccion pasa el filtro (locked: sin descubrir o de la otra faccion)
@@ -58,6 +71,7 @@ function ns.JourneyVisible(f, locked)
     local faction = ns.FactionFilter and ns.FactionFilter()
     if faction and f.side and f.side ~= faction then return false end
     if flt.show == "known" then return not locked end
+    if flt.show == "active" then return not locked and InProgress(ns.FactionStanding(f.id)) and true or false end
     return true
 end
 
@@ -177,6 +191,113 @@ function ns.JourneyTimeline()
 end
 
 -- ------------------------------------------
+-- Que hacer ahora
+-- ------------------------------------------
+
+-- Mazmorra de una mision o, si es un paso de fuera, la de su cadena
+local function DungeonOf(id)
+    local chain = type(ns.Quests[id].chain) == "table" and ns.Quests[id].chain or {}
+    for _, step in ipairs({ id, unpack(chain) }) do
+        for _, d in ipairs(ns.Dungeons) do
+            if tContains(d.quests, step) then return d end
+        end
+    end
+end
+
+-- Abre la hoja de una mision donde este: Registro de viajero o Mazmorras
+function ns.OpenJourneyQuest(id)
+    local q = ns.Quests[id]
+    if q.event then return ns.ShowEventQuest(q.event, id) end
+    local d = DungeonOf(id)
+    if d then ns.char.dungeon = d.key end
+    ns.ShowQuest(id)
+end
+
+local function InLog(id)
+    return C_QuestLog.GetLogIndexForQuestID(id) ~= nil
+end
+
+-- Paso en el que vas de una cadena (y su posicion), o nil si no la has empezado o la
+-- has acabado. Va tras el ultimo hecho: un paso opcional saltado no te devuelve atras.
+local function ChainStep(chain)
+    local last = 0
+    for i, id in ipairs(chain) do
+        if C_QuestLog.IsQuestFlaggedCompleted(id) then last = i
+        elseif InLog(id) then last = i - 1 end
+    end
+    local id = chain[last + 1]
+    if not id then return end
+    local started = last > 0 or InLog(id)
+    for _, before in ipairs(ns.Quests[id] and ns.Quests[id].after or {}) do
+        started = started or C_QuestLog.IsQuestFlaggedCompleted(before)
+    end
+    if started then return id, last + 1 end
+end
+
+local function EventOpen(q)
+    local ev = q.event and ns.EventByKey[q.event]
+    return not ev or ev.item ~= nil or ns.EventActive(ev)
+end
+
+local function ByLevel(a, b)
+    if a.level ~= b.level then return a.level < b.level end
+    return a.id < b.id
+end
+
+-- Lo que puede hacer este personaje ahora: { ready, dungeons, chains, news }
+function ns.JourneyPlan()
+    local plan = { ready = {}, dungeons = {}, chains = {}, news = {} }
+    local faction, here = UnitFactionGroup("player"), C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
+    local function Mine(q) return ns.MatchesFaction(q, faction) and ns.IsMyClass(q) end
+    local seen = {}
+    for id, q in pairs(ns.Quests) do
+        if Mine(q) then
+            if ns.QuestStatus(id) == ns.STATUS_READY then
+                plan.ready[#plan.ready + 1] = { id = id, level = q.level or 0 }
+            end
+            local key = type(q.chain) == "table" and table.concat(q.chain, ",")
+            if key and not seen[key] then
+                seen[key] = true
+                local nextID, step = ChainStep(q.chain)
+                local nq = nextID and ns.Quests[nextID]
+                if nq and Mine(nq) and EventOpen(nq) and ns.QuestStatus(nextID) ~= ns.STATUS_READY then
+                    plan.chains[#plan.chains + 1] = { id = nextID, level = nq.level or 0, step = step, total = #q.chain }
+                end
+            end
+        end
+    end
+    table.sort(plan.ready, ByLevel)
+    table.sort(plan.chains, ByLevel)
+    for i = #plan.chains, MAX_CHAINS + 1, -1 do plan.chains[i] = nil end
+
+    local level = UnitLevel("player")
+    for _, d in ipairs(ns.Dungeons) do
+        if ns.InRange(d, level) and not ns.IsDungeonHidden(d) then
+            local pick, near = 0, 0
+            for _, id in ipairs(ns.DungeonQuests(d, faction, true)) do
+                if Mine(ns.Quests[id] or {}) and ns.QuestStatus(id) == ns.STATUS_AVAILABLE then
+                    pick = pick + 1
+                    local place = ns.QuestPlaces(id, "starts")[1]
+                    if place and here and place.mapID == here then near = near + 1 end
+                end
+            end
+            if pick > 0 then plan.dungeons[#plan.dungeons + 1] = { d = d, pick = pick, near = near } end
+        end
+    end
+    table.sort(plan.dungeons, function(a, b)
+        if a.near ~= b.near then return a.near > b.near end
+        if a.pick ~= b.pick then return a.pick > b.pick end
+        return a.d.minLevel < b.d.minLevel
+    end)
+    for i = #plan.dungeons, MAX_DUNGEONS + 1, -1 do plan.dungeons[i] = nil end
+
+    for _, n in ipairs(ns.News or {}) do
+        if not n.ends or ParseDate(n.ends) > time() then plan.news[#plan.news + 1] = n end
+    end
+    return plan
+end
+
+-- ------------------------------------------
 -- Interfaz
 -- ------------------------------------------
 
@@ -189,6 +310,52 @@ local function Header(parent, text)
     line:SetPoint("TOPLEFT", fs, "BOTTOMLEFT", 0, -6)
     line:SetPoint("RIGHT", parent, "RIGHT", -4, 0)
     return fs
+end
+
+local function SubHeader(parent, text)
+    local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    fs:SetText(text)
+    return fs
+end
+
+-- Fila de "Tu viaje": icono de estado, titulo, detalle y, si hay sitio que marcar, boton
+local function CreateStepRow(parent)
+    local row = CreateFrame("Button", nil, parent)
+    row:SetHeight(STEP_H)
+    local box = ns.CreateDarkBox(row, 12)
+    box:SetAllPoints()
+    box:SetFrameLevel(row:GetFrameLevel())
+    row.mark = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    row.mark:SetPoint("LEFT", 12, 0)
+    row.title = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.title:SetPoint("TOPLEFT", 38, -8)
+    row.title:SetPoint("RIGHT", -134, 0)
+    row.title:SetJustifyH("LEFT")
+    row.title:SetWordWrap(false)
+    row.detail = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.detail:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -3)
+    row.detail:SetPoint("RIGHT", -134, 0)
+    row.detail:SetJustifyH("LEFT")
+    row.detail:SetWordWrap(false)
+    row.detail:SetTextColor(unpack(ns.TEXT_ON_DARK))
+    row.action = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    row.action:SetSize(116, 24)
+    row.action:SetPoint("RIGHT", -10, 0)
+    row.action:SetFrameLevel(row:GetFrameLevel() + 2)
+    row.action:SetScript("OnClick", function(self)
+        local e = self:GetParent().entry
+        local mode, point = ns.MarkPlace(e.place, ns.PlaceName(e.place), e.dungeon, e.kind)
+        if mode and point then ns.OpenMapAt(point.mapID) end
+    end)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetPoint("TOPLEFT", 4, -4)
+    hl:SetPoint("BOTTOMRIGHT", -4, 4)
+    hl:SetColorTexture(1, 0.82, 0, 0.08)
+    row:SetScript("OnClick", function(self)
+        if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN) end
+        self.entry.open()
+    end)
+    return row
 end
 
 local function CreateCard(parent)
@@ -300,7 +467,11 @@ local function UpdateCard(card, f)
     end
     local label = _G["FACTION_STANDING_LABEL" .. (s.reaction or 0)] or ""
     local text = label
-    if s.max > 0 then text = text .. "  |cffffffff" .. s.value .. "/" .. s.max .. "|r" end
+    if s.max > 0 then
+        text = text .. "  |cffffffff" .. s.value .. "/" .. s.max .. "|r"
+        local nextLabel = _G["FACTION_STANDING_LABEL" .. ((s.reaction or 0) + 1)]
+        if nextLabel then text = text .. "  |cffa0a0a0" .. L.TRIP_REP_LEFT:format(s.max - s.value, nextLabel) .. "|r" end
+    end
     card.standing:SetText(text)
     card.bar:SetShown(s.max > 0)
     card.bar:SetMinMaxValues(0, math.max(1, s.max))
@@ -315,23 +486,15 @@ local function CreateTimelineRow(parent)
     box:SetAllPoints()
     box:SetFrameLevel(row:GetFrameLevel())
     row.when = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    row.when:SetPoint("TOPLEFT", 14, -12)
-    row.when:SetWidth(150)
+    row.when:SetPoint("LEFT", 14, 0)
+    row.when:SetWidth(170)
     row.when:SetJustifyH("LEFT")
-    row.left = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    row.left:SetPoint("TOPLEFT", row.when, "BOTTOMLEFT", 0, -4)
-    row.left:SetTextColor(0.6, 0.85, 1)
+    row.when:SetWordWrap(false)
     row.title = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    row.title:SetPoint("TOPLEFT", 172, -12)
+    row.title:SetPoint("LEFT", 190, 0)
     row.title:SetPoint("RIGHT", -12, 0)
     row.title:SetJustifyH("LEFT")
     row.title:SetWordWrap(false)
-    row.detail = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    row.detail:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -4)
-    row.detail:SetPoint("RIGHT", -12, 0)
-    row.detail:SetJustifyH("LEFT")
-    row.detail:SetWordWrap(false)
-    row.detail:SetTextColor(unpack(ns.TEXT_ON_DARK))
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetPoint("TOPLEFT", 4, -4)
     hl:SetPoint("BOTTOMRIGHT", -4, 4)
@@ -349,6 +512,37 @@ local function CreateTimelineRow(parent)
     end)
     row:SetScript("OnLeave", GameTooltip_Hide)
     return row
+end
+
+-- Fila de una entrada de ns.JourneyPlan
+local function StepEntry(key, item)
+    if key == "news" then
+        local url = item.article and ("https://news.blizzard.com/%s/article/%d"):format(NEWS_LANG[ns.UILANG] or "en-us", item.article)
+        local title = L[item.title]
+        return { mark = NEWS_ICON, title = title, detail = L[item.text]:format(item.ends and ns.FormatDate(item.ends) or ""),
+            open = function() if url then ns.ShowCopyDialog(title, url) end end }
+    end
+    if key == "dungeons" then
+        local d = item.d
+        local detail = L.TRIP_TO_PICK:format(item.pick)
+        if item.near > 0 then detail = detail .. " · " .. L.TRIP_NEAR:format(item.near) end
+        return { mark = ns.StatusMarkup(ns.STATUS_AVAILABLE, 18), detail = detail,
+            title = ("%s  |c%s%d–%d|r"):format(ns.DungeonName(d), ns.LevelColor(d.minLevel, d.maxLevel, UnitLevel("player")), d.minLevel, d.maxLevel),
+            open = function() ns.OpenDungeon(d) end }
+    end
+    local id, status, reason = item.id, ns.QuestStatus(item.id)
+    local which = key == "ready" and "ends" or "starts"
+    local place = ns.QuestPlaces(id, which)[1]
+    local detail
+    if place then detail = (key == "ready" and L.TRIP_TURN_IN or L.TRIP_NEXT_AT):format(ns.PlaceName(place)) end
+    if item.step then
+        local step = L.TRIP_STEP:format(item.step, item.total)
+        detail = reason or (detail and (step .. " · " .. detail)) or step
+    end
+    return { mark = ns.StatusMarkup(status, 18), title = ns.QuestTitle(id), detail = detail or "",
+        place = status ~= ns.STATUS_IN_LOG and place or nil, dungeon = DungeonOf(id),
+        kind = key == "ready" and "end" or "start", button = key == "ready" and L.MARK_END or L.MARK_START,
+        open = function() ns.OpenJourneyQuest(id) end }
 end
 
 function ns.CreateJourneysSection(parent)
@@ -372,8 +566,16 @@ function ns.CreateJourneysSection(parent)
     scroll:SetScrollChild(content)
     content.section = section -- las filas abren su noticia
 
+    local trip = Header(content, L.RPG_JOURNEY_TITLE)
+    trip:SetPoint("TOPLEFT", 4, -4)
+    local empty = content:CreateFontString(nil, "OVERLAY", "GameFontDisable")
+    empty:SetText(L.TRIP_EMPTY)
+    -- Las tres listas de lo que se puede hacer; una vacia no ocupa sitio
+    local groups = { { key = "ready", head = SubHeader(content, L.TRIP_READY), rows = {} },
+        { key = "dungeons", head = SubHeader(content, L.TRIP_RECOMMENDED), rows = {} },
+        { key = "chains", head = SubHeader(content, L.TRIP_CHAINS), rows = {} },
+        { key = "news", head = SubHeader(content, L.TRIP_NEWS), rows = {} } }
     local renown = Header(content, L.JOURNEY_RENOWN)
-    renown:SetPoint("TOPLEFT", 4, -4)
     local cards = {}
     for i in ipairs(ns.Reputations) do cards[i] = CreateCard(content) end
     local none = content:CreateFontString(nil, "OVERLAY", "GameFontDisable")
@@ -383,13 +585,12 @@ function ns.CreateJourneysSection(parent)
 
     -- Filtro arriba a la derecha (como "Temporada actual" en Retail): que mostrar
     -- y, debajo, casillas por tipo. Se guarda por personaje.
-    local SHOW = { { "all", L.JOURNEY_SHOW_ALL }, { "known", L.JOURNEY_SHOW_KNOWN } }
+    local SHOW = { { "active", L.TRIP_SHOW_ACTIVE }, { "known", L.JOURNEY_SHOW_KNOWN }, { "all", L.JOURNEY_SHOW_ALL } }
     local TYPES = { { "world", L.JOURNEY_TYPE_WORLD }, { "instance", L.JOURNEY_TYPE_INSTANCE }, { "pvp", L.JOURNEY_TYPE_PVP } }
     -- En la fila de "Renombres", a la derecha: arriba, en la barra, pisaba el
     -- selector de idioma; fijo sobre la lista, las tarjetas al bajar
     local filter = CreateFrame("DropdownButton", nil, content, "WowStyle1DropdownTemplate")
     filter:SetWidth(190)
-    filter:SetPoint("TOPRIGHT", content, "TOPRIGHT", -4, -2)
     local function FilterLabel()
         local flt = Filter()
         for _, o in ipairs(SHOW) do if o[1] == flt.show then return o[2] end end
@@ -423,7 +624,34 @@ function ns.CreateJourneysSection(parent)
         local width = math.max(400, ns.Width(scroll, 740))
         content:SetWidth(width)
         local half = (width - GAP) / 2
-        local y = -38
+        local y = -36
+        local any = false
+        empty:ClearAllPoints()
+        empty:SetPoint("TOPLEFT", 8, y)
+        if section.plan and #section.plan.ready + #section.plan.dungeons + #section.plan.chains == 0 then y = y - 26 end
+        for _, g in ipairs(groups) do
+            local count = section.plan and #section.plan[g.key] or 0
+            g.head:SetShown(count > 0)
+            if count > 0 then
+                any = any or g.key ~= "news"
+                g.head:ClearAllPoints()
+                g.head:SetPoint("TOPLEFT", 6, y)
+                y = y - 20
+                for i = 1, count do
+                    g.rows[i]:ClearAllPoints()
+                    g.rows[i]:SetPoint("TOPLEFT", 0, y)
+                    g.rows[i]:SetWidth(width - 4)
+                    y = y - STEP_H - 4
+                end
+                y = y - 8
+            end
+        end
+        empty:SetShown(not any)
+        renown:ClearAllPoints()
+        renown:SetPoint("TOPLEFT", 4, y - 8)
+        filter:ClearAllPoints()
+        filter:SetPoint("TOPRIGHT", content, "TOPRIGHT", -4, y - 6)
+        y = y - 42
         local n = 0
         for _, card in ipairs(cards) do
             if card:IsShown() then
@@ -448,7 +676,7 @@ function ns.CreateJourneysSection(parent)
                 row:ClearAllPoints()
                 row:SetPoint("TOPLEFT", 0, y)
                 row:SetWidth(width - 4)
-                y = y - ROW_H - 6
+                y = y - ROW_H - 4
             end
         end
         content:SetHeight(-y + 8)
@@ -601,23 +829,41 @@ function ns.CreateJourneysSection(parent)
             return ShowNews(e, changed)
         end
         if filter.OverrideText then filter:OverrideText(FilterLabel()) end
+        section.plan = ns.JourneyPlan()
+        for _, g in ipairs(groups) do
+            local list = {}
+            for _, item in ipairs(section.plan[g.key]) do list[#list + 1] = StepEntry(g.key, item) end
+            for i, e in ipairs(list) do
+                local row = g.rows[i] or CreateStepRow(content)
+                g.rows[i] = row
+                row.entry = e
+                row.mark:SetText(e.mark)
+                row.title:SetText(e.title)
+                row.detail:SetText(e.detail)
+                row.action:SetShown(e.place ~= nil)
+                row.action:SetText(e.button or "")
+                row:Show()
+            end
+            for i = #list + 1, #g.rows do g.rows[i]:Hide() end
+        end
         for i, f in ipairs(ns.Reputations) do
             local locked = UpdateCard(cards[i], f)
             cards[i]:SetShown(ns.JourneyVisible(f, locked))
         end
-        local entries = ns.JourneyTimeline()
-        for i, e in ipairs(entries) do
-            local row = rows[i] or CreateTimelineRow(content)
-            rows[i] = row
-            row.entry = e
-            row.when:SetText(e.date and ns.FormatDate(e.date) or e.when or "")
-            row.left:SetText(e.date and ns.Countdown(e.date) or "")
-            row.title:SetText(e.title)
-            row.index = i
-            row.detail:SetText(e.detail or L.CLICK_DETAILS)
-            row:Show()
+        -- Solo lo que aun no ha llegado; row.index es su sitio en la linea de tiempo
+        local n = 0
+        for i, e in ipairs(ns.JourneyTimeline()) do
+            if not (e.date and ns.Countdown(e.date) == L.JOURNEY_OUT) then
+                n = n + 1
+                local row = rows[n] or CreateTimelineRow(content)
+                rows[n] = row
+                row.entry, row.index = e, i
+                row.when:SetText(e.date and (ns.FormatDate(e.date) .. "  |cff99d9ff" .. ns.Countdown(e.date) .. "|r") or e.when or "")
+                row.title:SetText(e.title)
+                row:Show()
+            end
         end
-        for i = #entries + 1, #rows do rows[i]:Hide() end
+        for i = n + 1, #rows do rows[i]:Hide() end
         Layout()
     end
 

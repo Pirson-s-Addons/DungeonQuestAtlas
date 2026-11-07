@@ -41,6 +41,9 @@ ns.EventList = {
     { key = "DARKMOON", holidays = { 263, 264 }, monthly = true, hours = 168,
         names = { enUS = "Darkmoon Faire", esES = "Feria de la Luna Negra", deDE = "Dunkelmond-Jahrmarkt", frFR = "Foire de Sombrelune", itIT = "Fiera di Lunacupa", ptBR = "Feira de Negraluna", ruRU = "Ярмарка Новолуния", koKR = "다크문 축제", zhCN = "暗月马戏团", zhTW = "暗月馬戲團" },
         quests = { 7881, 7882, 7883, 7884, 7885, 7889, 7890, 7891, 7892, 7893, 7894, 7895, 7896, 7897, 7898, 7899, 7900, 7901, 7902, 7903, 7904, 7906, 7907, 7927, 7928, 7929, 7930, 7931, 7932, 7933, 7934, 7935, 7936, 7937, 7938, 7939, 7940, 7941, 7942, 7943, 7944, 7945, 7946, 7981, 8222, 8223, 9249 } },
+    -- Sin fechas: la cadena del Saco de dormir acogedor siempre esta. item: el nombre lo da el juego
+    { key = "BEDROLL", item = 211527, names = { enUS = "Cozy Sleeping Bag", esES = "Saco de dormir acogedor" },
+        quests = { 79007, 79008, 79192, 79980, 79974, 79975, 79976 } },
 }
 
 ns.EventByKey = {}

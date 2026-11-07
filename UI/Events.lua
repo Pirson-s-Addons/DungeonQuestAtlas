@@ -123,6 +123,8 @@ end
 -- Nombre del evento: el del calendario del juego o el de los datos en el idioma
 -- de la ventana (en ingles en los idiomas sin cliente oficial)
 function ns.EventName(ev)
+    local itemName = ev.item and C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(ev.item)
+    if itemName then return itemName end
     local c = calendar[ev.key]
     if c and c.title and c.title ~= "" and ns.UILANG == ns.LOCALE then return c.title end
     return ev.names[ns.UILANG] or ev.names.enUS
@@ -333,6 +335,11 @@ function ns.CreateEventsSection(parent)
     local function Open(ev)
         state.key, state.questID = ev.key, nil
         ns.RefreshUI()
+    end
+    -- Desde Viajes: la hoja de una mision de un evento
+    function ns.ShowEventQuest(key, id)
+        state.key, state.questID = key, id
+        ns.ShowSection("events")
     end
     local gridArea = CreateFrame("Frame", nil, home)
     gridArea:SetPoint("TOP", 0, -(HEADER_H + 8))

@@ -94,6 +94,15 @@ ns.Upcoming = {
     { season = "summer2027", raids = { "revamp", "new" }, dungeons = 2 },
 }
 
+-- Novedades de Viajes: lo destacado en la aplicacion de Battle.net (07-11-2026).
+-- title / text: claves de L; article: noticia de news.blizzard.com (clic: su direccion
+-- para copiarla); ends: dia en que deja de salir (y %s de text, si lo lleva).
+ns.News = {
+    { title = "NEWS_DROP", text = "NEWS_DROP_TEXT", article = 24317678, ends = "2026-11-13" },
+    { title = "NEWS_GUIDE", text = "NEWS_GUIDE_TEXT", article = 24315821 },
+    { title = "NEWS_ARMORY", text = "NEWS_ARMORY_TEXT" },
+}
+
 -- Misiones de la cadena de Onyxia y sus PNJ de inicio: Wowhead Forever (12-10-2026,
 -- /forever/quest= y g_mapperData); 4903 empieza con Warlord Goretooth (guia de
 -- Wowhead Classic). Se anaden sin pisar lo que ya hay en Data/Quests.lua y Data/Places.lua.

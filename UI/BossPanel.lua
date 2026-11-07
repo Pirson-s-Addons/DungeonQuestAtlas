@@ -261,6 +261,12 @@ end
 ns.LOOT_FILTERS = { { "all", "LOOT_ALL" }, { "weapons", "LOOT_WEAPONS" }, { "armor", "LOOT_ARMOR" },
     { "accessories", "LOOT_ACCESSORIES" }, { "recipes", "RECIPES" }, { "other", "LOOT_OTHER" } }
 
+-- Lo que se ve a la derecha de un objeto: su %, o "Probable" si nadie lo ha visto caer aun
+function ns.LootExtra(item)
+    if item.probable then return L.LOOT_PROBABLE end
+    return item[2] and (item[2] .. "%")
+end
+
 -- Todo el botin de la mazmorra: { itemID, %, from = { jefes } }, sin repetir objetos
 -- (las recetas caen de varios jefes: el primero que la suelta y "+N")
 function ns.DungeonLoot(d)
@@ -272,7 +278,7 @@ function ns.DungeonLoot(d)
                 if item then
                     item.from[#item.from + 1] = i
                 else
-                    item = { it[1], it[2], from = { i } }
+                    item = { it[1], it[2], from = { i }, probable = it.probable }
                     seen[it[1]] = item
                     items[#items + 1] = item
                 end
@@ -437,7 +443,7 @@ function ns.CreateLootPanel(page, bar)
         row.extra.color = ns.INK
         row.source = SourceButton(row, row.extra)
     end, function(row, item)
-        local extra = item[2] and (item[2] .. "%")
+        local extra = ns.LootExtra(item)
         local from = BossLabel(item.from)
         if from then extra = from .. (extra and ("  " .. extra) or "") end
         ns.SetItemButton(row, item[1], nil, extra)
@@ -462,7 +468,7 @@ function ns.CreateLootPanel(page, bar)
         row.boss.color = ns.INK
         row.source = SourceButton(row, row.boss)
     end, function(row, item)
-        ns.SetItemButton(row.item, item[1], nil, item[2] and (item[2] .. "%"))
+        ns.SetItemButton(row.item, item[1], nil, ns.LootExtra(item))
         row.boss:SetText(L.LOOT_BOSS:format(BossLabel(item.from) or "?"))
         row.source.from, row.source.itemID = item.from, item[1]
     end)

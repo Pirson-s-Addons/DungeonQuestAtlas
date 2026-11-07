@@ -115,7 +115,65 @@ local MARK_ICON = {
     item = { size = 16 }, -- el icono del propio objeto
     -- Como llegar a un jefe: escalera de mano propia (_project/tools/dqa_art/ladder.py)
     note = { file = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\ladder", size = 30 },
+    -- Misiones (Data/MapQuests.lua): ! empieza, ? se entrega, la gema, hay que hacer algo ahi
+    quest_start = { atlas = "QuestNormal", file = "Interface\\GossipFrame\\AvailableQuestIcon", size = 22 },
+    quest_end = { atlas = "QuestTurnin", file = "Interface\\GossipFrame\\ActiveQuestIcon", size = 22 },
+    quest_do = { file = "Interface\\AddOns\\DungeonQuestAtlas\\img\\pin_dqa", size = 20 },
 }
+
+local function HasAct(entry, act)
+    for i = 2, #entry do
+        if entry[i] == act then return true end
+    end
+end
+
+-- Sitios de mision de una planta, uno por lugar: solo lo que le queda por hacer a este
+-- personaje (su faccion y su clase, sin entregar). { x, y, kind, entries }
+local function QuestSpots(d, floor)
+    local spots, byPlace = {}, {}
+    local faction = UnitFactionGroup("player")
+    for _, spot in ipairs(ns.MapQuests[d.key] and ns.MapQuests[d.key][floor] or {}) do
+        for i = 4, #spot do
+            local e, q = spot[i], ns.Quests[spot[i][1]]
+            if q and ns.MatchesFaction(q, faction) and ns.IsMyClass(q)
+                and ns.QuestStatus(e[1]) ~= ns.STATUS_COMPLETED then
+                local key = spot[1] .. ":" .. spot[2]
+                local place = byPlace[key]
+                if not place then
+                    place = { x = spot[1], y = spot[2], entries = {} }
+                    byPlace[key] = place
+                    spots[#spots + 1] = place
+                end
+                place.entries[#place.entries + 1] = e
+            end
+        end
+    end
+    for _, place in ipairs(spots) do
+        local turnIn, start, anyEnd
+        for _, e in ipairs(place.entries) do
+            local status = ns.QuestStatus(e[1])
+            local inLog = status == ns.STATUS_IN_LOG or status == ns.STATUS_READY
+            anyEnd = anyEnd or HasAct(e, "end")
+            turnIn = turnIn or (inLog and HasAct(e, "end"))
+            start = start or (not inLog and HasAct(e, "start"))
+        end
+        place.kind = (turnIn and "quest_end") or (start and "quest_start") or (anyEnd and "quest_end") or "quest_do"
+    end
+    return spots
+end
+
+local function QuestActText(e)
+    local parts = {}
+    if HasAct(e, "start") then parts[#parts + 1] = L.MAP_QUEST_START end
+    if HasAct(e, "end") then parts[#parts + 1] = L.MAP_QUEST_END end
+    if HasAct(e, "loot") then
+        local item = e.item and ns.ItemInfo(e.item)
+        parts[#parts + 1] = L.MAP_QUEST_LOOT:format(item and item.name or ("#" .. tostring(e.item)))
+    end
+    if HasAct(e, "use") then parts[#parts + 1] = L.MAP_QUEST_USE end
+    if HasAct(e, "explore") then parts[#parts + 1] = L.MAP_QUEST_EXPLORE end
+    return table.concat(parts, " / ")
+end
 
 local function SetMarkIcon(texture, kind, itemID)
     if kind == "item" then return texture:SetTexture(ns.ItemInfo(itemID).icon) end
@@ -143,9 +201,22 @@ local function CreateMark(canvas, plan)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
         if self.kind == "item" or self.kind == "note" then return end
+        if self.entries then
+            ns.char.dungeon = plan.dungeon.key
+            ns.ShowQuest(self.entries[1][1])
+            if plan.onPinClick then plan.onPinClick() end
+            return
+        end
         if self.to and plan.floors[self.to] then plan:ShowFloor(self.to) end
     end)
     ns.AddTooltip(mark, function()
+        if mark.entries then
+            local lines = {}
+            for _, e in ipairs(mark.entries) do
+                lines[#lines + 1] = "|cffffd100" .. ns.QuestTitle(e[1]) .. "|r\n|cffffffff" .. QuestActText(e) .. "|r"
+            end
+            return table.concat(lines, "\n") .. "\n|cff59ff59" .. L.MAP_QUEST_CLICK .. "|r"
+        end
         if mark.kind == "entrance" then
             local point = plan.dungeon and ns.Entrance(plan.dungeon)
             return L.MAP_ENTRANCE .. (point and ("\n|cffffffff" .. ns.ZoneName(point.mapID) .. " "
@@ -183,7 +254,7 @@ ns.SetMapBossScale = SetBossScale
 -- Arrastrar mueve el plano si es mas grande que el viewport; si no, llama a
 -- onIdleDrag(true/false). Los botones de planta (plan.floorBar) los coloca quien crea el plano.
 local function CreatePlan(parent, onIdleDrag, onPinClick)
-    local plan = {}
+    local plan = { onPinClick = onPinClick }
     local viewport = CreateFrame("Frame", nil, parent)
     viewport:SetClipsChildren(true)
     plan.viewport = viewport
@@ -353,7 +424,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
             local item, note = m[1] == "item", m[1] == "note"
-            mark.kind, mark.x, mark.y = m[1], m[2], m[3]
+            mark.kind, mark.x, mark.y, mark.entries = m[1], m[2], m[3], nil
             mark.to = not (item or note) and m[4] or nil
             mark.boss = note and m[4] or nil
             mark.itemID, mark.hint = item and m[4] or nil, m[5]
@@ -371,6 +442,21 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
             mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
+            mark:Show()
+        end
+        for k, spot in ipairs(QuestSpots(self.dungeon, index)) do
+            local n = #floorMarks + k
+            local mark = marks[n] or CreateMark(canvas, self)
+            marks[n] = mark
+            mark.kind, mark.x, mark.y, mark.entries = spot.kind, spot.x, spot.y, spot.entries
+            mark.to, mark.boss, mark.itemID, mark.hint = nil, nil, nil, nil
+            SetMarkIcon(mark.icon, spot.kind)
+            SetMarkIcon(mark.glow, spot.kind)
+            ns.TintPortal(mark.icon, false)
+            ns.TintPortal(mark.glow, false)
+            mark:SetSize(MARK_ICON[spot.kind].size, MARK_ICON[spot.kind].size)
+            mark.label:SetText("")
+            mark:SetFrameLevel(canvas:GetFrameLevel() + 2)
             mark:Show()
         end
         self:UpdateBossScale()
