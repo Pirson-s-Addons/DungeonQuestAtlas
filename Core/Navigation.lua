@@ -52,18 +52,18 @@ local function Highlight(marker)
 end
 
 -- El mismo sitio no se repite: se reutiliza y pasa a ser el objetivo
-function ns.AddMarker(point, title, kind)
+function ns.AddMarker(point, title, kind, questID)
     for _, m in ipairs(Markers()) do
         if m.mapID == point.mapID and m.x == point.x and m.y == point.y then
             m.title, m.kind = title, kind or m.kind
-            m.npcID, m.under = point.npcID, point.under
+            m.npcID, m.under, m.questID = point.npcID, point.under, questID
             Highlight(m)
             ns.SetTarget(m)
             return m
         end
     end
     local marker = { mapID = point.mapID, x = point.x, y = point.y, title = title, kind = kind,
-        npcID = point.npcID, under = point.under }
+        npcID = point.npcID, under = point.under, questID = questID }
     table.insert(Markers(), marker)
     Highlight(marker)
     ns.SetTarget(marker)
@@ -81,6 +81,15 @@ function ns.RemoveMarker(marker)
     end
     if target == marker then target = Markers()[#Markers()] end
     ns.SetTarget(target)
+end
+
+-- Los marcadores que ya no hacen falta: el de quien da la mision al cogerla y todos los
+-- de esa mision al entregarla
+function ns.ClearQuestMarkers(questID, onlyKind)
+    for i = #Markers(), 1, -1 do
+        local m = Markers()[i]
+        if m.questID == questID and (not onlyKind or m.kind == onlyKind) then ns.RemoveMarker(m) end
+    end
 end
 
 function ns.ClearMarkers()

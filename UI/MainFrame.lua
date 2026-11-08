@@ -212,6 +212,7 @@ function ns.RefreshUI()
         local plan = ui.map.plan
         if plan.dungeon ~= d then plan:SetDungeon(d, map) else plan:ShowFloor(plan.index) end -- jefes muertos al dia
         if ui.mapBoss ~= nil then plan:FocusBoss(ui.mapBoss or nil); ui.mapBoss = nil end
+        if ui.mapQuest then plan:FocusQuest(ui.mapQuest.id, ui.mapQuest.floor); ui.mapQuest = nil end
         return
     end
 
@@ -763,6 +764,17 @@ function ns.ShowDungeonMap(d, bossIndex)
     ns.char.dungeon = d.key
     ns.char.view = "map"
     if frame:IsShown() then ns.RefreshUI() else frame:Show() end
+end
+
+-- Mision que se coge ("start") o se entrega ("end") dentro de la mazmorra: el plano en su
+-- planta, con su marca latiendo. false si no tiene sitio en el plano.
+function ns.ShowQuestOnDungeonMap(d, questID, act)
+    local floor = ns.DungeonMaps(d) and ns.QuestSpotFloor(d, questID, act)
+    if not floor then return false end
+    if not frame then CreateMainFrame() end
+    ui.mapQuest = { id = questID, floor = floor }
+    ns.ShowDungeonMap(d)
+    return true
 end
 
 -- Abre la ventana en la pagina de una mazmorra (entradas del mapa del mundo)

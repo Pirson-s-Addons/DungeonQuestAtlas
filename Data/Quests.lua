@@ -568,12 +568,20 @@ ns.Quests = {
     [95748] = { name = "The Gurubashi Legends of Old", level = 40, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95770, 95775 }, need = { { 2007, 1 } }, xp = 3150, starts = { "npc:2519" }, ends = { "npc:2519" }, verified = true },
     [95770] = { name = "Locating the Lost City", level = 40, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95770, 95775 }, xp = 3150, starts = { "npc:2519" }, ends = { "npc:2519" }, verified = true },
     [95775] = { name = "The Drowned City", level = 40, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95770, 95775 }, need = { { 270308, 1 }, { 270309, 1 }, { 270310, 1 }, { 270311, 1 } }, xp = 8450, starts = { "npc:2519" }, ends = { "npc:2519" }, verified = true },
-    [95773] = { name = "Enemies in the Water", level = 37, minLevel = 30, faction = "Horde", chain = { 95773, 95776 }, need = { { 270305, 10 } }, xp = 2850, verified = true },
-    [95776] = { name = "The Only Good Brinescale...", level = 38, minLevel = 30, faction = "Horde", chain = { 95773, 95776 }, choice = { 279888, 279889 }, xp = 9500, verified = true },
+    [95773] = { name = "Enemies in the Water", level = 37, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95773 }, need = { { 270305, 10 } }, xp = 2850, starts = { "npc:2464" }, ends = { "npc:2464" }, verified = true },
+    [95776] = { name = "The Only Good Brinescale...", level = 38, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95773, 95770, 95776 }, choice = { 279888, 279889 }, xp = 9500, starts = { "npc:2464" }, ends = { "npc:2464" }, verified = true },
     [96774] = { name = "Ancient Gurubashi Idol", level = 40, minLevel = 30, faction = "Horde", need = { { 276894, 1 } }, xp = 8800, starts = { "npc:264074" }, ends = { "npc:264074" }, verified = true },
-    [95787] = { name = "Take Two With Water", level = 40, minLevel = 30, faction = "Alliance", starts = { "npc:2277" }, ends = { "npc:2277" }, verified = false },
-    [95788] = { name = "Magics of the Drowned City", level = 40, minLevel = 30, faction = "Alliance", need = { { 270343, 5 } }, verified = false },
-    [97130] = { name = "Ancient Gurubashi Secrets", level = 40, minLevel = 34, faction = "Alliance", need = { { 276894, 1 } }, xp = 10450, money = 5000, verified = false },
+    [95787] = { name = "Take Two With Water", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, need = { { 270308, 1 }, { 270309, 1 }, { 270310, 1 }, { 270311, 1 } }, xp = 8450, starts = { "npc:2277" }, ends = { "npc:2277" }, verified = false },
+    [95788] = { name = "Magics of the Drowned City", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95788, 95798 }, need = { { 270343, 5 } }, xp = 8450, starts = { "npc:2277" }, ends = { "npc:2277" }, verified = false },
+    -- Cadena de la Alianza hasta Dibbs (08-11-2026; niveles, XP y objetos de Wowhead Forever). 203 y 204 se hacen a la vez; 95798 y 95799 son la entrega final de cada rama.
+    [203] = { name = "The Second Rebellion", level = 33, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, xp = 1950, starts = { "npc:733" }, ends = { "npc:733" }, verified = false },
+    [204] = { name = "Bad Medicine", level = 34, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, need = { { 2633, 7 }, { 2634, 1 } }, xp = 2700, starts = { "npc:733" }, ends = { "npc:733" }, verified = false },
+    [207] = { name = "Kurzen's Mystery", level = 38, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, need = { { 2005, 1 }, { 2006, 1 }, { 2007, 1 }, { 2008, 1 } }, xp = 3550, starts = { "npc:739" }, ends = { "npc:739" }, verified = false },
+    [205] = { name = "Troll Witchery", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, need = { { 2466, 4 } }, xp = 3150, starts = { "npc:739" }, ends = { "npc:739" }, verified = false },
+    [95786] = { name = "An Acquaintance in Southshore", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, provided = { 270340 }, xp = 3150, starts = { "npc:739" }, ends = { "npc:2277" }, verified = false },
+    [95799] = { name = "Findings for the Explorer's League", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95787, 95799 }, choice = { 279880, 279881 }, xp = 2350, money = 3500, starts = { "npc:2277" }, ends = { "npc:2916" }, verified = false },
+    [95798] = { name = "The Web of Magic", level = 40, minLevel = 30, faction = "Alliance", chain = { 203, 204, 207, 205, 95786, 95788, 95798 }, choice = { 279879, 279878 }, xp = 2350, money = 3500, starts = { "npc:2277" }, ends = { "npc:252019" }, verified = false },
+    [97130] = { name = "Ancient Gurubashi Secrets", level = 40, minLevel = 34, faction = "Alliance", need = { { 276894, 1 } }, xp = 10450, money = 5000, starts = { "npc:31439" }, verified = false },
     -- Paladin de la Horda: The Debt ... The Moonsilver Blade y Old Fire-Eye (da Wolfsbane).
     -- A Moon-Kissed Blade pide materiales de Las Minas, Colmillo Oscuro y Cavernas de Brazanegra.
     [95034] = { name = "The Debt", level = 24, minLevel = 18, faction = "Horde", classes = { "PALADIN" }, chain = { 95034, 95036, 95111, 95125, 95126, 95140 }, xp = 200, starts = { "npc:259620" }, ends = { "npc:259620" }, verified = true },
@@ -603,7 +611,7 @@ ns.Quests = {
     [79974] = { name = "Wet Job", event = "BEDROLL", level = 32, minLevel = 14, faction = "Both", chain = { 79192, 79980, 79974, 79975, 79976 }, rewards = { 5432, 20709 }, xp = 2550, starts = { "object:424012" }, ends = { "object:424007" }, verified = true },
     [79975] = { name = "Eagle's Fist", event = "BEDROLL", level = 32, minLevel = 14, faction = "Both", chain = { 79192, 79980, 79974, 79975, 79976 }, xp = 2550, starts = { "object:424007" }, ends = { "object:406918" }, verified = true },
     [79976] = { name = "This Must Be The Place", event = "BEDROLL", level = 32, minLevel = 14, faction = "Both", chain = { 79192, 79980, 79974, 79975, 79976 }, rewards = { 211527, 216619 }, xp = 1950, starts = { "object:406918" }, ends = { "object:424006" }, verified = true },
-    -- Krol'dok y Ciudad Sumergida (07-11-2026; IDs comprobados en Wowhead Forever; sin dato, quien da 94972, 94975, 94983 y 96771).
+    -- Krol'dok y Ciudad Sumergida (07-11-2026; IDs comprobados en Wowhead Forever; sin dato, quien da 94972, 94975 y 94983).
     [94968] = { name = "Eye of Mugg", level = 45, minLevel = 40, faction = "Horde", choice = { 279852, 279480, 279853 }, need = { { 267086, 1 } }, xp = 13000, money = 13000, starts = { "npc:256418" }, ends = { "npc:256418" }, verified = false },
     [94972] = { name = "Tome of Twilight", level = 44, minLevel = 39, faction = "Horde", choice = { 279859, 279860 }, need = { { 267104, 1 } }, xp = 12450, verified = false },
     [94975] = { name = "A Token of Vengeance", level = 42, minLevel = 38, faction = "Horde", rewards = { 267090 }, need = { { 267091, 15 } }, xp = 9250, verified = false },
@@ -611,7 +619,7 @@ ns.Quests = {
     [94983] = { name = "Twilight Mementos", level = 42, minLevel = 38, faction = "Alliance", need = { { 267234, 8 } }, xp = 11500, verified = false },
     [94907] = { name = "A Small Favor", faction = "Alliance", chain = { 94907, 94984 }, starts = { "npc:257591" }, ends = { "npc:257591" }, verified = false },
     [94984] = { name = "Tome of Twilight", level = 44, minLevel = 39, faction = "Alliance", chain = { 94907, 94984 }, choice = { 279854, 279855 }, need = { { 267104, 1 } }, xp = 12450, starts = { "npc:257591" }, ends = { "npc:257591" }, verified = false },
-    [96771] = { name = "Vengeance of the Highborne", level = 45, minLevel = 37, faction = "Alliance", xp = 13000, money = 6500, verified = false },
+    [96771] = { name = "Vengeance of the Highborne", level = 45, minLevel = 37, faction = "Alliance", xp = 13000, money = 6500, starts = { "npc:268425" }, ends = { "npc:268425" }, verified = false },
     [95789] = { name = "Shady Saltseers", level = 40, minLevel = 34, faction = "Both", choice = { 279882, 279930 }, need = { { 270333, 10 } }, xp = 10450, money = 10000, starts = { "npc:773" }, ends = { "npc:773" }, verified = false },
     [95791] = { name = "The Saltseer Captain", level = 40, minLevel = 34, faction = "Both", choice = { 279883, 279884 }, xp = 10450, starts = { "npc:773" }, ends = { "npc:773" }, verified = false },
 }

@@ -97,7 +97,7 @@ end
 
 -- Devuelve "own", "native", "tomtom" o nil (sin coordenadas).
 -- kind: "start", "end" o "entrance" (el icono del marcador).
-function ns.SetWaypoint(point, title, kind)
+function ns.SetWaypoint(point, title, kind, questID)
     if not (point and point.mapID and point.x and point.y) then
         ns.Print(L.WP_NO_COORDS:format(title))
         return nil
@@ -114,7 +114,7 @@ function ns.SetWaypoint(point, title, kind)
         ns.Print(L.WP_SET:format(where) .. (link and (" " .. link) or ""))
         return "native"
     end
-    ns.AddMarker(point, title, kind)
+    ns.AddMarker(point, title, kind, questID)
     ns.Print(L.WP_OWN:format(where))
     return "own"
 end
@@ -134,7 +134,7 @@ end
 -- PNJ u objeto de una mision. Si esta dentro de la mazmorra (sin coordenadas,
 -- o en un mapa que no admite pin), se marca la entrada. Devuelve el modo de
 -- SetWaypoint y el punto que se ha marcado.
-function ns.MarkPlace(place, title, d, kind)
+function ns.MarkPlace(place, title, d, kind, questID)
     local noPin = place and (not place.mapID
         or (C_Map.CanSetUserWaypointOnMap and not C_Map.CanSetUserWaypointOnMap(place.mapID)))
     if noPin and d then
@@ -144,7 +144,7 @@ function ns.MarkPlace(place, title, d, kind)
             return ns.SetWaypoint(entrance, ns.DungeonName(d), "entrance"), entrance
         end
     end
-    return ns.SetWaypoint(place, title, kind), place
+    return ns.SetWaypoint(place, title, kind, questID), place
 end
 
 -- ==========================================
@@ -171,7 +171,7 @@ function ns.GuideNextStep(questID)
             local who = place and ns.PlaceName(place) or L.UNKNOWN
             ns.Print(L.NEXT_STEP:format(ns.QuestTitle(nextID), who))
             local sameNpc = place and place.npcID and tContains(q.ends or {}, "npc:" .. place.npcID)
-            if place and not sameNpc then ns.MarkPlace(place, who, DungeonOfQuest(nextID), "start") end
+            if place and not sameNpc then ns.MarkPlace(place, who, DungeonOfQuest(nextID), "start", nextID) end
             return
         end
     end

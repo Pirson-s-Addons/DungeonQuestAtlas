@@ -36,6 +36,27 @@ local FLOOR_PAD, FLOOR_GAP = 7, 3              -- margen de su placa y hueco ent
 -- Chincheta de jefe: su cara recortada en circulo dentro de un aro, como los
 -- botones del minimapa (medidas de LibDBIcon: aro de 53 con el hueco de 20 en
 -- 7,-5; aqui escaladas a PIN)
+-- Estrella dorada que late detras de una marca o una cara. Devuelve su animacion.
+local function CreateFocusStar(holder, size)
+    local star = holder:CreateTexture(nil, "OVERLAY", nil, 7)
+    star:SetTexture("Interface\\Cooldown\\star4")
+    star:SetBlendMode("ADD")
+    star:SetVertexColor(1, 0.8, 0.2)
+    star:SetSize(size, size)
+    star:SetPoint("CENTER")
+    local pulse = star:CreateAnimationGroup()
+    pulse:SetLooping("BOUNCE")
+    local fade = pulse:CreateAnimation("Alpha")
+    fade:SetFromAlpha(1)
+    fade:SetToAlpha(0.35)
+    fade:SetDuration(0.45)
+    local grow = pulse:CreateAnimation("Scale")
+    grow:SetScaleFrom(0.8, 0.8)
+    grow:SetScaleTo(1.25, 1.25)
+    grow:SetDuration(0.45)
+    return pulse
+end
+
 local function CreatePin(canvas, onClick)
     local k = PIN / 20
     local pin = CreateFrame("Button", nil, canvas)
@@ -67,22 +88,7 @@ local function CreatePin(canvas, onClick)
     pin.focus = CreateFrame("Frame", nil, canvas)
     pin.focus:SetAllPoints(pin)
     pin.focus:Hide()
-    local star = pin.focus:CreateTexture(nil, "OVERLAY", nil, 7)
-    star:SetTexture("Interface\\Cooldown\\star4")
-    star:SetBlendMode("ADD")
-    star:SetVertexColor(1, 0.8, 0.2)
-    star:SetSize(PIN * 3.4, PIN * 3.4)
-    star:SetPoint("CENTER")
-    local pulse = star:CreateAnimationGroup()
-    pulse:SetLooping("BOUNCE")
-    local fade = pulse:CreateAnimation("Alpha")
-    fade:SetFromAlpha(1)
-    fade:SetToAlpha(0.35)
-    fade:SetDuration(0.45)
-    local grow = pulse:CreateAnimation("Scale")
-    grow:SetScaleFrom(0.8, 0.8)
-    grow:SetScaleTo(1.25, 1.25)
-    grow:SetDuration(0.45)
+    local pulse = CreateFocusStar(pin.focus, PIN * 3.4)
     pin.focus:SetScript("OnShow", function()
         pin:SetFrameLevel(pin:GetParent():GetFrameLevel() + 5) -- encima de caras y marcas, bajo los botones de planta
         pin.focus:SetFrameLevel(pin:GetFrameLevel() - 1)
@@ -175,6 +181,25 @@ local function QuestActText(e)
     return table.concat(parts, " / ")
 end
 
+-- La mision buscada esta en este sitio del plano
+local function HasQuest(entries, questID)
+    for _, e in ipairs(entries) do
+        if e[1] == questID then return true end
+    end
+    return false
+end
+
+-- Planta donde esta el sitio de una mision ("start" o "end"), si lo tiene
+function ns.QuestSpotFloor(d, questID, act)
+    for floor, spots in pairs(ns.MapQuests[d.key] or {}) do
+        for _, spot in ipairs(spots) do
+            for i = 4, #spot do
+                if spot[i][1] == questID and HasAct(spot[i], act) then return floor end
+            end
+        end
+    end
+end
+
 local function SetMarkIcon(texture, kind, itemID)
     if kind == "item" then return texture:SetTexture(ns.ItemInfo(itemID).icon) end
     local icon = MARK_ICON[kind]
@@ -198,6 +223,16 @@ local function CreateMark(canvas, plan)
     local font = mark.label:GetFont()
     if font then mark.label:SetFont(font, 13, "OUTLINE") end
     mark.label:SetPoint("TOP", mark, "BOTTOM", 0, -1)
+    -- Mision buscada desde su hoja: la marca late unos segundos
+    mark.focus = CreateFrame("Frame", nil, canvas)
+    mark.focus:SetAllPoints(mark)
+    mark.focus:Hide()
+    local markPulse = CreateFocusStar(mark.focus, 72)
+    mark.focus:SetScript("OnShow", function()
+        mark.focus:SetFrameLevel(mark:GetFrameLevel() - 1)
+        markPulse:Play()
+    end)
+    mark.focus:SetScript("OnHide", function() markPulse:Stop() end)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
         if self.kind == "item" or self.kind == "note" then return end
@@ -418,7 +453,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             pin:Show()
         end
         for k = #floor.pins + 1, #pins do pins[k].x = nil end
-        for _, mark in ipairs(marks) do mark:Hide(); mark.x = nil end
+        for _, mark in ipairs(marks) do mark:Hide(); mark.focus:Hide(); mark.x = nil end
         local floorMarks = ns.MapMarks[self.dungeon.key] and ns.MapMarks[self.dungeon.key][index] or {}
         for k, m in ipairs(floorMarks) do
             local mark = marks[k] or CreateMark(canvas, self)
@@ -458,6 +493,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark.label:SetText("")
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2)
             mark:Show()
+            mark.focus:SetShown(self.focusQuest ~= nil and HasQuest(spot.entries, self.focusQuest))
         end
         self:UpdateBossScale()
         UpdateFloorButtons()
@@ -478,8 +514,21 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         end)
     end
 
+    -- Hoja de una mision que se coge o se entrega dentro: su planta, con la marca latiendo 3 s
+    function plan:FocusQuest(questID, floor)
+        self.focusQuest = questID
+        self:ShowFloor(floor)
+        local token = {}
+        self.focusToken = token
+        C_Timer.After(3, function()
+            if self.focusToken ~= token then return end
+            self.focusQuest = nil
+            for _, mark in ipairs(marks) do mark.focus:Hide() end
+        end)
+    end
+
     function plan:SetDungeon(d, floors)
-        self.dungeon, self.floors, self.index, self.focus = d, floors, nil, nil
+        self.dungeon, self.floors, self.index, self.focus, self.focusQuest = d, floors, nil, nil, nil
         self:ShowFloor(1)
     end
 

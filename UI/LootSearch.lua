@@ -51,6 +51,9 @@ local function ArmorName(sub)
     return get and get(4, sub) or tostring(sub)
 end
 
+-- Complementos: ranura del objeto (el nombre, el del juego)
+local ACCESSORIES = { "INVTYPE_FINGER", "INVTYPE_NECK", "INVTYPE_TRINKET", "INVTYPE_CLOAK" }
+
 -- Claves de estadistica de un objeto, en mayusculas y juntas (una vez cargado)
 local statCache = {}
 local function StatKeys(itemID)
@@ -72,7 +75,7 @@ local function HasStat(itemID, stat)
     return false
 end
 
--- filters: search (nombre), stat (indice de STATS), armor (subclase), favorites
+-- filters: search (nombre), stat (indice de STATS), armor (subclase de armadura o ranura de ACCESSORIES), favorites
 function ns.SearchLoot(filters)
     local search = (filters.search or ""):lower()
     local instant = (C_Item and C_Item.GetItemInfoInstant) or _G.GetItemInfoInstant
@@ -80,8 +83,12 @@ function ns.SearchLoot(filters)
     for itemID in pairs(ns.AllSourceItems()) do
         local ok = not filters.favorites or ns.IsFavorite(itemID)
         if ok and filters.armor then
-            local _, _, _, _, _, classID, subID = instant(itemID)
-            ok = classID == 4 and subID == filters.armor
+            local _, _, _, equipLoc, _, classID, subID = instant(itemID)
+            if type(filters.armor) == "string" then
+                ok = equipLoc == filters.armor
+            else
+                ok = classID == 4 and subID == filters.armor
+            end
         end
         if ok and filters.stat then ok = HasStat(itemID, STATS[filters.stat]) end
         local info = ok and ns.ItemInfo(itemID)
@@ -127,6 +134,7 @@ function ns.CreateLootSearch(parent, filters)
     local armor = Dropdown(panel, 150, function()
         local list = { { false, L.LOOT_ARMOR_ANY } }
         for sub = 1, 4 do list[#list + 1] = { sub, ArmorName(sub) } end
+        for _, slot in ipairs(ACCESSORIES) do list[#list + 1] = { slot, _G[slot] or slot } end
         return list
     end, function() return lf.armor or false end, function(v) lf.armor = v or nil; Changed() end)
     armor:SetPoint("LEFT", stat, "RIGHT", 10, 0)

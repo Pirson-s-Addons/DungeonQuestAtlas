@@ -123,6 +123,10 @@ ns.Maps = {
     -- pasados a ojo desde las capturas con su sitio que dio el autor).
     -- id = clave: Art/Maps/<CLAVE>_<1-12>.tga, generadas con
     -- _project/tools/dqa_maps/forever_maps.py.
+    -- Sin chinchetas: aun no se sabe en que sala esta cada jefe
+    ALCAZ = { { id = "ALCAZ", pins = {} } },
+    DROWNED = { { id = "DROWNED", pins = {} } },
+    KROLDOK = { { id = "KROLDOK", pins = {} } },
     EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
     THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },

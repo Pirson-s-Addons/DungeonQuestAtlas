@@ -398,12 +398,14 @@ end
 
 -- Coger una mision: su texto, desde el registro (por si no se vio la oferta)
 On("QUEST_ACCEPTED", function(questID)
+    ns.ClearQuestMarkers(questID, "start")
     if ns.Quests[questID] and not ns.QuestText(questID).desc then ns.CollectFromLog(questID) end
     ns.RequestRefresh()
 end)
 
 -- Entregar un paso de una cadena: el inicio del siguiente (Core/Waypoints.lua)
 On("QUEST_TURNED_IN", function(questID)
+    ns.ClearQuestMarkers(questID)
     ns.RequestRefresh()
     ns.GuideNextStep(questID)
 end)

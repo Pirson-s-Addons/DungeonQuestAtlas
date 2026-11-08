@@ -61,6 +61,16 @@ local function CreatePinMixin()
     function DungeonQuestAtlasPinMixin:OnAcquired(marker, x, y)
         self.marker = marker
         local size = ns.db.pinSize
+        -- Donde se entrega una mision: la ? del juego, algo mas grande; el resto, la gema
+        local turnIn = marker.kind == "end" and self.Gem and self.Gem.SetAtlas
+            and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("QuestTurnin")
+        if turnIn then
+            self.Gem:SetAtlas("QuestTurnin")
+            size = size * 1.3
+        elseif self.Gem then
+            self.Gem:SetTexture("Interface\\AddOns\\DungeonQuestAtlas\\img\\pin_dqa")
+            self.Gem:SetTexCoord(0, 1, 0, 1)
+        end
         self:SetSize(size, size)
         self:SetPosition(x, y)
         -- Halo solo en el recien marcado y solo unos segundos: luego, la gema sola

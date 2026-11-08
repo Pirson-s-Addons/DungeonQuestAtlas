@@ -407,8 +407,12 @@ local function CreateDetail(parent)
         for _, p in ipairs(list) do
             if p.mapID then place = p break end
         end
+        local kind = which == "starts" and "start" or "end"
+        -- Dentro de la mazmorra y con su sitio en el plano: el plano, no la entrada
+        if Dungeon() and (not place or not place.mapID or place.inside)
+            and ns.ShowQuestOnDungeonMap(Dungeon(), detail.questID, kind) then return end
         local mode, point = ns.MarkPlace(place, place and ns.PlaceName(place) or ns.QuestTitle(detail.questID),
-            Dungeon(), which == "starts" and "start" or "end")
+            Dungeon(), kind, detail.questID)
         -- Y el mapa abierto donde esta el pin
         if mode and point then ns.OpenMapAt(point.mapID) end
     end

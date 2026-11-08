@@ -17,27 +17,50 @@ local _, ns = ...
 -- Nombre, icono y calidad de cada objeto los da el cliente en su idioma.
 
 ns.Bosses = {
+    -- Abierta desde el 07-11-2026: jefes en el orden del juego, npcID y retratos de Wowhead Forever; botin visto hasta ahora.
+    -- probable = true: de la misma tanda del cliente (276732-276746 y el conjunto Defias Enforcer), sin ver caer aun.
+    ALCAZ = {
+        { name = "Overseer Wrex", level = 50, loot = { { 276733 }, { 276734 } } },
+        { name = "The Questioner", npcID = 256236, display = 140092, level = 51, loot = { { 276742 }, { 276743 }, { 276741 } } },
+        { name = "Tidemistress Ca'zass", npcID = 255997, display = 4973, level = 50, loot = { { 276735 }, { 276736 }, { 276737, probable = true } } },
+        { name = "Katerina the Cleaner", npcID = 257016, display = 2317, level = 52, loot = { { 276739 }, { 276738, probable = true } } },
+        { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = {} },
+        { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 276740, probable = true }, { 287019, probable = true }, { 287020, probable = true }, { 276746, probable = true }, { 276732, probable = true } } },
+    },
+    -- Abierta desde el 07-11-2026: jefes en el orden del juego. Botin de sus jefes visto sin ID publico aun: no se pone
+    -- hasta tenerlo; el de los bichos, Satyr's Touch (Wowhead Forever).
+    BLACKMAW = {
+        { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = {} },
+        { name = "Impaan the Imprisoner", npcID = 247206, display = 130432, level = 57, loot = {} },
+        { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, loot = {} },
+        { name = "Bonesnout the Unbroken", npcID = 247198, display = 130427, level = 58, loot = {} },
+        { name = "Varrox Bleakhoof", npcID = 247234, display = 130447, level = 60, loot = {} },
+        { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, loot = {} },
+        { name = "Unbound Spirit", npcID = 247231, display = 131644, loot = {} },
+        { name = "Moontouched Wanderer", npcID = 269104, display = 12235, level = 55, kind = "rare", loot = {} },
+        { name = "Trash mobs", kind = "trash", loot = { { 287036 } } },
+    },
     -- Lo visto caer hasta ahora (07-11-2026). probable = true: objetos de la misma tanda del
     -- cliente que nadie ha visto caer aun, a cada jefe por orden de ID y nivel (sin confirmar).
     DROWNED = {
-        { name = "Zul'Alai", npcID = 258905, level = 37, loot = { { 274600 }, { 274598, probable = true }, { 274599, probable = true } } },
-        { name = "Var'Taka", npcID = 258924, level = 38, loot = { { 274602 }, { 274601, probable = true } } },
-        { name = "Captain Dreadrise", npcID = 260042, level = 38, loot = { { 274604 }, { 274605 }, { 274603, probable = true } } },
-        { name = "Deathless Marrow", npcID = 269586, level = 39, loot = { { 274606 }, { 274607, probable = true } } },
-        { name = "Primeval Elemental", npcID = 273738, level = 38, loot = { { 274612 }, { 274611, probable = true }, { 274613, probable = true }, { 274614, probable = true }, { 274615, probable = true } } },
-        { name = "Gill", npcID = 264177, kind = "rare", loot = { { 286646 }, { 286649, probable = true }, { 286650, probable = true }, { 286651, probable = true }, { 286658, probable = true }, { 286662, probable = true } } },
-        { name = "Min'loth the Serpent", npcID = 260274, level = 40, loot = { { 274610 }, { 274608, probable = true }, { 274609, probable = true } } },
+        { name = "Zul'Alai", npcID = 258905, display = 144475, level = 37, loot = { { 274600 }, { 274599 }, { 274598, probable = true } } },
+        { name = "Var'Taka", npcID = 258924, display = 144487, level = 38, loot = { { 274602 }, { 274601 } } },
+        { name = "Captain Dreadrise", npcID = 260042, display = 142144, level = 38, loot = { { 274604 }, { 274605 }, { 274603, probable = true } } },
+        { name = "Deathless Marrow", npcID = 269586, display = 142245, level = 39, loot = { { 274606 }, { 274607, probable = true } } },
+        { name = "Primeval Elemental", npcID = 273738, display = 129945, level = 38, loot = { { 274612 }, { 274611 }, { 274613, probable = true }, { 274614, probable = true }, { 274615, probable = true } } },
+        { name = "Gill", npcID = 264177, display = 144023, kind = "rare", loot = { { 286646 }, { 286649, probable = true }, { 286650, probable = true }, { 286651, probable = true }, { 286658, probable = true }, { 286662, probable = true } } },
+        { name = "Min'loth the Serpent", npcID = 260274, display = 142322, level = 40, loot = { { 274610 }, { 274608, probable = true }, { 274609, probable = true } } },
     },
-    -- Lo visto caer hasta ahora (07-11-2026). Faltan objetos vistos sin ID conocido. War Handler Ashka esta en los
-    -- datos del juego pero aun no se ha visto. El conjunto Krol'dok Warplate: sin saber quien lo suelta.
+    -- Lo visto caer hasta ahora (08-11-2026). El resto del conjunto Krol'dok Warplate (el peto lo suelta Nar'gurk):
+    -- sin saber quien lo suelta.
     KROLDOK = {
-        { name = "Slavecrusher Grox", npcID = 258966, level = 42, loot = { { 274996 } } },
-        { name = "Twilight Commander Zarmok", npcID = 258972, level = 43, loot = { { 275000 }, { 274998 } } },
-        { name = "War Handler Ashka", npcID = 259281, loot = { { 275002, probable = true } } },
-        { name = "Nar'gurk", npcID = 258964, level = 44, loot = {} },
-        { name = "Bossman Toof", npcID = 264773, level = 42, loot = { { 286430 }, { 286429 } } },
-        { name = "Overlord Mugg", npcID = 258968, level = 45, loot = {} },
-        { name = "Trash mobs", kind = "trash", loot = { { 275006, probable = true }, { 287014, probable = true }, { 275005, probable = true }, { 287012, probable = true }, { 287013, probable = true } } },
+        { name = "Slavecrusher Grox", npcID = 258966, display = 141217, level = 42, loot = { { 274996 }, { 274997 }, { 274995 } } },
+        { name = "Twilight Commander Zarmok", npcID = 258972, display = 141219, level = 43, loot = { { 275000 }, { 274998 } } },
+        { name = "War Handler Ashka", npcID = 259281, display = 141443, loot = { { 275001 }, { 275002, probable = true } } },
+        { name = "Nar'gurk", npcID = 258964, display = 141215, level = 44, loot = { { 275005 }, { 275004 } } },
+        { name = "Bossman Toof", npcID = 264773, display = 14424, level = 42, loot = { { 286430 }, { 286429 } } },
+        { name = "Overlord Mugg", npcID = 258968, display = 141218, level = 45, loot = { { 275009 }, { 275007 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 275006, probable = true }, { 287014, probable = true }, { 287012, probable = true }, { 287013, probable = true } } },
     },
     BFD = {
         { name = "Ghamoo-ra", npcID = 4887, display = 5027, level = 25, loot = { { 6907, 37.3 }, { 6908, 56.4 }, { 273839 }, { 251380, 0.03 }, { 251381, 0.02 }, { 251382, 0.08 }, { 252798, 0.05 }, { 252800, 0.03 }, { 252801, 0.08 }, { 252803, 0.02 }, { 253938, 0.03 }, { 253940, 0.05 }, { 253942, 0.03 }, { 253944, 0.02 }, { 253946, 0.03 } } },
@@ -200,7 +223,7 @@ ns.Bosses = {
         { name = "Mordresh Fire Eye", npcID = 7357, display = 8055, level = 39, loot = { { 10769, 33.3 }, { 10771, 31.9 }, { 10770, 33 } } },
         { name = "Glutton", npcID = 8567, display = 7864, level = 40, loot = { { 10774, 47.7 }, { 10772, 50.3 } } },
         { name = "Ragglesnout", npcID = 7354, kind = "rare", display = 11382, level = 40, loot = { { 10768, 38.9 }, { 10767, 39.2 }, { 10758, 20.1 } } },
-        { name = "Amnennar the Coldbringer", npcID = 7358, display = 7971, level = 41, loot = { { 10763, 36.9 }, { 10762, 38.7 }, { 10764, 28.6 }, { 10761, 18.6 }, { 10765, 27.3 } } },
+        { name = "Amnennar the Coldbringer", npcID = 7358, display = 7971, level = 41, loot = { { 10763, 36.9 }, { 10762, 38.7 }, { 10764, 28.6 }, { 10761, 18.6 }, { 10765, 27.3 }, { 274381 } } },
         { name = "Plaguemaw the Rotting", npcID = 7356, display = 6124, level = 40, loot = { { 10766, 32.7 }, { 10760, 62.8 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 10574 }, { 10581 }, { 10583, 0.1 }, { 10584 }, { 10578 }, { 10582 }, { 10572 }, { 10567 }, { 10571 }, { 10570 }, { 10573 } } },
         { name = "Henry Stern", kind = "object", display = 8029, level = 36, loot = { { 3826 }, { 10841 } } },

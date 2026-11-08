@@ -75,6 +75,9 @@ ns.MapMarks = {
         { "item", 0.370, 0.430, 275521, "MAP_ITEM_TOP" },
     } },
     EXCAVATION = { { { "entrance", 0.077, 0.610 } } },
+    ALCAZ = { { { "entrance", 0.352, 0.160 } } },
+    DROWNED = { { { "entrance", 0.845, 0.522 } } },
+    KROLDOK = { { { "entrance", 0.204, 0.808 } } },
     DALARAN = {
         { { "entrance", 0.190, 0.838 }, { "up", 0.642, 0.593, 2 } },
         { { "down", 0.610, 0.560, 1 } },

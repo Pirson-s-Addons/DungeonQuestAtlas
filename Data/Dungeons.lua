@@ -4,8 +4,8 @@ local _, ns = ...
 -- name: nombre en ingles, solo de respaldo. El nombre que se ve lo da el juego
 -- en el idioma del cliente con GetRealZoneText(instanceID).
 -- instanceID: ID de instancia (el 8.o valor de GetInstanceInfo() dentro). Las
--- nuevas, de wowforevertalents.com; sin el aun: Alcaz, Blackmaw, Krol'dok,
--- Ciudad Sumergida y Terraza del Modelador.
+-- nuevas, de wowforevertalents.com; Alcaz y Blackmaw, de los datos de encuentros del
+-- juego (sin confirmar dentro); sin el aun: Krol'dok, Ciudad Sumergida y Terraza del Modelador.
 -- part: las que comparten instancia (Cumbre de Roca Negra, y las alas del
 -- Monasterio Escarlata, La Masacre y Stratholme); se le anade "(<parte>)".
 -- minLevel / maxLevel: de foreverchanges.pro.
@@ -24,14 +24,14 @@ local _, ns = ...
 -- item, itemName y las misiones en orden por faccion (Both si es la misma).
 
 ns.Dungeons = {
-    { key = "ALCAZ", name = "Alcaz Prison", instanceID = nil, minLevel = 48, maxLevel = 53, isForever = true, faction = "Both",
+    { key = "ALCAZ", name = "Alcaz Prison", instanceID = 2994, minLevel = 48, maxLevel = 53, isForever = true, faction = "Both",
         names = { esES = "Prisión de Alcaz", deDE = "Gefängnis von Alcaz", frFR = "Prison d'Alcaz", itIT = "Prigione di Alcaz", ptBR = "Prisão de Alcaz",
             ruRU = "Тюрьма Алказ", koKR = "알카즈 감옥", zhCN = "奥卡兹监狱", zhTW = "奧卡茲監獄" },
         quests = {} },
     { key = "BFD", name = "Blackfathom Deeps", instanceID = 48, minLevel = 24, maxLevel = 32, isForever = false, faction = "Both",
         entrance = { mapID = 1440, x = 14.5, y = 14.2 },
         quests = { 971, 6564, 6563, 6565, 1275, 1200, 6561, 1199, 6921, 1198, 1740, 6922, 95140 } },
-    { key = "BLACKMAW", name = "Blackmaw Hold", instanceID = nil, minLevel = 55, maxLevel = 60, isForever = true, faction = "Both",
+    { key = "BLACKMAW", name = "Blackmaw Hold", instanceID = 2974, minLevel = 55, maxLevel = 60, isForever = true, faction = "Both",
         names = { esES = "Bastión Fauce Negra", deDE = "Schwarzmaulfeste", frFR = "Fort Gueule-Noire", itIT = "Fortezza Fauce Nera", ptBR = "Fortaleza Bocanegra",
             ruRU = "Оплот Черной Пасти", koKR = "검은아귀 요새", zhCN = "黑口要塞", zhTW = "黑口要塞" },
         quests = {} },
