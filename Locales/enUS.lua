@@ -422,6 +422,13 @@ L["NEW_VERSION"] = "A newer Dungeon Quest Atlas (%s) is out; you have %s. Update
 
 -- Copia del ingles: la base sobre la que se pone cualquier otro idioma.
 -- Siempre al final: las claves de despues no entrarian en la copia.
+L["PREV_DUNGEON"] = "Previous dungeon"
+L["NEXT_DUNGEON"] = "Next dungeon"
+L["SUMMON_HEADER"] = "How to summon"
+L["SUMMON_MALLET"] = "Kill the keeper at the mark of the first item and loot it. Use it at the altar at the mark of the second item: it becomes the mallet. Use the mallet at the gong inside the dungeon; one per group is enough."
+L["SUMMON_TOME"] = "The first item is marked on the map of its dungeon. Use it at the ley line focus to turn it into the second item, which summons this boss."
+L["QUEST_WARN_THAELRID"] = "Hand this in before you accept the next quest, or it can no longer be completed."
+L["QUEST_WARN_VILLAINY"] = "Accept this after completing the previous quest: if you accept it first, you will lose that one."
 local english = {}
 for key, text in pairs(L) do english[key] = text end
 ns.LOCALES.enUS, ns.LOCALES.enGB = english, english

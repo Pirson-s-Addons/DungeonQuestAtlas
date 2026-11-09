@@ -155,10 +155,49 @@ local function RefreshSection(key)
     SetNav(key .. ">" .. table.concat(names, ">"), crumbs)
 end
 
+-- Mazmorra anterior o siguiente en el orden de la portada, sin las bloqueadas (modo aventura)
+local function NeighbourDungeon(delta)
+    local list, current = ns.FilterDungeons(filters), SelectedDungeon()
+    local index
+    for i, d in ipairs(list) do
+        if d == current then index = i break end
+    end
+    if not index then return nil end
+    local i = index + delta
+    while list[i] do
+        if not ns.IsDungeonLocked(list[i]) then return list[i] end
+        i = i + delta
+    end
+end
+ns.NeighbourDungeon = NeighbourDungeon
+
+-- Sigue en la misma pagina (Resumen, Botin, Misiones... o el mapa, si la otra tiene)
+function ns.StepDungeon(delta)
+    local d = NeighbourDungeon(delta)
+    if not d then return end
+    local onMap = ns.char.view == "map"
+    ns.SelectDungeon(d)
+    if onMap and ns.DungeonMaps(d) then
+        ns.char.view = "map"
+        ns.RefreshUI()
+    end
+end
+
+local function UpdateDungeonArrows()
+    local shown = (ns.char.section or "dungeons") == "dungeons" and (ns.char.view == "dungeon" or ns.char.view == "map")
+    ui.prevDungeon:SetShown(shown)
+    ui.nextDungeon:SetShown(shown)
+    if shown then
+        ui.prevDungeon:SetEnabled(NeighbourDungeon(-1) ~= nil)
+        ui.nextDungeon:SetEnabled(NeighbourDungeon(1) ~= nil)
+    end
+end
+
 function ns.RefreshUI()
     if not (frame and frame:IsShown()) then return end
     local section = ns.char.section or "dungeons"
     SelectTab(section)
+    UpdateDungeonArrows()
     if section ~= "dungeons" then
         ui.home:Hide(); ui.book:Hide(); ui.map:Hide()
         return RefreshSection(section)
@@ -329,13 +368,13 @@ local function CreateNav()
     local ok, nav = pcall(CreateFrame, "Frame", nil, frame, "NavBarTemplate")
     if ok and nav and NavBar_Initialize and nav.home then
         nav:SetPoint("TOPLEFT", 61, -22)
-        nav:SetSize(380, 34)
+        nav:SetSize(340, 34)
         NavBar_Initialize(nav, "NavButtonTemplate", { name = L.HOME, OnClick = NavHome }, nav.home, nav.overflow)
         return nav
     end
     nav = CreateFrame("Frame", nil, frame)
     nav:SetPoint("TOPLEFT", 64, -28)
-    nav:SetSize(380, 24)
+    nav:SetSize(340, 24)
     local homeButton = CreateFrame("Button", nil, nav, "UIPanelButtonTemplate")
     homeButton:SetSize(100, 22)
     homeButton:SetPoint("LEFT")
@@ -350,6 +389,26 @@ local function CreateNav()
         crumb:SetText(table.concat(names, " "))
     end
     return nav
+end
+
+local function CreateDungeonArrow(delta, page, title)
+    local button = CreateFrame("Button", nil, frame)
+    button:SetSize(28, 28)
+    local path = "Interface\\Buttons\\UI-SpellbookIcon-" .. page .. "Page-"
+    button:SetNormalTexture(path .. "Up")
+    button:SetPushedTexture(path .. "Down")
+    button:SetDisabledTexture(path .. "Disabled")
+    button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    button:SetScript("OnClick", function() ns.StepDungeon(delta) end)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+        GameTooltip:SetText(title)
+        local d = ns.NeighbourDungeon(delta)
+        if d then GameTooltip:AddLine(ns.DungeonName(d), 1, 1, 1) end
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", GameTooltip_Hide)
+    return button
 end
 
 local function CreateTopBar()
@@ -368,6 +427,12 @@ local function CreateTopBar()
     local language = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
     language:SetWidth(140)
     language:SetPoint("RIGHT", search, "LEFT", -12, 0)
+
+    -- Mazmorra anterior y siguiente, entre las migas y el idioma
+    ui.nextDungeon = CreateDungeonArrow(1, "Next", L.NEXT_DUNGEON)
+    ui.nextDungeon:SetPoint("RIGHT", language, "LEFT", -4, 0)
+    ui.prevDungeon = CreateDungeonArrow(-1, "Prev", L.PREV_DUNGEON)
+    ui.prevDungeon:SetPoint("RIGHT", ui.nextDungeon, "LEFT", 0, 0)
     if language.SetupMenu then
         language:SetupMenu(function(_, root)
             if root.SetScrollMode then root:SetScrollMode(22 * 16) end

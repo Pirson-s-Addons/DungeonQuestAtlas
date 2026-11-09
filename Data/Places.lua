@@ -62,7 +62,17 @@ ns.Places = {
     ["npc:1470"] = { npcID = 1470, name = "Ghak Healtouch", mapID = 1432, x = 37, y = 49.2 },
     ["npc:1646"] = { npcID = 1646, name = "Baros Alexston", mapID = 1453, x = 57.8, y = 47.8 },
     ["npc:1719"] = { npcID = 1719, name = "Warden Thelwater", mapID = 1453, x = 51.5, y = 69.4 },
-    ["npc:1721"] = { npcID = 1721, name = "Nikova Raskol", mapID = 1453, x = 76.4, y = 63.7 },
+    ["npc:263445"] = { npcID = 263445, name = "Mayena Earthseeker", mapID = 1412, x = 34.8, y = 22.2 },
+    ["npc:20735"] = { npcID = 20735, name = "Archmage Lan'dalock", mapID = 1416, x = 15.9, y = 73.1 },
+    ["name:Mathrengyl Bearwalker"] = { name = "Mathrengyl Bearwalker", mapID = 1457, x = 35.4, y = 8.4 },
+    ["name:Jediga"] = { name = "Jediga", mapID = 1447, x = 22.5, y = 51.4 },
+    ["name:Alphonse Dumas"] = { name = "Alphonse Dumas" },
+    ["name:Kreza Darkthorn"] = { name = "Kreza Darkthorn" },
+    ["name:Melanie Sable"] = { name = "Melanie Sable" },
+    ["name:Sergeant Riftan"] = { name = "Sergeant Riftan" },
+    ["item:267137"] = { itemID = 267137 },
+    ["item:267138"] = { itemID = 267138 },
+    ["npc:1721"] = { npcID = 1721, name = "Nikova Raskol", mapID = 1453, x = 74.4, y = 60.0 },
     ["npc:1855"] = { npcID = 1855, name = "Tirion Fordring", mapID = 1423, x = 5.2, y = 35.6 },
     ["npc:1938"] = { npcID = 1938, name = "Dalar Dawnweaver", mapID = 1421, x = 44.2, y = 39.8 },
     ["npc:1952"] = { npcID = 1952, name = "High Executor Hadrec", mapID = 1421, x = 43.4, y = 40.8 },
@@ -398,6 +408,8 @@ ns.Places = {
 
 -- Donde se consigue un objeto que pide una mision (need): clic en su tarjeta, marcador ahi
 ns.ItemPlaces = {
+    [9241] = { mapID = 1425, x = 48.6, y = 68.0 },   -- Sacred Mallet: Qiaga, Altar de Zul
+    [9240] = { mapID = 1425, x = 58.5, y = 77.5 },   -- Mallet of Zul'Farrak: altar en lo alto de Jintha'Alor
     [210186] = { mapID = 1442, x = 58.2, y = 51.7 }, -- Breaching Charge: Veenix, Sierra Espolon
     [3254] = { mapID = 1421, x = 35.5, y = 12.0 },   -- Skittering Blood: Skittering Dark
     [3255] = { mapID = 1421, x = 43.0, y = 73.2 },   -- Berard's Journal: posada de Pirolena

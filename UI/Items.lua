@@ -202,6 +202,30 @@ function ns.CreateRewardCard(parent)
 end
 
 -- Un objeto (id, cuantos) o, sin id, un texto con icono (la XP, el dinero)
+-- Tarjeta de objeto con sitio conocido (ns.ItemPlaces): lleva la gema y un clic lo marca
+local function MarkItem(card)
+    local info = ns.ItemInfo(card.itemID)
+    local mode, point = ns.MarkPlace(ns.ItemPlaces[card.itemID], info.name or ("#" .. card.itemID), nil, "item")
+    if mode and point then ns.OpenMapAt(point.mapID) end
+end
+
+function ns.CreatePlaceCard(parent)
+    local card = ns.CreateRewardCard(parent)
+    card.pin = card:CreateTexture(nil, "OVERLAY")
+    card.pin:SetSize(16, 16)
+    card.pin:SetPoint("TOPLEFT", card.icon, "TOPLEFT", -3, 3)
+    card.pin:SetTexture(ns.IMG .. "pin_dqa")
+    return card
+end
+
+function ns.SetPlaceCard(card, itemID, count)
+    ns.SetRewardCard(card, itemID, count)
+    local known = ns.ItemPlaces[itemID] ~= nil
+    card.pin:SetShown(known)
+    card.tipLine = known and L.ITEM_PLACE_HINT or nil
+    card.onPlainClick = known and MarkItem or nil
+end
+
 function ns.SetRewardCard(card, id, count, icon, text)
     card.itemID = id
     local info = id and ns.ItemInfo(id)

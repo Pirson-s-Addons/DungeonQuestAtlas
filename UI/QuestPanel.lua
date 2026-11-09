@@ -274,6 +274,7 @@ local function CreateDetail(parent)
     statusLine:SetPoint("LEFT", 6, 0)
     local unverified = Text("GameFontBlack", 4, ns.INK_LIGHT)
     local requires = Text("GameFontNormal", 6) -- "Antes: <paso anterior>", si aun no esta hecho
+    local questWarn = Text("GameFontNormal", 6) -- q.warn: un aviso propio de esa mision
 
     -- Cadena: un boton por paso, reutilizados. Cada paso abre su hoja.
     local chainHeader = Section(L.CHAIN)
@@ -316,33 +317,19 @@ local function CreateDetail(parent)
     local needBlock = Add(CreateFrame("Frame", nil, content))
     needBlock.section = needHeader
     local needCards = {}
-    local function MarkItem(card)
-        local place = ns.ItemPlaces[card.itemID]
-        local info = ns.ItemInfo(card.itemID)
-        local mode, point = ns.MarkPlace(place, info.name or ("#" .. card.itemID), nil, "item")
-        if mode and point then ns.OpenMapAt(point.mapID) end
-    end
     local function FillNeed(q)
         local list = q.need or {}
         local half = (ns.Width(needBlock, 330) - 6) / 2
         for i, n in ipairs(list) do
             local card = needCards[i]
             if not card then
-                card = ns.CreateRewardCard(needBlock)
-                card.pin = card:CreateTexture(nil, "OVERLAY")
-                card.pin:SetSize(16, 16)
-                card.pin:SetPoint("TOPLEFT", card.icon, "TOPLEFT", -3, 3)
-                card.pin:SetTexture(ns.IMG .. "pin_dqa")
+                card = ns.CreatePlaceCard(needBlock)
                 needCards[i] = card
             end
             card:ClearAllPoints()
             card:SetWidth(half)
             card:SetPoint("TOPLEFT", ((i - 1) % 2) * (half + 6), -math.floor((i - 1) / 2) * (ns.REWARD_CARD_HEIGHT + 6))
-            ns.SetRewardCard(card, n[1], n[2])
-            local known = ns.ItemPlaces[n[1]] ~= nil
-            card.pin:SetShown(known)
-            card.tipLine = known and L.ITEM_PLACE_HINT or nil
-            card.onPlainClick = known and MarkItem or nil
+            ns.SetPlaceCard(card, n[1], n[2])
             card:Show()
         end
         for i = #list + 1, #needCards do needCards[i]:Hide() end
@@ -628,6 +615,7 @@ local function CreateDetail(parent)
         if previous and ns.Quests[previous] and ns.Quests[previous].breadcrumb then previous = nil end
         Set(requires, previous and ns.QuestStatus(previous) ~= ns.STATUS_COMPLETED
             and ("|cff8c1a0d" .. L.CHAIN_REQUIRES:format(ns.QuestTitle(previous)) .. "|r") or nil)
+        Set(questWarn, q.warn and ("|cff8c1a0d" .. L[q.warn] .. "|r") or nil)
 
         local objective = ns.QuestObjective(id)
         -- La llevas: el progreso de cada objetivo ("Cabeza de Arugal: 0/1"), del juego

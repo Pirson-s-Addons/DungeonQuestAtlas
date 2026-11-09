@@ -335,6 +335,27 @@ local function FilterLoot(items, filter, class)
     return out
 end
 
+-- Botin por rareza (epico, raro, poco comun, comun), con los materiales al final. Sin datos
+-- del objeto aun, cuenta como comun; al llegar, ITEM_DATA_LOAD_RESULT refresca y se recoloca
+local function RarityRank(itemID)
+    local instant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    local classID = instant and select(6, instant(itemID))
+    if classID == 7 then return -1 end
+    return C_Item and C_Item.GetItemQualityByID and C_Item.GetItemQualityByID(itemID) or 1
+end
+
+function ns.SortLootByRarity(items)
+    local rows = {}
+    for i, item in ipairs(items) do rows[i] = { item = item, index = i, rank = RarityRank(item[1]) } end
+    table.sort(rows, function(a, b)
+        if a.rank ~= b.rank then return a.rank > b.rank end
+        return a.index < b.index
+    end)
+    local out = {}
+    for i, row in ipairs(rows) do out[i] = row.item end
+    return out
+end
+
 -- page: la pagina derecha entera; bar: la franja de arriba (desplegables)
 function ns.CreateLootPanel(page, bar)
     local panel = { dungeon = nil, index = nil, filter = "all" }
@@ -484,6 +505,7 @@ function ns.CreateLootPanel(page, bar)
         local boss = d and self.index and ns.Bosses[d.key][self.index]
         local items = boss and boss.loot or ns.DungeonLoot(d)
         items = FilterLoot(items, self.filter, self.class)
+        if not (boss and boss.kind == "recipes") then items = ns.SortLootByRarity(items) end
         classFilter:Update()
         allArea:SetShown(boss == nil)
         bossArea:SetShown(boss ~= nil)

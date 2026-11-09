@@ -219,10 +219,41 @@ function ns.CreateOverviewPanel(page)
     ns.SetButtonIcon(lootButton, "Interface\\Icons\\INV_Box_02")
     lootButton:SetPoint("LEFT", onMap, "RIGHT", 8, 0)
     lootButton:SetScript("OnClick", function() ns.ShowBoss(panel.dungeon, panel.index, "loot") end)
+    -- boss.summon: los jefes que hay que invocar. Dos objetos (con su sitio si se sabe) y como se usan
+    local summonHeader = ns.CreatePaperHeader(bossView, L.SUMMON_HEADER)
+    summonHeader:SetPoint("TOPLEFT", onMap, "BOTTOMLEFT", -6, -8)
+    summonHeader:SetPoint("RIGHT", -4, 0)
+    local summonText = ns.PaperText(bossView, "GameFontBlack")
+    summonText:SetPoint("TOPLEFT", summonHeader, "BOTTOMLEFT", 0, -4)
+    summonText:SetPoint("RIGHT", -4, 0)
+    summonText:SetJustifyH("LEFT")
+    local summonCards = { ns.CreatePlaceCard(bossView), ns.CreatePlaceCard(bossView) }
     local header = ns.CreatePaperHeader(bossView, L.LORE)
-    header:SetPoint("TOPLEFT", onMap, "BOTTOMLEFT", -6, -8)
     header:SetPoint("RIGHT", -4, 0)
     local bossLore = LoreScroll(bossView, header, 6)
+    local function ShowSummon(summon)
+        summonHeader:SetShown(summon ~= nil)
+        summonText:SetShown(summon ~= nil)
+        summonText:SetText(summon and L[summon.text] or "")
+        local half = (ns.Width(bossView, 330) - 10) / 2
+        for i, card in ipairs(summonCards) do
+            card:SetShown(summon ~= nil)
+            if summon then
+                card:ClearAllPoints()
+                card:SetWidth(half)
+                card:SetPoint("TOPLEFT", summonText, "BOTTOMLEFT", (i - 1) * (half + 6), -6)
+                ns.SetPlaceCard(card, summon.items[i])
+            end
+        end
+        header:ClearAllPoints()
+        header:SetPoint("RIGHT", -4, 0)
+        if summon then
+            header:SetPoint("TOPLEFT", summonCards[1], "BOTTOMLEFT", 0, -8)
+        else
+            header:SetPoint("TOPLEFT", onMap, "BOTTOMLEFT", -6, -8)
+        end
+    end
+    ShowSummon(nil)
     panel.bossName, panel.onMap = bossName, onMap
 
     function panel:SetShown(shown)
@@ -269,6 +300,7 @@ function ns.CreateOverviewPanel(page)
         bossName:SetText(ns.BossName(boss, d))
         bossInfo:SetText((dead and ("|cffa01010" .. L.BOSS_KILLED .. "|r  ·  ") or "") .. ns.BossInfo(boss, ns.RARE_PREFIX))
         onMap:SetEnabled(ns.BossFloor(d, panel.index) ~= nil)
+        ShowSummon(boss.summon)
         local journal = ns.JournalBoss(d, boss)
         bossLore.text:SetText(journal and journal.description or L.NO_BOSS_LORE)
         bossLore:Fit()
