@@ -16,6 +16,7 @@ local _, ns = ...
 -- Sin verificar en el juego: lo recogido con /dqa collect tiene prioridad.
 
 ns.Places = {
+    ["name:Sutara Plainstalker"] = { name = "Sutara Plainstalker", mapID = 1412, x = 34.4, y = 22.8 },
     ["name:A Crumpled Up Note"] = { name = "A Crumpled Up Note", inside = true },
     ["name:A Dull and Flat Elven Blade"] = { name = "A Dull and Flat Elven Blade", inside = true },
     ["name:Abominable Head"] = { name = "Abominable Head", inside = true },

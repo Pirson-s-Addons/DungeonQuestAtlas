@@ -46,11 +46,18 @@ function ns.IsMyClass(q)
     return false
 end
 
+-- Ya no se puede hacer: q.lostIf es la mision que la cierra al entregarla sin hacer esta
+function ns.IsQuestLost(id)
+    local q = ns.Quests[id]
+    return q ~= nil and q.lostIf ~= nil and IsCompleted(q.lostIf) and not IsCompleted(id) and not IsInLog(id)
+end
+
 -- Devuelve el estado y, si esta bloqueada, el motivo
 function ns.QuestStatus(id)
     if IsCompleted(id) then return ns.STATUS_COMPLETED end
     if IsInLog(id) then return IsReady(id) and ns.STATUS_READY or ns.STATUS_IN_LOG end
     local q = ns.Quests[id] or {}
+    if ns.IsQuestLost(id) then return ns.STATUS_BLOCKED, L.BLOCKED_LOST end
     if not ns.IsMyClass(q) then return ns.STATUS_BLOCKED, L.BLOCKED_CLASS:format(ns.ClassNames(q)) end
     for _, pre in ipairs(q.prereqs or {}) do
         if not IsCompleted(pre) then return ns.STATUS_BLOCKED, L.BLOCKED_PREREQ end
@@ -91,7 +98,7 @@ function ns.DungeonProgress(d, faction)
     local done, total = 0, 0
     for _, id in ipairs(d.quests) do
         local q = ns.Quests[id] or {}
-        if ns.MatchesFaction(q, faction) and ns.IsMyClass(q) then
+        if ns.MatchesFaction(q, faction) and ns.IsMyClass(q) and not ns.IsQuestLost(id) then
             total = total + 1
             if IsCompleted(id) then done = done + 1 end
         end

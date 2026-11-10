@@ -43,8 +43,8 @@ end
 -- ==========================================
 -- MENU DE ADDONS DEL MINIMAPA Y TECLAS
 -- ==========================================
--- La entrada del addon en el menu de addons del minimapa (## AddonCompartmentFunc
--- del .toc): los mismos clics y el mismo tooltip que el boton.
+-- La entrada del addon en el menu de addons del minimapa (registrada abajo):
+-- los mismos clics y el mismo tooltip que el boton.
 function DungeonQuestAtlas_OnAddonCompartmentClick(_, button)
     if button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
 end
@@ -61,6 +61,18 @@ end
 
 function DungeonQuestAtlas_OnAddonCompartmentLeave()
     GameTooltip:Hide()
+end
+
+-- Se registra desde aqui y no con ## AddonCompartmentFunc: el menu usa el ## Title
+-- entero, "Dungeon Quest Atlas Forever" no cabe en su ancho y el icono salia descolocado
+if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then
+    AddonCompartmentFrame:RegisterAddon({
+        text = "|cffd597ffDungeon Quest Atlas|r",
+        icon = "Interface\\AddOns\\DungeonQuestAtlas\\img\\logo_dqa",
+        func = function(_, input) DungeonQuestAtlas_OnAddonCompartmentClick(nil, input and input.buttonName) end,
+        funcOnEnter = function(button) DungeonQuestAtlas_OnAddonCompartmentEnter(nil, button) end,
+        funcOnLeave = DungeonQuestAtlas_OnAddonCompartmentLeave,
+    })
 end
 
 -- Nombres de Bindings.xml en Opciones > Atajos de teclado (en el idioma del juego)

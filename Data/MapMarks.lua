@@ -78,6 +78,7 @@ ns.MapMarks = {
     ALCAZ = { { { "entrance", 0.352, 0.160 } } },
     DROWNED = { { { "entrance", 0.845, 0.522 } } },
     KROLDOK = { { { "entrance", 0.204, 0.808 } } },
+    SHAPERS = { { { "entrance", 0.026, 0.400 } } },
     DALARAN = {
         { { "entrance", 0.190, 0.838 }, { "up", 0.642, 0.593, 2 } },
         { { "down", 0.610, 0.560, 1 } },

@@ -100,6 +100,7 @@ Quest descriptions are **collected in the game**:
 | `/dqa` | Opens or closes the window (also `/dungeonquest`) |
 | `/dqa config` | Opens the options |
 | `/dqa mode` | Choose Full Atlas or Adventure Mode |
+| `/dqa runs` | Opens the list of your dungeon runs |
 | `/dqa rfk` | Opens a dungeon by its shortcut (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Collector mode |
 | `/dqa export` | Shows the collected data, ready to copy |

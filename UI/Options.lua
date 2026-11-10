@@ -9,7 +9,7 @@ local L = ns.L
 
 local HEADER = "|cffC47FF3"
 local X = 16
-local general
+local general, tracker
 
 local function Header(panel, y, text)
     local fs = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -212,6 +212,75 @@ local function CreateGeneral()
     return panel
 end
 
+-- Subcategoria "Seguimiento de mazmorras" (UI/RunTracker.lua)
+local function CreateTrackerPanel()
+    local db = ns.db
+    local panel = CreateFrame("Frame")
+    panel:Hide()
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", X, -16)
+    title:SetText(L.OPT_TRACKER)
+    local logo = panel:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(110, 110)
+    logo:SetPoint("TOPRIGHT", -38, -5)
+    logo:SetTexture(ns.LOGO)
+    local version = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    version:SetPoint("TOP", logo, "BOTTOM", 0, -2)
+    version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
+
+    local boxes = {}
+    local function Refresh()
+        for _, cb in ipairs(boxes) do
+            cb:SetChecked(db[cb.key])
+            if cb.dependent then
+                cb:SetEnabled(not db.trackerNever)
+                cb:SetAlpha(db.trackerNever and 0.5 or 1)
+            end
+        end
+    end
+    local function Box(key, label, tooltip, y, dependent)
+        local cb = CreateFrame("CheckButton", "DungeonQuestAtlas_" .. key, panel, "InterfaceOptionsCheckButtonTemplate")
+        cb:SetPoint("TOPLEFT", X + (dependent and 20 or 0), y)
+        _G[cb:GetName() .. "Text"]:SetText(label)
+        cb.key, cb.dependent = key, dependent
+        cb:SetScript("OnClick", function(self)
+            db[key] = self:GetChecked() and true or false
+            Refresh()
+            ns.RefreshRunTracker()
+            if ns.UpdateRunHistoryButton then ns.UpdateRunHistoryButton() end
+        end)
+        ns.AddTooltip(cb, tooltip)
+        boxes[#boxes + 1] = cb
+    end
+
+    Header(panel, -56, L.OPT_TRACKER)
+    Box("trackerNever", L.OPT_TRACKER_NEVER, L.OPT_TRACKER_NEVER_TOOLTIP, -78)
+    Box("trackerSolo", L.OPT_TRACKER_SOLO, L.OPT_TRACKER_SOLO_TOOLTIP, -104, true)
+    Box("rareChime", L.OPT_RARE_SOUND, L.OPT_RARE_SOUND_TOOLTIP, -130)
+    Box("rareGlow", L.OPT_RARE_GLOW, L.OPT_RARE_GLOW_TOOLTIP, -156)
+    Box("runHistoryButton", L.OPT_HISTORY_BUTTON, L.OPT_HISTORY_BUTTON_TOOLTIP, -182)
+    Separator(panel, -216)
+    Header(panel, -231, L.OPT_TRACKER_SHOW)
+    Box("trackerHideTime", L.OPT_HIDE_TIME, L.OPT_HIDE_TOOLTIP, -253, true)
+    Box("trackerHideXP", L.OPT_HIDE_XP, L.OPT_HIDE_TOOLTIP, -279, true)
+    Box("trackerHideGold", L.OPT_HIDE_GOLD, L.OPT_HIDE_TOOLTIP, -305, true)
+    Box("trackerHideBosses", L.OPT_HIDE_BOSSES, L.OPT_HIDE_TOOLTIP, -331, true)
+    Separator(panel, -365)
+
+    panel:SetScript("OnShow", Refresh)
+    local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reset:SetSize(180, 26)
+    reset:SetPoint("TOPLEFT", X, -378)
+    reset:SetText(L.DEFAULTS)
+    reset:SetScript("OnClick", function()
+        for _, cb in ipairs(boxes) do db[cb.key] = ns.DEFAULTS[cb.key] end
+        Refresh()
+        ns.RefreshRunTracker()
+        if ns.UpdateRunHistoryButton then ns.UpdateRunHistoryButton() end
+    end)
+    return panel
+end
+
 function ns.CreateOptions()
     local root = ns.CreateAbout({
         name = "Dungeon Quest Atlas Forever",
@@ -223,6 +292,11 @@ function ns.CreateOptions()
         commands = ns.CommandList(),
     })
     general = Settings.RegisterCanvasLayoutSubcategory(root, CreateGeneral(), L.GENERAL)
+    tracker = Settings.RegisterCanvasLayoutSubcategory(root, CreateTrackerPanel(), L.OPT_TRACKER)
+end
+
+function ns.OpenTrackerOptions()
+    if tracker and not InCombatLockdown() then Settings.OpenToCategory(tracker:GetID()) end
 end
 
 function ns.OpenOptions()

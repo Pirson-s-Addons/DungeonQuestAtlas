@@ -31,6 +31,17 @@ local DEFAULTS = {
     -- tamano de las caras de jefe (1 = 100 %; 0 las esconde)
     worldMapPlan = true,
     mapBossScale = 1,
+    -- Ventana de la partida (UI/RunTracker.lua)
+    trackerNever = false,
+    trackerSolo = false,
+    trackerHideTime = false,
+    trackerHideXP = false,
+    trackerHideGold = false,
+    trackerHideBosses = false,
+    rareChime = true,     -- sonido al encontrar un raro vivo
+    rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
+    runHistoryButton = true, -- la cara del personaje (historial) en la portada
+    trackerPos = {},
     itemSourceTip = true, -- "Jefe - Mazmorra" en el tooltip de cualquier objeto (UI/ItemSource.lua)
     favorites = {},       -- objetos favoritos [itemID] = true (clic derecho; UI/LootSearch.lua)
     -- Portada: ocultar solas las mazmorras de nivel superado o con todas las misiones hechas
@@ -44,6 +55,7 @@ local DEFAULTS = {
     window = {},
 }
 local CHAR_DEFAULTS = { dungeon = nil, view = "home", tab = "quests", markers = {}, target = nil,
+    runLog = {}, -- partidas guardadas (Core/RunLog.lua), la mas nueva la primera
     kills = {}, runs = {}, left = {}, done = {}, -- jefes muertos (Core/BossKills.lua): por mazmorra,
     -- copia de la instancia, cuando saliste de ella y cuando murio el ultimo jefe
     unlocked = {}, hiddenDungeons = {} } -- y las mazmorras ocultas a mano (clic derecho en su tarjeta) -- jefes finales muertos (UI/JournalMode.lua); journalMode: nil hasta elegirlo
@@ -440,6 +452,7 @@ function ns.CommandList()
         { "/dqa", L.CMD_TOGGLE },
         { "/dqa config", L.CMD_CONFIG },
         { "/dqa mode", L.CMD_MODE },
+        { "/dqa runs", L.CMD_RUNS },
         { "/dqa rfk", L.CMD_ALIAS },
         { "/dqa bug", L.CMD_BUG },
         { "/dqa collect on|off", L.CMD_COLLECT },
@@ -480,6 +493,8 @@ function ns.HandleCommand(msg)
     elseif cmd == "debug" then
         ns.db.debug = not ns.db.debug
         ns.Print(ns.db.debug and L.DEBUG_ON or L.DEBUG_OFF)
+    elseif cmd == "runs" then
+        ns.ToggleRunHistory()
     elseif cmd == "bug" then
         ns.ShowBugReport()
     elseif ns.DungeonsByAlias(cmd) then -- /dqa rfk, /dqa stocks...

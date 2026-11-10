@@ -73,9 +73,14 @@ end
 -- ordered and unordered argument specifications", datos rotos de Blizzard; pcall no
 -- sirve): solo nombre y tipo. 273042: botas del Devorador de mana (Dalaran), beta 70291.
 local BROKEN_TOOLTIP = { [273042] = true }
+ns.BROKEN_TOOLTIP = BROKEN_TOOLTIP
 
 local function ShowTooltip(self)
     if not self.itemID then return end
+    if self.glow and ns.glowItem == self.itemID then -- ya lo has encontrado
+        ns.glowItem = nil
+        self.glow:Hide()
+    end
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     if BROKEN_TOOLTIP[self.itemID] then
         local item = ns.ItemInfo(self.itemID)
@@ -140,6 +145,12 @@ function ns.SetupItemButton(button)
     -- GameTooltip llama a UpdateTooltip mientras se ve: pulsar Shift compara al momento
     button.UpdateTooltip = ShowTooltip
     button.star = ns.CreateFavoriteStar(button, button.icon)
+    button.glow = button:CreateTexture(nil, "OVERLAY")
+    button.glow:SetPoint("TOPLEFT", -2, 2)
+    button.glow:SetPoint("BOTTOMRIGHT", 2, -2)
+    button.glow:SetColorTexture(1, 0.8, 0.2, 0.35)
+    button.glow:SetBlendMode("ADD")
+    button.glow:Hide()
 end
 
 -- extra: texto a la derecha ("12.5%"); count: cuantos da
@@ -159,6 +170,7 @@ function ns.SetItemButton(button, id, count, extra)
     button.info:SetText(info.kind or "")
     button.extra:SetText(extra or "")
     button.star:SetShown(ns.IsFavorite(id))
+    button.glow:SetShown(ns.glowItem == id)
 end
 
 -- Tarjeta de recompensa, como las de la ventana de misiones del juego
@@ -218,12 +230,36 @@ function ns.CreatePlaceCard(parent)
     return card
 end
 
+-- El jefe (no los bichos) que suelta un objeto, si esta en el atlas
+function ns.BossDrop(itemID)
+    for _, e in ipairs(ns.ItemSources(itemID) or {}) do
+        if e.boss and not e.d.size and ns.Bosses[e.d.key][e.boss].kind ~= "trash" then return e end
+    end
+end
+
+-- Abre el botin de su jefe con el objeto iluminado 3 s, o hasta pasar el raton
+local function OpenBossDrop(card)
+    local drop = ns.BossDrop(card.itemID)
+    if not drop then return end
+    ns.glowItem = card.itemID
+    ns.ShowBoss(drop.d, drop.boss, "loot")
+    C_Timer.After(3, function()
+        if ns.glowItem == card.itemID then
+            ns.glowItem = nil
+            ns.RefreshUI()
+        end
+    end)
+end
+
 function ns.SetPlaceCard(card, itemID, count)
     ns.SetRewardCard(card, itemID, count)
     local known = ns.ItemPlaces[itemID] ~= nil
+    local drop = not known and ns.BossDrop(itemID)
     card.pin:SetShown(known)
-    card.tipLine = known and L.ITEM_PLACE_HINT or nil
-    card.onPlainClick = known and MarkItem or nil
+    card.tipLine = known and L.ITEM_PLACE_HINT
+        or drop and (L.LOOTED_FROM:format(ns.BossName(ns.Bosses[drop.d.key][drop.boss], drop.d), ns.DungeonName(drop.d)) .. "\n" .. L.ITEM_CLICK_BOSS)
+        or nil
+    card.onPlainClick = known and MarkItem or drop and OpenBossDrop or nil
 end
 
 function ns.SetRewardCard(card, id, count, icon, text)

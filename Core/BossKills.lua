@@ -61,6 +61,7 @@ local function DungeonsOf(instanceID)
     end
     return list
 end
+ns.DungeonsOf = DungeonsOf
 
 -- Mazmorra en la que estas (o nil): la elegida en la ventana si es de esta
 -- instancia (alas de SM, La Masacre, Stratholme), si no la primera
@@ -128,6 +129,7 @@ function ns.MarkBossKilled(npcID, name, encounterID, source)
                 Kills(d)[boss.name] = true
                 UpdateDone(d)
                 ns.OnBossKilled(d, boss) -- jefe final: su pagina en el modo aventura
+                if ns.RunLogBossKilled then ns.RunLogBossKilled(d, boss) end
                 marked = true
                 ns.Debug("jefe muerto (%s): %s", source or "?", boss.name)
             end
@@ -141,9 +143,9 @@ end
 function ns.ParseCreatureGUID(guid)
     guid = ns.PlainText(guid)
     if type(guid) ~= "string" then return end
-    local kind, _, _, instance, zone, npcID = strsplit("-", guid)
+    local kind, _, _, instance, zone, npcID, spawn = strsplit("-", guid)
     if kind ~= "Creature" and kind ~= "Vehicle" then return end
-    return tonumber(instance), zone, tonumber(npcID)
+    return tonumber(instance), zone, tonumber(npcID), spawn
 end
 
 -- Otra copia de la instancia (se ha reiniciado): cruces fuera. Solo con el
@@ -170,9 +172,11 @@ end
 
 function ns.CheckBossUnit(unit)
     if not currentInstance or not UnitExists(unit) then return end
-    local instance, zone, npcID = ns.ParseCreatureGUID(UnitGUID(unit))
+    local instance, zone, npcID, spawn = ns.ParseCreatureGUID(UnitGUID(unit))
     CheckRun(instance, zone)
-    if not IsDead(unit) then return end
+    local dead = IsDead(unit)
+    if ns.RunLogUnit then ns.RunLogUnit(unit, instance, zone, npcID, spawn, dead) end
+    if not dead then return end
     local name = ns.PlainText(UnitName(unit))
     if not (npcID or name) then ns.Debug("%s muerto, pero nombre y GUID secretos", unit) end
     ns.MarkBossKilled(npcID, name, nil, unit)

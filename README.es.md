@@ -96,6 +96,7 @@ Las descripciones de las misiones se **recogen en el juego**:
 | `/dqa` | Abre o cierra la ventana (también `/dungeonquest`) |
 | `/dqa config` | Abre las opciones |
 | `/dqa mode` | Elige Atlas completo o Modo aventura |
+| `/dqa runs` | Abre la lista de tus partidas de mazmorra |
 | `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Modo recolector |
 | `/dqa export` | Muestra lo recogido, listo para copiar |

@@ -511,6 +511,7 @@ local function CreateHome(area)
     lootLabel:SetPoint("LEFT", lootButton, "RIGHT", 0, 0)
     lootLabel:SetText(L.LOOT_SEARCH)
     ui.lootButton = lootButton
+    ns.CreateRunHistoryButton(home):SetPoint("RIGHT", lootButton, "LEFT", -6, 0)
     local hiddenButton = CreateFrame("DropdownButton", nil, home, "WowStyle1DropdownTemplate")
     hiddenButton:SetWidth(130)
     hiddenButton:SetPoint("TOPRIGHT", -18, -40)

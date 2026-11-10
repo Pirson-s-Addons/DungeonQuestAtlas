@@ -318,7 +318,12 @@ local function CreateDetail(parent)
     needBlock.section = needHeader
     local needCards = {}
     local function FillNeed(q)
-        local list = q.need or {}
+        local list = {}
+        for _, n in ipairs(q.need or {}) do list[#list + 1] = n end
+        for _, start in ipairs(q.starts or {}) do
+            local item = tonumber(tostring(start):match("^item:(%d+)"))
+            if item and ns.BossDrop(item) then list[#list + 1] = { item, 1 } end
+        end
         local half = (ns.Width(needBlock, 330) - 6) / 2
         for i, n in ipairs(list) do
             local card = needCards[i]

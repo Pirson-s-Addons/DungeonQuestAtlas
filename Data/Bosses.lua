@@ -10,6 +10,8 @@ local _, ns = ...
 -- por su posicion en la lista, de mas a menos probable). Las recetas, en el botin de
 -- cada jefe con su probabilidad: Wowhead Forever (veces que cayo / veces saqueado).
 -- display: CreatureDisplayID para el retrato. level: nivel del jefe.
+-- optional = true: solo sale tras una mision; no cuenta para dar la partida por terminada (Core/RunLog.lua).
+-- En loot, quest = true: objeto de mision que suelta ese jefe (su hoja de mision lleva hasta aqui).
 -- faction: solo la puede atacar esa faccion (los enanos perdidos de Uldaman son amistosos para la Alianza).
 -- loot = { { itemID, probabilidad en % (si se conoce) }, ... }
 -- Los objetos nuevos de Forever en mazmorras clasicas (sin probabilidad) y los seis cascos de
@@ -24,20 +26,21 @@ ns.Bosses = {
         { name = "The Questioner", npcID = 256236, display = 140092, level = 51, loot = { { 276742 }, { 276743 }, { 276741 } } },
         { name = "Tidemistress Ca'zass", npcID = 255997, display = 4973, level = 50, loot = { { 276735 }, { 276736 }, { 276737, probable = true } } },
         { name = "Katerina the Cleaner", npcID = 257016, display = 2317, level = 52, loot = { { 276739 }, { 276738, probable = true } } },
-        { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = {} },
+        { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = { { 276890, quest = true } } },
         { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 276740, probable = true }, { 287019, probable = true }, { 287020, probable = true }, { 276746, probable = true }, { 276732, probable = true } } },
     },
     -- Abierta desde el 07-11-2026: jefes en el orden del juego. Botin de sus jefes visto sin ID publico aun: no se pone
     -- hasta tenerlo; el de los bichos, Satyr's Touch (Wowhead Forever).
     BLACKMAW = {
-        { name = "Impaan the Imprisoner", npcID = 247206, display = 130432, level = 57, loot = {} },
-        { name = "Bonesnout the Unbroken", npcID = 247198, display = 130427, level = 58, loot = {} },
-        { name = "Moontouched Wanderer", npcID = 269104, display = 12235, level = 55, kind = "rare", loot = {} },
-        { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = {} },
-        { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, level = 59, loot = {} },
-        { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, level = 59, loot = {} },
-        { name = "Unbound Spirit", npcID = 247231, display = 131644, level = 59, loot = {} },
-        { name = "Varrox Bleakhoof", npcID = 247234, display = 130447, level = 60, loot = {} },
+        { name = "Impaan the Imprisoner", npcID = 247206, display = 130432, level = 57, loot = { { 280056 }, { 280058 }, { 280057, probable = true } } },
+        { name = "Bonesnout the Unbroken", npcID = 247198, display = 130427, level = 58, loot = { { 280060 }, { 280059, probable = true }, { 249696, quest = true } } },
+        { name = "Moontouched Wanderer", npcID = 269104, display = 12235, level = 55, kind = "rare", loot = { { 280080 }, { 280079 } } },
+        { name = "Gortek the Apprentice", npcID = 269111, display = 145808, level = 55, kind = "rare", loot = { { 280077 } } },
+        { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = { { 280064 }, { 280061, probable = true }, { 280062, probable = true }, { 280063, probable = true }, { 249697, quest = true } } },
+        { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, level = 59, loot = { { 280068 }, { 280069 }, { 280070 }, { 276893, quest = true } } },
+        { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, level = 59, loot = { { 280065 }, { 280066 }, { 280067, probable = true } } },
+        { name = "Unbound Spirit", npcID = 247231, display = 131644, level = 59, loot = { { 280071 }, { 280073 }, { 280072, probable = true } } },
+        { name = "Varrox Bleakhoof", npcID = 247234, display = 130447, level = 60, loot = { { 280074 }, { 280075 }, { 280076, probable = true } } },
         { name = "Trash mobs", kind = "trash", loot = { { 287036 } } },
     },
     -- Lo visto caer hasta ahora (07-11-2026). probable = true: objetos de la misma tanda del
@@ -48,19 +51,22 @@ ns.Bosses = {
         { name = "Captain Dreadrise", npcID = 260042, display = 142144, level = 38, loot = { { 274604 }, { 274605 }, { 274603 } } },
         { name = "Deathless Marrow", npcID = 269586, display = 142245, level = 39, loot = { { 274606 }, { 274614 }, { 274607, probable = true } } },
         { name = "Primeval Elemental", npcID = 273738, display = 129945, level = 38, loot = { { 274612 }, { 274611 }, { 274615 } } },
-        { name = "Gill", npcID = 264177, display = 144023, kind = "rare", loot = { { 286646 }, { 286649, probable = true }, { 286650, probable = true }, { 286651, probable = true }, { 286658, probable = true }, { 286662, probable = true } } },
-        { name = "Min'loth the Serpent", npcID = 260274, display = 142322, level = 40, loot = { { 274610 }, { 274608 }, { 274609, probable = true } } },
+        { name = "Gill", npcID = 264177, display = 144023, kind = "rare", level = 38, loot = { { 286646 }, { 286649 } } },
+        { name = "Umbra", npcID = 264172, kind = "rare", level = 38, loot = { { 286662 }, { 286658, probable = true } } },
+        { name = "\"Pyromancer\" Braxton", npcID = 260468, display = 142457, kind = "rare", level = 38, loot = { { 286650 }, { 286651 } } },
+        { name = "Min'loth the Serpent", npcID = 260274, display = 142322, level = 40, loot = { { 274610 }, { 274608 }, { 274609 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287002 } } },
     },
     -- Lo visto caer hasta ahora (08-11-2026). El resto del conjunto Krol'dok Warplate (el peto lo suelta Nar'gurk):
     -- sin saber quien lo suelta.
     KROLDOK = {
-        { name = "Slavecrusher Grox", npcID = 258966, display = 141217, level = 42, loot = { { 274996 }, { 274997 }, { 274995 } } },
-        { name = "Twilight Commander Zarmok", npcID = 258972, display = 141219, level = 43, loot = { { 275000 }, { 274998 } } },
-        { name = "War Handler Ashka", npcID = 259281, display = 141443, loot = { { 275001 }, { 275002, probable = true } } },
-        { name = "Nar'gurk", npcID = 258964, display = 141215, level = 44, loot = { { 275005 }, { 275004 } } },
-        { name = "Bossman Toof", npcID = 264773, display = 14424, level = 42, loot = { { 286430 }, { 286429 } } },
-        { name = "Overlord Mugg", npcID = 258968, display = 141218, level = 45, loot = { { 275009 }, { 275007 }, { 275010 }, { 275008, probable = true } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 275006, probable = true }, { 287014, probable = true }, { 287012, probable = true }, { 287013, probable = true } } },
+        { name = "Slavecrusher Grox", npcID = 258966, display = 141217, level = 42, loot = { { 274996 }, { 274997 }, { 274995 }, { 273101 } } },
+        { name = "Twilight Commander Zarmok", npcID = 258972, display = 141219, level = 43, loot = { { 275000 }, { 274998 }, { 274999 } } },
+        { name = "War Handler Ashka", npcID = 259281, display = 141443, level = 43, loot = { { 275001 }, { 275002 } } },
+        { name = "Nar'gurk", npcID = 258964, display = 141215, level = 44, loot = { { 275005 }, { 275004 }, { 275006 }, { 267104, quest = true } } },
+        { name = "Bossman Toof", npcID = 264773, display = 14424, level = 42, loot = { { 286430 }, { 286429 }, { 286428 } } },
+        { name = "Overlord Mugg", npcID = 258968, display = 141218, level = 45, loot = { { 275009 }, { 275007 }, { 275010 }, { 275008, probable = true }, { 267086, quest = true } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287014, probable = true }, { 287012, probable = true }, { 287013, probable = true } } },
     },
     -- Abierta (09-11-2026). Orden sin confirmar, salvo Nanaya al final. Sin dato de la sala de cada jefe.
     SHAPERS = {
@@ -72,6 +78,7 @@ ns.Bosses = {
         { name = "Vitrix", npcID = 272561, display = 147098, level = 62, loot = { { 280026, probable = true }, { 280027, probable = true } } },
         { name = "Izha'Rel and Tor'Rel", npcID = 253218, display = 143040, level = 61, loot = { { 280014 }, { 280013 }, { 280012 } } },
         { name = "Nanaya", npcID = 261809, display = 143832, level = 62, loot = { { 280023 }, { 280025 }, { 280024 }, { 273128 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287037 } } },
     },
     BFD = {
         { name = "Ghamoo-ra", npcID = 4887, display = 5027, level = 25, loot = { { 6907, 37.3 }, { 6908, 56.4 }, { 273839 }, { 251380, 0.03 }, { 251381, 0.02 }, { 251382, 0.08 }, { 252798, 0.05 }, { 252800, 0.03 }, { 252801, 0.08 }, { 252803, 0.02 }, { 253938, 0.03 }, { 253940, 0.05 }, { 253942, 0.03 }, { 253944, 0.02 }, { 253946, 0.03 } } },
@@ -233,9 +240,9 @@ ns.Bosses = {
         { name = "Tuten'kash", npcID = 7355, display = 7845, level = 40, loot = { { 10776, 34.1 }, { 10775, 32.4 }, { 10777, 30.3 } } },
         { name = "Mordresh Fire Eye", npcID = 7357, display = 8055, level = 39, loot = { { 10769, 33.3 }, { 10771, 31.9 }, { 10770, 33 } } },
         { name = "Glutton", npcID = 8567, display = 7864, level = 40, loot = { { 10774, 47.7 }, { 10772, 50.3 }, { 274385 }, { 251402 } } },
-        { name = "Ragglesnout", npcID = 7354, kind = "rare", display = 11382, level = 40, loot = { { 10768, 38.9 }, { 10767, 39.2 }, { 10758, 20.1 } } },
-        { name = "Amnennar the Coldbringer", npcID = 7358, display = 7971, level = 41, loot = { { 10763, 36.9 }, { 10762, 38.7 }, { 10764, 28.6 }, { 10761, 18.6 }, { 10765, 27.3 }, { 274381 } } },
-        { name = "Plaguemaw the Rotting", npcID = 7356, display = 6124, level = 40, loot = { { 10766, 32.7 }, { 10760, 62.8 } } },
+        { name = "Ragglesnout", npcID = 7354, kind = "rare", display = 11382, level = 40, loot = { { 10768, 38.9 }, { 10767, 39.2 }, { 10758, 20.1 }, { 251399 } } },
+        { name = "Amnennar the Coldbringer", npcID = 7358, display = 7971, level = 41, loot = { { 10763, 36.9 }, { 10762, 38.7 }, { 10764, 28.6 }, { 10761, 18.6 }, { 10765, 27.3 }, { 274381 }, { 276916, quest = true } } },
+        { name = "Plaguemaw the Rotting", npcID = 7356, display = 6124, level = 40, optional = true, loot = { { 10766, 32.7 }, { 10760, 62.8 }, { 274380 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 10574 }, { 10581 }, { 10583, 0.1 }, { 10584 }, { 10578 }, { 10582 }, { 10572 }, { 10567 }, { 10571 }, { 10570 }, { 10573 } } },
         { name = "Henry Stern", kind = "object", display = 8029, level = 36, loot = { { 3826 }, { 10841 } } },
     },
@@ -379,7 +386,7 @@ ns.Bosses = {
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 251364, 0.03, from = { 1, 3 } }, { 253906, 0.03, from = { 1, 5, 9, 7, 6 } }, { 252777, 0.03, from = { 5, 6 } }, { 251362, 0.02, from = { 1, 6 } }, { 251363, 0.02, from = { 1, 5, 3 } }, { 252781, 0.02, from = { 1, 6 } }, { 251360, 0.02, from = { 9, 3 } }, { 252780, 0.02, from = { 5, 6, 3 } }, { 253902, 0.02, from = { 3 } }, { 253938, 0.02, from = { 8 } }, { 253948, 0.02, from = { 8 } }, { 252779, 0.01, from = { 9, 6, 5, 1 } }, { 252782, 0.01, from = { 6, 5, 1 } }, { 253908, 0.01, from = { 9, 1 } }, { 253910, 0.01, from = { 9, 1 } }, { 251341, 0.01, from = { 9, 3 } }, { 253904, 0.01, from = { 5, 3 } }, { 252778, 0.01, from = { 9, 6, 5 } }, { 251361, 0.01, from = { 6 } }, { 253912, 0.01, from = { 9, 7 } }, { 251382, 0.01, from = { 8 } }, { 252799, 0.01, from = { 8 } }, { 252800, 0.01, from = { 8 } }, { 252801, 0.01, from = { 8 } }, { 252803, 0.01, from = { 8 } }, { 253940, from = { 8 } } } },
     },
     STOCKS = {
-        { name = "Kam Deepfury", npcID = 1666, display = 825, level = 27, loot = { { 2280, 0.9 }, { 273808 }, { 251375, 0.01 }, { 251379, 0.01 }, { 252822, 0.03 }, { 252823, 0.01 }, { 252824, 0.01 }, { 252825, 0.01 }, { 253978, 0.01 }, { 253980, 0.01 }, { 253982, 0.01 }, { 273807 }, { 252515 }, { 252455 }, { 252512 }, { 252513 }, { 252456 }, { 252514 }, { 252820 } } },
+        { name = "Kam Deepfury", npcID = 1666, display = 825, level = 27, loot = { { 2280, 0.9 }, { 273808 }, { 252815 }, { 251375, 0.01 }, { 251379, 0.01 }, { 252822, 0.03 }, { 252823, 0.01 }, { 252824, 0.01 }, { 252825, 0.01 }, { 253978, 0.01 }, { 253980, 0.01 }, { 253982, 0.01 }, { 273807 }, { 252515 }, { 252455 }, { 252512 }, { 252513 }, { 252456 }, { 252514 }, { 252820 } } },
         { name = "Bruegal Ironknuckle", npcID = 1720, kind = "rare", display = 2142, level = 26, loot = { { 3228, 56.2 }, { 2941, 19 }, { 2942, 17.5 } } },
         { name = "Targorr the Dread", npcID = 1696, display = 517, level = 24, loot = { { 273804 }, { 273805 }, { 273806 }, { 273820 }, { 251380, 0.04 }, { 251382, 0.01 }, { 251383, 0.02 }, { 252801, 0.01 }, { 252803, 0.02 }, { 253942, 0.02 }, { 253944, 0.02 } } },
         { name = "Hamhock", npcID = 1717, display = 3250, level = 28, loot = { { 273809 }, { 273810 }, { 273811 }, { 251375, 0.01 }, { 251376, 0.01 }, { 251377, 0.03 }, { 251378, 0.01 }, { 252821, 0.01 }, { 252822, 0.01 }, { 252823, 0.01 }, { 252825, 0.01 }, { 253976, 0.04 }, { 253980, 0.03 }, { 253984, 0.01 }, { 253986, 0.01 }, { 252513 }, { 252455 }, { 252456 }, { 252512 } } },
@@ -435,7 +442,7 @@ ns.Bosses = {
         { name = "Antu'sul", npcID = 8127, display = 7353, level = 48, loot = { { 9640, 32 }, { 9641, 35 }, { 9639, 17.8 }, { 9379, 1 } } },
         { name = "Theka the Martyr", npcID = 7272, display = 6696, level = { 45, 46 }, loot = { { 10660, 43.7 } } },
         { name = "Sandarr Dunereaver", npcID = 10080, kind = "rare", display = 9291, level = 45, loot = { { 9523, 4.9 } } },
-        { name = "Witch Doctor Zum'rah", npcID = 7271, display = 6434, level = 46, loot = { { 18083, 34.9 }, { 18082, 15.1 } } },
+        { name = "Witch Doctor Zum'rah", npcID = 7271, display = 6434, level = 46, loot = { { 277112, quest = true }, { 18083, 34.9 }, { 18082, 15.1 } } },
         { name = "Nekrum Gutchewer", npcID = 7796, display = 6690, level = { 45, 46 }, loot = { { 9471, 39.1 } } },
         { name = "Shadowpriest Sezz'ziz", npcID = 7275, display = 6441, level = 47, loot = { { 9470, 23.4 }, { 9473, 21.6 }, { 9474, 21.3 }, { 9475, 21.7 } } },
         { name = "Dustwraith", npcID = 10081, kind = "rare", display = 9292, level = 45, loot = { { 12471, 21.9 } } },
@@ -446,6 +453,5 @@ ns.Bosses = {
         { name = "Chief Ukorz Sandscalp", npcID = 7267, display = 6439, level = 48, loot = { { 9479, 9.4 }, { 9476, 33.1 }, { 9478, 23.4 }, { 9477, 24 }, { 11086, 0.9 } } },
         { name = "Zerillis", npcID = 10082, kind = "rare", display = 9293, level = 45, loot = { { 12470, 18.1 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 9512 }, { 9484 }, { 862 }, { 6440 }, { 9483 }, { 2040 }, { 5616 }, { 9511 }, { 9481 }, { 9480 }, { 9482 }, { 9243, 1.4 } } },
-        { name = "Ruuzlu", npcID = 7797, kind = "rare", level = 46, loot = {} },
     },
 }
