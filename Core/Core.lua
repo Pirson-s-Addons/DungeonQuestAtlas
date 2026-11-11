@@ -280,6 +280,16 @@ function ns.LinkQuestOnModifiedClick(id)
     return true
 end
 
+-- Si la mision se puede compartir: llevandola, lo dice el juego; si no, el dato
+-- comprobado (ns.QuestShare, Data/Quests.lua). nil si no se sabe.
+function ns.QuestShareable(id)
+    if C_QuestLog and C_QuestLog.GetLogIndexForQuestID and C_QuestLog.GetLogIndexForQuestID(id)
+        and C_QuestLog.IsPushableQuest then
+        return C_QuestLog.IsPushableQuest(id) and true or false
+    end
+    if ns.QuestShare then return ns.QuestShare[id] end
+end
+
 -- PNJ u objeto con el que empieza ("starts") o termina ("ends") una mision.
 -- Lista de { name, mapID, x, y } (sin mapID: empieza con un objeto del inventario).
 -- Orden: lo recogido en el juego, Data/Places.lua (Wowhead Forever), Questie.
@@ -473,6 +483,7 @@ function ns.CommandList()
         { "/dqa config", L.CMD_CONFIG },
         { "/dqa mode", L.CMD_MODE },
         { "/dqa runs", L.CMD_RUNS },
+        { "/dqa tracker", L.CMD_TRACKER },
         { "/dqa rfk", L.CMD_ALIAS },
         { "/dqa bug", L.CMD_BUG },
         { "/dqa collect on|off", L.CMD_COLLECT },
@@ -515,6 +526,8 @@ function ns.HandleCommand(msg)
         ns.Print(ns.db.debug and L.DEBUG_ON or L.DEBUG_OFF)
     elseif cmd == "runs" then
         ns.ToggleRunHistory()
+    elseif cmd == "tracker" then
+        ns.ShowRunTracker()
     elseif cmd == "bug" then
         ns.ShowBugReport()
     elseif ns.DungeonsByAlias(cmd) then -- /dqa rfk, /dqa stocks...

@@ -11,12 +11,22 @@ local L = ns.L
 -- estrella (/targetexact + /tm). Un
 -- InsecureActionButtonTemplate hace la accion con el clic del jugador, fuera de
 -- combate, sin volver protegida la flecha (se puede mover y ocultar en combate).
--- Arte propio (img/): la flecha y la gema de los marcadores.
+-- Arte propio (img/): la flecha 3D y el marcador (los mismos que Azeroth AI).
 
 local INTERVAL = 0.05
--- img/arrow_dqa apunta hacia arriba; si en el juego se viera desviada, este
--- desfase (radianes) lo corrige sin tocar la cuenta.
-local ARROW_OFFSET = 0
+local TWO_PI = 2 * math.pi
+-- img/arrow_dqa: hoja de 1024x1024 con la flecha 3D ya renderizada desde FRAMES
+-- angulos (9 columnas x 12 filas de 112x84, sentido antihorario desde "recto"; la
+-- misma que Azeroth AI). Girar una sola imagen aplastaria la perspectiva: se
+-- elige el fotograma del angulo.
+local SHEET, COLUMNS, CELL_W, CELL_H, FRAMES = 1024, 9, 112, 84, 108
+
+local function SetDirection(image, angle)
+    local cell = math.floor(angle / TWO_PI * FRAMES + 0.5) % FRAMES
+    local column, row = cell % COLUMNS, math.floor(cell / COLUMNS)
+    image:SetTexCoord(column * CELL_W / SHEET, (column + 1) * CELL_W / SHEET,
+        row * CELL_H / SHEET, (row + 1) * CELL_H / SHEET)
+end
 -- Marca de banda para el PNJ (1 = estrella). "!" no la quita si ya la tiene.
 local RAID_MARK = 1
 
@@ -85,7 +95,7 @@ local function Update(self, elapsed)
     self.distance:SetText(target.under and (yards .. " · " .. L.UNDERGROUND) or yards)
     local angle = ns.ArrowAngle(dx, dy)
     self.image:SetAlpha(angle and 1 or 0.3)
-    if angle then self.image:SetRotation(angle + ARROW_OFFSET) end
+    if angle then SetDirection(self.image, angle) end
     UpdateMinimapPin(dx, dy)
 end
 
@@ -97,7 +107,7 @@ end
 
 local function CreateArrow()
     arrow = CreateFrame("Button", "DungeonQuestAtlasArrow", UIParent, "InsecureActionButtonTemplate")
-    arrow:SetSize(56, 56)
+    arrow:SetSize(72, 54)
     local pos = ns.db.arrow
     arrow:SetPoint(pos.point or "TOP", UIParent, pos.relPoint or "TOP", pos.x or 0, pos.y or -140)
     arrow:SetClampedToScreen(true)
@@ -119,9 +129,9 @@ local function CreateArrow()
     ns.AddTooltip(arrow, L.ARROW_TOOLTIP)
 
     arrow.image = arrow:CreateTexture(nil, "ARTWORK")
-    arrow.image:SetSize(44, 44)
-    arrow.image:SetPoint("CENTER")
+    arrow.image:SetAllPoints()
     arrow.image:SetTexture(ns.IMG .. "arrow_dqa")
+    SetDirection(arrow.image, 0)
 
     arrow.title = arrow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     arrow.title:SetPoint("TOP", arrow, "BOTTOM", 0, -2)

@@ -483,6 +483,17 @@ local HANDLERS = {
         if link then AddLoot(run, link, run.lastBoss) end
     end,
     CHAT_MSG_LOOT = LootMessage,
+    -- "X se ha reiniciado." (fuera de la mazmorra): la partida abierta se cierra ya,
+    -- sin esperar al primer bicho de la copia nueva
+    CHAT_MSG_SYSTEM = function(message)
+        local run = Active()
+        message = ns.PlainText(message)
+        local reset = Pattern(INSTANCE_RESET_SUCCESS)
+        if run and run.leftAt and reset and type(message) == "string" and message:match(reset) then
+            Close(run)
+            Changed()
+        end
+    end,
     BAG_UPDATE_DELAYED = CheckNeeds,
 }
 

@@ -274,6 +274,7 @@ local function CreateDetail(parent)
     local statusLine = statusBadge:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     statusLine:SetPoint("LEFT", 6, 0)
     local unverified = Text("GameFontBlack", 4, ns.INK_LIGHT)
+    local shareInfo = Text("GameFontBlack", 4, ns.INK_LIGHT) -- se puede compartir o no, aunque no la lleves
     local requires = Text("GameFontNormal", 6) -- "Antes: <paso anterior>", si aun no esta hecho
     local questWarn = Text("GameFontNormal", 6) -- q.warn: un aviso propio de esa mision
 
@@ -590,6 +591,9 @@ local function CreateDetail(parent)
         statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "light"))
         statusBadge:SetWidth(statusLine:GetStringWidth() + 14)
         Set(unverified, not ns.IsVerified(id) and (Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
+        local shareable = ns.QuestShareable(id)
+        Set(shareInfo, shareable ~= nil and ("|TInterface\\Icons\\INV_Letter_15:12|t "
+            .. (shareable and L.SHAREABLE or L.NOT_SHAREABLE)) or nil)
 
         local startList, endList = ns.QuestPlaces(id, "starts"), ns.QuestPlaces(id, "ends")
         starts:SetText(Describe(L.STARTS, startList))

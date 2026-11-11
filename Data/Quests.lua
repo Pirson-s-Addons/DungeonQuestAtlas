@@ -699,3 +699,36 @@ ns.Quests = {
     [1782] = { name = "Furen's Armor", level = 28, minLevel = 20, faction = "Alliance", classes = { "WARRIOR" }, chain = { 1702, 1701, 1782 }, rewards = { 6972 }, xp = 3400, starts = { "npc:5413" }, ends = { "npc:5413" }, verified = false },
     [1848] = { name = "Brutal Hauberk", level = 30, minLevel = 20, faction = "Horde", classes = { "WARRIOR" }, chain = { 1823, 1824, 1825, 1838, 1848 }, rewards = { 7133 }, xp = 3050, starts = { "npc:5878" }, ends = { "npc:5878" }, verified = false },
 }
+
+-- Si una mision se puede compartir con el grupo, aunque no la lleves (comprobado en el
+-- juego). Sin dato, solo se sabe llevandola (C_QuestLog.IsPushableQuest): ns.QuestShareable.
+ns.QuestShare = {
+    [155] = false, [373] = false, [1429] = false, [1469] = false, [2933] = false, [2945] = false, [2947] = false, [2948] = false, [2949] = false, [2950] = false, [2990] = false, [3373] = false,
+    [3446] = false, [3520] = false, [3528] = false, [3982] = false, [4024] = false, [4062] = false, [4121] = false, [4142] = false, [4146] = false, [4183] = false, [4184] = false, [4186] = false,
+    [4201] = false, [4264] = false, [4322] = false, [4729] = false, [4734] = false, [4735] = false, [4743] = false, [4771] = false, [4867] = false, [4903] = false, [5002] = false, [5047] = false,
+    [5089] = false, [5127] = false, [5160] = false, [5245] = false, [5247] = false, [5262] = false, [5282] = false, [5384] = false, [5462] = false, [5463] = false, [5464] = false, [5465] = false,
+    [5466] = false, [5522] = false, [5526] = false, [5531] = false, [5724] = false, [5727] = false, [6403] = false, [6501] = false, [6564] = false, [6568] = false, [6570] = false, [6601] = false,
+    [6922] = false, [6981] = false, [7029] = false, [7041] = false, [7046] = false, [7066] = false, [7067] = false, [7498] = false, [7499] = false, [7500] = false, [7501] = false, [7502] = false,
+    [7503] = false, [7504] = false, [7505] = false, [7506] = false, [7507] = false, [7604] = false, [7623] = false, [7624] = false, [7625] = false, [7629] = false, [7631] = false, [7643] = false,
+    [7644] = false, [7646] = false, [7647] = false, [7667] = false, [7703] = false, [7761] = false, [7848] = false, [8151] = false, [8153] = false, [8231] = false, [8232] = false, [8233] = false,
+    [8235] = false, [8236] = false, [8251] = false, [8252] = false, [8253] = false, [8256] = false, [8257] = false, [8413] = false, [8416] = false, [8417] = false, [8419] = false, [8421] = false,
+    [8422] = false, [8423] = false, [8424] = false, [8425] = false, [9051] = false, [9052] = false, [9053] = false, [9063] = false, [92070] = false, [92415] = false, [92434] = false, [92458] = false,
+    [92752] = false, [92753] = false, [95664] = false, [95809] = false, [95810] = false, [96391] = false, [96984] = false,
+    [166] = true, [167] = true, [168] = true, [214] = true, [356] = true, [377] = true, [378] = true, [386] = true, [387] = true, [388] = true, [389] = true, [391] = true,
+    [447] = true, [450] = true, [544] = true, [545] = true, [914] = true, [959] = true, [962] = true, [971] = true, [1013] = true, [1014] = true, [1098] = true, [1198] = true,
+    [1199] = true, [1200] = true, [1275] = true, [1424] = true, [1444] = true, [1445] = true, [1446] = true, [1475] = true, [1486] = true, [1487] = true, [1489] = true, [1490] = true,
+    [1491] = true, [1740] = true, [2040] = true, [2768] = true, [2769] = true, [2770] = true, [2846] = true, [2861] = true, [2864] = true, [2865] = true, [2934] = true, [2935] = true,
+    [2936] = true, [2988] = true, [2989] = true, [2991] = true, [3042] = true, [3444] = true, [3447] = true, [3527] = true, [3765] = true, [3801] = true, [3802] = true, [3906] = true,
+    [3907] = true, [3981] = true, [4001] = true, [4002] = true, [4003] = true, [4061] = true, [4063] = true, [4081] = true, [4082] = true, [4083] = true, [4123] = true, [4126] = true,
+    [4128] = true, [4132] = true, [4133] = true, [4134] = true, [4136] = true, [4141] = true, [4143] = true, [4145] = true, [4147] = true, [4182] = true, [4185] = true, [4223] = true,
+    [4224] = true, [4241] = true, [4242] = true, [4262] = true, [4263] = true, [4282] = true, [4286] = true, [4295] = true, [4324] = true, [4341] = true, [4342] = true, [4361] = true,
+    [4362] = true, [4701] = true, [4724] = true, [4742] = true, [4764] = true, [4766] = true, [4768] = true, [4769] = true, [4787] = true, [4788] = true, [4862] = true, [4866] = true,
+    [4907] = true, [4941] = true, [4974] = true, [4981] = true, [4982] = true, [5001] = true, [5065] = true, [5081] = true, [5102] = true, [5122] = true, [5125] = true, [5212] = true,
+    [5213] = true, [5214] = true, [5243] = true, [5246] = true, [5251] = true, [5263] = true, [5281] = true, [5341] = true, [5343] = true, [5382] = true, [5461] = true, [5515] = true,
+    [5518] = true, [5525] = true, [5527] = true, [5529] = true, [5722] = true, [5723] = true, [5725] = true, [5728] = true, [5742] = true, [5761] = true, [5781] = true, [5845] = true,
+    [5846] = true, [5848] = true, [6163] = true, [6402] = true, [6502] = true, [6561] = true, [6562] = true, [6563] = true, [6565] = true, [6566] = true, [6567] = true, [6569] = true,
+    [6585] = true, [6602] = true, [6921] = true, [7028] = true, [7044] = true, [7064] = true, [7065] = true, [7068] = true, [7070] = true, [7201] = true, [7441] = true, [7461] = true,
+    [7463] = true, [7481] = true, [7482] = true, [7483] = true, [7484] = true, [7485] = true, [7488] = true, [7489] = true, [7492] = true, [7494] = true, [8234] = true, [8254] = true,
+    [8255] = true, [8418] = true, [8945] = true, [92401] = true, [92421] = true, [92422] = true, [92432] = true, [92457] = true, [93604] = true, [93680] = true, [95189] = true, [95195] = true,
+    [95204] = true, [95216] = true, [95250] = true, [96393] = true, [96394] = true, [96395] = true, [96403] = true, [96771] = true, [96773] = true, [97196] = true, [97288] = true, [99156] = true,
+}

@@ -63,6 +63,50 @@ local function DungeonsOf(instanceID)
 end
 ns.DungeonsOf = DungeonsOf
 
+-- Alas que comparten instancia (Monasterio, La Masacre, Stratholme): la de la puerta
+-- por la que entras, antes de ver a ningun jefe. Fuera, tu sitio en el mapa de esas
+-- entradas (cada segundo y al cargar otra zona); al entrar, la entrada mas cercana de
+-- Data/Dungeons.lua. Cumbre de Roca Negra no: sus dos alas tienen la misma puerta.
+local wingMaps, lastDoor
+local DOOR_FRESH, DOOR_RADIUS = 60, 3 -- segundos; puntos del mapa (0-100)
+function ns.SampleDoor()
+    if currentInstance or not (C_Map and C_Map.GetPlayerMapPosition) then return end
+    if not wingMaps then
+        wingMaps = {}
+        for _, d in ipairs(ns.Dungeons) do
+            if d.part and d.entrance then wingMaps[d.entrance.mapID] = true end
+        end
+    end
+    for mapID in pairs(wingMaps) do
+        local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+        local x, y
+        if pos then x, y = pos:GetXY() end
+        x, y = ns.PlainText(x), ns.PlainText(y)
+        if type(x) == "number" and type(y) == "number" and (x > 0 or y > 0) then
+            lastDoor = { mapID = mapID, x = x * 100, y = y * 100, at = GetTime() }
+            return
+        end
+    end
+end
+
+function ns.WingByDoor(instanceID)
+    if not (lastDoor and GetTime() - lastDoor.at <= DOOR_FRESH) then return nil end
+    local best, bestDist, second = nil, math.huge, math.huge
+    for _, d in ipairs(DungeonsOf(instanceID)) do
+        local e = d.part and d.entrance
+        if e and e.mapID == lastDoor.mapID then
+            local dist = math.sqrt((e.x - lastDoor.x) ^ 2 + (e.y - lastDoor.y) ^ 2)
+            if dist < bestDist then
+                best, bestDist, second = d, dist, bestDist
+            elseif dist < second then
+                second = dist
+            end
+        end
+    end
+    -- Dos puertas a la misma distancia (Cumbre): no se sabe
+    if best and bestDist <= DOOR_RADIUS and second - bestDist > 0.1 then return best end
+end
+
 -- Mazmorra en la que estas (o nil): la elegida en la ventana si es de esta
 -- instancia (alas de SM, La Masacre, Stratholme), si no la primera
 function ns.CurrentDungeon()
@@ -204,9 +248,11 @@ function ns.UpdateInstance()
         ns.RequestRefresh()
     end
     if now then ns.char.left[now] = nil end -- de vuelta a tiempo: las cruces siguen
-    -- Al entrar, esta mazmorra queda elegida (su tarjeta abre su pagina)
-    if now and now ~= currentInstance and not tContains(DungeonsOf(now), ns.DungeonByKey[ns.char.dungeon]) then
-        local d = DungeonsOf(now)[1]
+    -- Al entrar, esta mazmorra queda elegida (su tarjeta abre su pagina); en las alas,
+    -- la de la puerta por la que has entrado
+    if now and now ~= currentInstance then
+        local d = ns.WingByDoor(now)
+        if not d and not tContains(DungeonsOf(now), ns.DungeonByKey[ns.char.dungeon]) then d = DungeonsOf(now)[1] end
         if d then ns.char.dungeon = d.key end
     end
     if now and now ~= currentInstance then checkRun = true end
@@ -218,6 +264,7 @@ end
 if C_Timer and C_Timer.NewTicker then C_Timer.NewTicker(30, function() ns.ExpireBossKills() end) end
 
 ns.On("PLAYER_ENTERING_WORLD", ns.UpdateInstance)
+ns.On("PLAYER_LEAVING_WORLD", function() ns.SampleDoor() end) -- el ultimo paso antes del portal
 ns.On("ZONE_CHANGED_NEW_AREA", ns.UpdateInstance)
 
 ns.On("ENCOUNTER_END", function(encounterID, name, _, _, success)
@@ -238,7 +285,7 @@ local POLLED = { "target", "focus", "mouseover", "boss1", "boss2", "boss3", "bos
 for i = 1, 4 do POLLED[#POLLED + 1] = "party" .. i .. "target" end
 if C_Timer and C_Timer.NewTicker then
     C_Timer.NewTicker(1, function()
-        if not currentInstance then return end
+        if not currentInstance then return ns.SampleDoor() end
         for _, unit in ipairs(POLLED) do ns.CheckBossUnit(unit) end
     end)
 end
