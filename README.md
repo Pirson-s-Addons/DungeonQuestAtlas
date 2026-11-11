@@ -110,6 +110,25 @@ Quest descriptions are **collected in the game**:
 | `/dqa debug` | Debug messages in the chat |
 | `/dqa bug` | Shows the address to report a bug |
 
+## API for addon authors
+
+Read-only, versioned, always returns copies with names in the client's language. Add `## OptionalDeps: DungeonQuestAtlas` to your TOC.
+
+```lua
+local api = DungeonQuestAtlasAPI
+if api and api.version == 1 then
+    api.GetDungeons()                 -- { { key, name, minLevel, maxLevel, faction, entrance = { mapID, x, y } }, ... }
+    api.GetDungeon("DM")              -- one of the above
+    api.FindDungeons("sm")            -- { "SM_GY", "SM_LIB", ... } from a shortcut or key
+    api.GetDungeonQuests("DM")        -- { { questID, title, status, reason }, ... } for your character
+    api.GetDungeonBosses("DM")        -- { { name, englishName, rare, npcID, level }, ... }
+    api.GetRaids()                    -- { { key, name, entrance }, ... }
+    api.GetRaid("ONYXIA")             -- { name, entrance, bosses, attunement = { itemName, steps } }
+end
+```
+
+`status` is one of `api.STATUS`: `AVAILABLE`, `IN_LOG`, `READY`, `COMPLETED`, `BLOCKED`. The `DungeonQuestAtlas` global is the addon's internal namespace: it is not stable, use the API.
+
 ## Installation
 
 1. Download the zip from the [latest release](https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest) or from CurseForge / Wago.
