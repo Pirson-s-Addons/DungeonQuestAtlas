@@ -260,6 +260,26 @@ function ns.QuestLevel(q, id)
     if level and level > 0 then return level end
 end
 
+-- Mayus+clic en una mision: su enlace al chat, como en el registro del juego (si
+-- no hay caja abierta, la abre con el enlace). true si el clic era para eso.
+function ns.LinkQuestOnModifiedClick(id)
+    if not (id and IsModifiedClick and IsModifiedClick("CHATLINK")) then return false end
+    -- El del juego: la caja del chat descarta los enlaces de mision hechos a mano.
+    -- Sin la mision en cache aun no lo da: se pide y el siguiente clic ya vale.
+    local link = GetQuestLink and GetQuestLink(id)
+    if not link then
+        if C_QuestLog and C_QuestLog.RequestLoadQuestByID then C_QuestLog.RequestLoadQuestByID(id) end
+        link = string.format("|cffffff00|Hquest:%d:%d|h[%s]|h|r", id,
+            ns.QuestLevel(ns.Quests[id] or {}, id) or 0, ns.QuestTitle(id))
+    end
+    local insert = ChatFrameUtil and ChatFrameUtil.InsertLink or ChatEdit_InsertLink
+    if not (insert and insert(link)) then
+        local open = ChatFrameUtil and ChatFrameUtil.OpenChat or ChatFrame_OpenChat
+        if open then open(link) end
+    end
+    return true
+end
+
 -- PNJ u objeto con el que empieza ("starts") o termina ("ends") una mision.
 -- Lista de { name, mapID, x, y } (sin mapID: empieza con un objeto del inventario).
 -- Orden: lo recogido en el juego, Data/Places.lua (Wowhead Forever), Questie.

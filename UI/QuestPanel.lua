@@ -135,6 +135,7 @@ local function CreateQuestList(parent, onSelect)
         row.step:SetJustifyH("LEFT")
         row.step:SetWordWrap(false)
         row:SetScript("OnClick", function(self)
+            if ns.LinkQuestOnModifiedClick(self.questID) then return end
             if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT) end
             onSelect(self.questID)
         end)
@@ -300,7 +301,9 @@ local function CreateDetail(parent)
             hl:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.12)
             -- Cualquier paso abre su hoja, tambien los de fuera de la mazmorra
             -- (Data/Quests.lua los trae con su inicio y final para marcarlos)
-            b:SetScript("OnClick", function(self) ns.ShowQuest(self.questID) end)
+            b:SetScript("OnClick", function(self)
+                if not ns.LinkQuestOnModifiedClick(self.questID) then ns.ShowQuest(self.questID) end
+            end)
             links[i] = b
         end
         return links[i]

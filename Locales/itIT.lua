@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Uccidi il guardiano al segno del primo oggetto e raccoglil
 L["SUMMON_TOME"] = "Il primo oggetto è segnato sulla mappa della sua spedizione. Usalo sul fulcro della linea di prana per trasformarlo nel secondo oggetto, che evoca questo boss."
 L["QUEST_WARN_THAELRID"] = "Consegnala prima di accettare la missione successiva, o non potrai più completarla."
 L["QUEST_WARN_VILLAINY"] = "Accettala dopo aver completato la missione precedente: se la accetti prima, perderai quella."
+L["QUEST_WARN_QUESTIONER"] = "Non uccidere The Questioner prima dell'ultimo boss: se lo fai, non potrai prendere questa missione."
 L["RUN_HISTORY"] = "Partite nelle spedizioni"
 L["RUN_HISTORY_TOOLTIP"] = "Le partite nelle spedizioni del tuo personaggio, registrate da sole."
 L["RUN_NONE"] = "Ancora nessuna partita. Uccidi qualcosa in una spedizione per iniziarne una."

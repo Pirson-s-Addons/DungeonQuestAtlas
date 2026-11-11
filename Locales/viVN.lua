@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Hạ người canh giữ tại dấu của vật phẩm đ
 L["SUMMON_TOME"] = "Vật phẩm đầu tiên được đánh dấu trên bản đồ hầm ngục của nó. Dùng nó tại tiêu điểm đường năng lượng để biến thành vật phẩm thứ hai, dùng để triệu hồi trùm này."
 L["QUEST_WARN_THAELRID"] = "Hãy nộp nhiệm vụ này trước khi nhận nhiệm vụ tiếp theo, nếu không sẽ không thể hoàn thành nữa."
 L["QUEST_WARN_VILLAINY"] = "Hãy nhận nhiệm vụ này sau khi hoàn thành nhiệm vụ trước: nếu nhận trước, bạn sẽ mất nhiệm vụ đó."
+L["QUEST_WARN_QUESTIONER"] = "Đừng giết The Questioner trước trùm cuối: nếu giết, bạn sẽ không nhận được nhiệm vụ này."
 L["RUN_HISTORY"] = "Lượt hầm ngục"
 L["RUN_HISTORY_TOOLTIP"] = "Các lượt hầm ngục của nhân vật, tự động ghi lại."
 L["RUN_NONE"] = "Chưa có lượt nào. Hạ một kẻ địch trong hầm ngục để bắt đầu."

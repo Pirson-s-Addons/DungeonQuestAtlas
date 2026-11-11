@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Tötet den Hüter an der Markierung des ersten Gegenstands
 L["SUMMON_TOME"] = "Der erste Gegenstand ist auf der Karte seines Dungeons markiert. Benutzt ihn am Leylinienfokus, um daraus den zweiten Gegenstand zu machen, der diesen Boss beschwört."
 L["QUEST_WARN_THAELRID"] = "Gebt diese Quest ab, bevor Ihr die nächste annehmt, sonst könnt Ihr sie nicht mehr abschließen."
 L["QUEST_WARN_VILLAINY"] = "Nehmt diese Quest erst nach Abschluss der vorherigen an: Sonst verliert Ihr jene."
+L["QUEST_WARN_QUESTIONER"] = "Tötet The Questioner nicht vor dem letzten Boss, sonst könnt Ihr diese Quest nicht mehr annehmen."
 L["RUN_HISTORY"] = "Dungeondurchläufe"
 L["RUN_HISTORY_TOOLTIP"] = "Die Dungeondurchläufe deines Charakters, automatisch aufgezeichnet."
 L["RUN_NONE"] = "Noch keine Durchläufe. Besiege etwas in einem Dungeon, um einen zu beginnen."

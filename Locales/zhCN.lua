@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "在第一件物品的标记处击杀守护者并拾取它�
 L["SUMMON_TOME"] = "第一件物品标记在其地下城的地图上。在魔网节点使用它，可将其变为第二件物品，用于召唤这个首领。"
 L["QUEST_WARN_THAELRID"] = "请在接受下一个任务之前交付此任务，否则将无法再完成。"
 L["QUEST_WARN_VILLAINY"] = "请在完成上一个任务后再接受此任务：如果先接受，将失去上一个任务。"
+L["QUEST_WARN_QUESTIONER"] = "不要在最后一个首领之前击杀The Questioner，否则将无法接取此任务。"
 L["RUN_HISTORY"] = "地下城记录"
 L["RUN_HISTORY_TOOLTIP"] = "你角色的地下城记录，自动保存。"
 L["RUN_NONE"] = "还没有记录。在地下城中击杀敌人即可开始。"

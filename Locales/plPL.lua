@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Zabij strażnika przy znaczniku pierwszego przedmiotu i za
 L["SUMMON_TOME"] = "Pierwszy przedmiot jest zaznaczony na mapie swojego lochu. Użyj go przy ognisku linii mocy, aby zmienić go w drugi przedmiot, który przywołuje tego bossa."
 L["QUEST_WARN_THAELRID"] = "Oddaj to zadanie przed przyjęciem następnego, bo inaczej nie będzie można go ukończyć."
 L["QUEST_WARN_VILLAINY"] = "Przyjmij to zadanie po ukończeniu poprzedniego: jeśli przyjmiesz je wcześniej, stracisz tamto."
+L["QUEST_WARN_QUESTIONER"] = "Nie zabijaj The Questioner przed ostatnim bossem: jeśli to zrobisz, nie dostaniesz tego zadania."
 L["RUN_HISTORY"] = "Przejścia lochów"
 L["RUN_HISTORY_TOOLTIP"] = "Przejścia lochów twojej postaci, zapisywane samoczynnie."
 L["RUN_NONE"] = "Brak przejść. Zabij coś w lochu, aby rozpocząć."

@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Tuez le gardien à la marque du premier objet et ramassez-
 L["SUMMON_TOME"] = "Le premier objet est marqué sur le plan de son donjon. Utilisez-le au foyer de ligne tellurique pour le changer en second objet, qui invoque ce boss."
 L["QUEST_WARN_THAELRID"] = "Rendez cette quête avant d'accepter la suivante, sinon vous ne pourrez plus la terminer."
 L["QUEST_WARN_VILLAINY"] = "Acceptez cette quête après avoir terminé la précédente : sinon, vous perdrez celle-ci."
+L["QUEST_WARN_QUESTIONER"] = "Ne tuez pas The Questioner avant le dernier boss : sinon, vous ne pourrez pas obtenir cette quête."
 L["RUN_HISTORY"] = "Parties de donjon"
 L["RUN_HISTORY_TOOLTIP"] = "Les parties de donjon de votre personnage, enregistrées automatiquement."
 L["RUN_NONE"] = "Aucune partie pour l'instant. Tuez quelque chose dans un donjon pour en commencer une."

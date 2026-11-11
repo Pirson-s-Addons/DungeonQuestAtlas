@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Mata al guardián en la marca del primer objeto y saquéal
 L["SUMMON_TOME"] = "El primer objeto está marcado en el mapa de su mazmorra. Úsalo en el foco de línea Ley para convertirlo en el segundo objeto, que invoca a este jefe."
 L["QUEST_WARN_THAELRID"] = "Entrégala antes de aceptar la siguiente misión o ya no podrás completarla."
 L["QUEST_WARN_VILLAINY"] = "Acéptala después de completar la misión anterior: si la aceptas antes, perderás aquella."
+L["QUEST_WARN_QUESTIONER"] = "No mates a The Questioner antes que al último jefe: si lo haces, no podrás coger esta misión."
 L["RUN_HISTORY"] = "Partidas de mazmorra"
 L["RUN_HISTORY_TOOLTIP"] = "Las partidas de mazmorra de tu personaje, que se guardan solas."
 L["RUN_NONE"] = "Aún no hay partidas. Mata algo en una mazmorra para empezar una."

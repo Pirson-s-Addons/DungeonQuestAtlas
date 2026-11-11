@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Zabij strážce u značky prvního předmětu a seber pře
 L["SUMMON_TOME"] = "První předmět je označen na mapě svého dungeonu. Použij ho u ohniska siločáry a změní se v druhý předmět, který vyvolá tohoto bosse."
 L["QUEST_WARN_THAELRID"] = "Odevzdej tento úkol před přijetím dalšího, jinak ho už nepůjde dokončit."
 L["QUEST_WARN_VILLAINY"] = "Tento úkol přijmi až po dokončení předchozího: když ho přijmeš dřív, o předchozí přijdeš."
+L["QUEST_WARN_QUESTIONER"] = "Nezabíjej The Questioner před posledním bossem: jinak tento úkol nedostaneš."
 L["RUN_HISTORY"] = "Průchody dungeony"
 L["RUN_HISTORY_TOOLTIP"] = "Průchody dungeony vaší postavy, ukládají se samy."
 L["RUN_NONE"] = "Zatím žádné průchody. Zabijte něco v dungeonu a jeden začne."

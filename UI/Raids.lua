@@ -778,6 +778,7 @@ function ns.CreateAttunePanel(leftPage, rightPage)
         row.info:SetPoint("RIGHT", -4, 0)
         row.info:SetWordWrap(false)
         row:SetScript("OnClick", function(self)
+            if ns.LinkQuestOnModifiedClick(self.questID) then return end
             if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT) end
             panel:Select(self.questID)
         end)

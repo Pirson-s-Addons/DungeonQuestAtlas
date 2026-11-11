@@ -429,6 +429,7 @@ L["SUMMON_MALLET"] = "Kill the keeper at the mark of the first item and loot it.
 L["SUMMON_TOME"] = "The first item is marked on the map of its dungeon. Use it at the ley line focus to turn it into the second item, which summons this boss."
 L["QUEST_WARN_THAELRID"] = "Hand this in before you accept the next quest, or it can no longer be completed."
 L["QUEST_WARN_VILLAINY"] = "Accept this after completing the previous quest: if you accept it first, you will lose that one."
+L["QUEST_WARN_QUESTIONER"] = "Don't kill The Questioner before the last boss: if you do, you can't get this quest."
 L["RUN_HISTORY"] = "Dungeon runs"
 L["RUN_HISTORY_TOOLTIP"] = "Your character's dungeon runs, recorded on their own."
 L["RUN_NONE"] = "No runs recorded yet. Kill something in a dungeon to start one."

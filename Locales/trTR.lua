@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "İlk eşyanın işaretindeki bekçiyi öldür ve eşyayı 
 L["SUMMON_TOME"] = "İlk eşya, zindanının haritasında işaretlidir. Bu boss'u çağıran ikinci eşyaya dönüştürmek için enerji hattı odağında kullan."
 L["QUEST_WARN_THAELRID"] = "Sonraki görevi kabul etmeden önce bunu teslim et, yoksa artık tamamlayamazsın."
 L["QUEST_WARN_VILLAINY"] = "Bu görevi önceki görevi tamamladıktan sonra kabul et: önce kabul edersen öncekini kaybedersin."
+L["QUEST_WARN_QUESTIONER"] = "The Questioner'ı son bosstan önce öldürme: öldürürsen bu görevi alamazsın."
 L["RUN_HISTORY"] = "Zindan koşuları"
 L["RUN_HISTORY_TOOLTIP"] = "Karakterinin zindan koşuları, kendiliğinden kaydedilir."
 L["RUN_NONE"] = "Henüz koşu yok. Başlatmak için bir zindanda bir şey öldür."

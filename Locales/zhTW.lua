@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "在第一件物品的標記處擊殺守護者並拾取它�
 L["SUMMON_TOME"] = "第一件物品標記在其地城的地圖上。在魔網節點使用它，可將其變為第二件物品，用於召喚這個首領。"
 L["QUEST_WARN_THAELRID"] = "請在接受下一個任務之前交付此任務，否則將無法再完成。"
 L["QUEST_WARN_VILLAINY"] = "請在完成上一個任務後再接受此任務：如果先接受，將失去上一個任務。"
+L["QUEST_WARN_QUESTIONER"] = "不要在最後一個首領之前擊殺The Questioner，否則將無法接取此任務。"
 L["RUN_HISTORY"] = "地城紀錄"
 L["RUN_HISTORY_TOOLTIP"] = "你角色的地城紀錄，會自動保存。"
 L["RUN_NONE"] = "還沒有紀錄。在地城中擊殺敵人即可開始。"

@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Drep vokteren ved markeringen til den første gjenstanden 
 L["SUMMON_TOME"] = "Den første gjenstanden er markert på kartet til instansen. Bruk den ved kraftlinjefokuset for å gjøre den om til den andre gjenstanden, som påkaller denne bossen."
 L["QUEST_WARN_THAELRID"] = "Lever dette oppdraget før du tar det neste, ellers kan det ikke fullføres lenger."
 L["QUEST_WARN_VILLAINY"] = "Ta dette oppdraget etter at du har fullført det forrige: tar du det først, mister du det andre."
+L["QUEST_WARN_QUESTIONER"] = "Ikke drep The Questioner før siste boss: gjør du det, kan du ikke ta dette oppdraget."
 L["RUN_HISTORY"] = "Dungeon-runder"
 L["RUN_HISTORY_TOOLTIP"] = "Karakterens dungeon-runder, lagres automatisk."
 L["RUN_NONE"] = "Ingen runder ennå. Drep noe i en dungeon for å starte en."

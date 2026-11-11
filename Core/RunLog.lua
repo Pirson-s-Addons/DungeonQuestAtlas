@@ -21,6 +21,8 @@ local NEED_ROLL = 1       -- RollOnLoot(id, 1): Necesidad
 local inside              -- instanceID de la mazmorra en la que estas (o nil)
 local checkCopy = false   -- falta mirar si esta copia es la de la partida abierta
 local seen, rares, names = {}, {}, {} -- bichos vistos vivos, raros encontrados, npcID -> nombre
+local critters = {}       -- npcID de alimanas (nivel 1): ni empiezan la partida ni cuentan
+local wing                -- ala (clave) del primer jefe visto en esta visita: SM, La Masacre, Cumbre
 local lastKill, pendingXP
 local prevXP, prevMax, prevMoney
 local ignoreXPUntil = 0   -- la XP de una mision entregada dentro no es de bichos
@@ -141,7 +143,7 @@ end
 local function ResumeLimit(run) return run.finished and RESUME_DONE or RESUME_OPEN end
 
 local function StartRun(zone)
-    local d = ns.CurrentDungeon()
+    local d = (wing and ns.DungeonByKey[wing]) or ns.CurrentDungeon()
     if not d then return end
     local run = {
         key = d.key, instance = inside, zone = zone, started = Now(), deaths = 0, xp = 0, money = 0, trashCount = 0,
@@ -257,13 +259,22 @@ function ns.RunLogUnit(unit, instance, zone, npcID, spawn, dead)
     CheckCopy(zone)
     if ns.PlainText(UnitIsFriend("player", unit)) == true then return end
     names[npcID] = ns.PlainText(UnitName(unit)) or names[npcID]
+    if ns.PlainText(UnitLevel(unit)) == 1 then critters[npcID] = true; return end -- ratas, cucarachas...
     local key = npcID .. ":" .. tostring(spawn)
     -- Muerto y enemigo dentro de tu copia: tuyo (PARTY_KILL y UNIT_DIED pueden no llegar
     -- o llegar secretos, y entonces la partida no empezaba hasta el primer jefe)
     if dead then return AddKill(npcID, spawn, zone) end
     seen[key] = true
-    local boss = BossFor(npcID, names[npcID])
-    if boss and boss.kind == "rare" then RareFound(boss) end
+    local boss, d = BossFor(npcID, names[npcID])
+    if not boss then return end
+    -- Alas que comparten instancia: la del primer jefe que se ve, aunque aun no haya muerto ninguno
+    wing = wing or d.key
+    local run = Active()
+    if run and run.instance == inside and next(run.bosses) == nil and run.key ~= d.key then
+        run.key = d.key
+        Changed()
+    end
+    if boss.kind == "rare" then RareFound(boss) end
 end
 
 -- ------------------------------------------
@@ -391,7 +402,7 @@ local function UpdateZone()
             Close(run)
         end
     end
-    if now ~= inside then preXP, preMoney, pendingXP = 0, 0, nil end
+    if now ~= inside then preXP, preMoney, pendingXP, wing = 0, 0, nil, nil end
     inside = now
     SyncCounters()
     Changed()
@@ -438,7 +449,7 @@ end
 local function OnGUID(guid, onlyKnown)
     if not inside then return end
     local instance, zone, npcID, spawn = ns.ParseCreatureGUID(guid)
-    if not (npcID and instance == inside) then return end
+    if not (npcID and instance == inside) or critters[npcID] then return end
     CheckCopy(zone)
     if not onlyKnown or seen[npcID .. ":" .. tostring(spawn)] or BossFor(npcID, names[npcID]) then
         AddKill(npcID, spawn, zone)

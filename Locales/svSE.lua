@@ -413,6 +413,7 @@ L["SUMMON_MALLET"] = "Döda väktaren vid det första föremålets markering och
 L["SUMMON_TOME"] = "Det första föremålet är markerat på instansens karta. Använd det vid kraftlinjens fokus för att göra det till det andra föremålet, som framkallar den här bossen."
 L["QUEST_WARN_THAELRID"] = "Lämna in uppdraget innan du tar nästa, annars går det inte längre att slutföra."
 L["QUEST_WARN_VILLAINY"] = "Ta det här uppdraget efter att du har slutfört det föregående: tar du det först förlorar du det andra."
+L["QUEST_WARN_QUESTIONER"] = "Döda inte The Questioner före sista bossen: annars kan du inte ta det här uppdraget."
 L["RUN_HISTORY"] = "Dungeonrundor"
 L["RUN_HISTORY_TOOLTIP"] = "Din karaktärs dungeonrundor, sparas automatiskt."
 L["RUN_NONE"] = "Inga rundor ännu. Döda något i en dungeon för att starta en."
