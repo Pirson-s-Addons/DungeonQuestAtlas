@@ -124,6 +124,9 @@ if api and api.version == 1 then
     api.GetDungeonBosses("DM")        -- { { name, englishName, rare, npcID, level }, ... }
     api.GetRaids()                    -- { { key, name, entrance }, ... }
     api.GetRaid("ONYXIA")             -- { name, entrance, bosses, attunement = { itemName, steps } }
+    api.GetQuest(166)                 -- { title, status, reason, level, xp, dungeonKey, rewards, choice, chain, step }
+    api.GetItemSources(itemID)        -- { { who, where, chance } | { quest, where }, ... } who drops it
+    api.GetQuestPlaces(questID, "starts") -- { { name, mapID, x, y }, ... } quest giver ("ends": turn-in)
 end
 ```
 

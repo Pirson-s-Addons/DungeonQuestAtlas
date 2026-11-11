@@ -120,6 +120,9 @@ if api and api.version == 1 then
     api.GetDungeonBosses("DM")        -- { { name, englishName, rare, npcID, level }, ... }
     api.GetRaids()                    -- { { key, name, entrance }, ... }
     api.GetRaid("ONYXIA")             -- { name, entrance, bosses, attunement = { itemName, steps } }
+    api.GetQuest(166)                 -- { title, status, reason, level, xp, dungeonKey, rewards, choice, chain, step }
+    api.GetItemSources(itemID)        -- { { who, where, chance } | { quest, where }, ... } quién lo suelta
+    api.GetQuestPlaces(questID, "starts") -- { { name, mapID, x, y }, ... } quién da la misión ("ends": dónde se entrega)
 end
 ```
 

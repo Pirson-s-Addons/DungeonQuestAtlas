@@ -109,6 +109,72 @@ DungeonQuestAtlasAPI = {
         return out
     end,
 
+    -- Una mision de mazmorra (o de llave de banda) que DQA conoce, o nil:
+    -- { questID, title, status, reason, level, minLevel, xp, money, dungeonKey, dungeonName,
+    --   rewards = { itemID... }, choice = { itemID... }, need = { { itemID, count }... },
+    --   chain = { { questID, title, status }... } (la serie entera, en orden), step = n }
+    GetQuest = function(questID)
+        local q = ns.Quests and ns.Quests[questID]
+        if not q then return nil end
+        local info = QuestLine(questID)
+        info.level, info.minLevel, info.xp, info.money = q.level, q.minLevel, q.xp, q.money
+        local function ids(list)
+            local out = {}
+            for i, id in ipairs(list or {}) do out[i] = id end
+            return out
+        end
+        info.rewards, info.choice = ids(q.rewards), ids(q.choice)
+        info.need = {}
+        for i, n in ipairs(q.need or {}) do info.need[i] = { itemID = n[1], count = n[2] } end
+        if type(q.chain) == "table" then
+            info.chain = {}
+            for i, id in ipairs(q.chain) do
+                info.chain[i] = QuestLine(id)
+                if id == questID then info.step = i end
+            end
+        end
+        for _, d in ipairs(ns.Dungeons) do
+            for _, id in ipairs(d.quests or {}) do
+                if id == questID then
+                    info.dungeonKey, info.dungeonName = d.key, ns.DungeonName(d)
+                    return info
+                end
+            end
+        end
+        return info
+    end,
+
+    -- De donde sale un objeto: { { who, where, chance, dungeonKey } | { quest, questID, where }, ... }
+    -- who: jefe (nombre local); where: mazmorra o banda; chance: % o nil; nil si no lo tiene
+    GetItemSources = function(itemID)
+        local list = ns.ItemSources(itemID)
+        if not list then return nil end
+        local out = {}
+        for _, e in ipairs(list) do
+            local where = ns.DungeonName(e.d)
+            if e.quest then
+                out[#out + 1] = { quest = ns.QuestTitle(e.quest), questID = e.quest, where = where }
+            else
+                local boss = e.d.size and e.d.bosses[e.boss] or ns.Bosses[e.d.key][e.boss]
+                out[#out + 1] = { who = e.d.size and boss.name or ns.BossName(boss, e.d), where = where,
+                    chance = e.chance, dungeonKey = not e.d.size and e.d.key or nil }
+            end
+        end
+        return out
+    end,
+
+    -- Quien da (which = "starts") o recoge ("ends") una mision: { { name, mapID, x, y }, ... }
+    -- (sin mapID: empieza con un objeto del inventario); nil si no se sabe
+    GetQuestPlaces = function(questID, which)
+        local list = ns.QuestPlaces(questID, which)
+        if not list or #list == 0 then return nil end
+        local out = {}
+        for _, p in ipairs(list) do
+            out[#out + 1] = { name = ns.PlaceName(p), mapID = p.mapID, x = p.x, y = p.y }
+        end
+        return out
+    end,
+
     -- { key, name, entrance, bosses = { nombre, ... }, attunement = { item, steps = { quest... } } | nil }
     GetRaid = function(key, faction)
         local raid = RaidByKey(key)
