@@ -5,7 +5,8 @@ local _, ns = ...
 -- ==========================================
 -- Cada copia de una mazmorra es una partida (ns.char.runLog, la mas nueva la primera):
 -- tiempo, XP de los bichos, dinero, muertes, bichos, jefes, botin, grupo y objetos a
--- Necesidad. Empieza con el primer combate dentro o el primer bicho muerto. Salir y volver a la misma copia
+-- Necesidad. Empieza con el primer combate dentro, el primer muerto de tu grupo o el primer jefe
+-- (un cadaver visto no: los hay de adorno). Salir y volver a la misma copia
 -- sigue la misma partida; otra copia (zoneUID del GUID) empieza otra.
 -- Forever cierra el registro de combate: los muertos salen de PARTY_KILL, UNIT_DIED
 -- (si no llegan secretos), los cadaveres que se ven (Core/BossKills.lua) y los jefes de
@@ -20,6 +21,8 @@ local NEED_ROLL = 1       -- RollOnLoot(id, 1): Necesidad
 
 local inside              -- instanceID de la mazmorra en la que estas (o nil)
 local checkCopy = false   -- falta mirar si esta copia es la de la partida abierta
+local lastZone            -- zoneUID del ultimo PNJ visto en esta visita (la copia en la que estas)
+local doubt = false       -- has vuelto tras salir vivo (quiza la reiniciaron): lo decide el primer GUID o el primer combate
 local seen, rares, names = {}, {}, {} -- bichos vistos vivos, raros encontrados, npcID -> nombre
 local critters = {}       -- npcID de alimanas (nivel 1): ni empiezan la partida ni cuentan
 local wing                -- ala (clave) del primer jefe visto en esta visita: SM, La Masacre, Cumbre
@@ -143,6 +146,7 @@ end
 local function ResumeLimit(run) return run.finished and RESUME_DONE or RESUME_OPEN end
 
 local function StartRun(zone)
+    zone = zone or lastZone -- empezada por el combate: la copia del ultimo PNJ visto
     local d = (wing and ns.DungeonByKey[wing]) or ns.CurrentDungeon()
     if not d then return end
     local run = {
@@ -158,18 +162,37 @@ local function StartRun(zone)
     return run
 end
 
+-- Vuelta tras salir vivo: misma copia (sigue, sin el tiempo de fuera) u otra (se cierra)
+local function Resolve(same)
+    doubt = false
+    local run = Active()
+    if not run then return end
+    ns.Debug(same and "partida: misma copia, sigue" or "partida: otra copia, empieza otra")
+    if not same then Close(run)
+    elseif run.leftAt then run.outside, run.leftAt = run.outside + Now() - run.leftAt, nil end
+    Changed()
+end
+
 -- Con el primer bicho que se ve al entrar: otra copia cierra la partida abierta
 local function CheckCopy(zone)
-    if not (checkCopy and zone) then return end
-    checkCopy = false
+    if not zone then return end
+    lastZone = zone
     local run = Active()
-    if run and run.instance == inside and run.zone and run.zone ~= zone then
+    if run and run.instance == inside and not run.zone and not doubt then run.zone = zone end
+    if not checkCopy then return end
+    checkCopy = false
+    if not (run and run.instance == inside and run.zone) then return end
+    if run.zone ~= zone then
         Close(run)
+        doubt = false
         Changed()
+    elseif doubt then
+        Resolve(true)
     end
 end
 
 local function AddKill(npcID, spawn, zone)
+    if doubt then Resolve(false) end -- sin GUID que diga que es la misma copia
     local run = Active()
     if not run then run = StartRun(zone) end
     if not run then return end
@@ -197,6 +220,7 @@ end
 -- Lo llama ns.MarkBossKilled con cada jefe nuevo muerto
 function ns.RunLogBossKilled(d, boss)
     if not inside then return end
+    if doubt then Resolve(false) end
     local run = Active() or StartRun()
     if not run then return end
     if next(run.bosses) == nil then run.key = d.key end -- alas: la del primer jefe
@@ -263,7 +287,12 @@ function ns.RunLogUnit(unit, instance, zone, npcID, spawn, dead)
     local key = npcID .. ":" .. tostring(spawn)
     -- Muerto y enemigo dentro de tu copia: tuyo (PARTY_KILL y UNIT_DIED pueden no llegar
     -- o llegar secretos, y entonces la partida no empezaba hasta el primer jefe)
-    if dead then return AddKill(npcID, spawn, zone) end
+    -- Solo con la partida en marcha: un cadaver puesto de adorno no empieza el tiempo
+    if dead then
+        local run = Active()
+        if run and run.first and not doubt then AddKill(npcID, spawn, zone) end
+        return
+    end
     seen[key] = true
     local boss, d = BossFor(npcID, names[npcID])
     if not boss then return end
@@ -393,11 +422,17 @@ local function UpdateZone()
     local _, kind, _, _, _, _, _, instanceID = GetInstanceInfo()
     local now = kind == "party" and instanceID or nil
     local run = Active()
-    if inside and inside ~= now and run and run.instance == inside then run.leftAt = Now() end
+    if inside and inside ~= now and run and run.instance == inside then
+        -- Muerto (liberar el espiritu) vuelves a la misma copia; vivo, quiza a otra (reinicio)
+        run.leftAt, run.leftAlive = Now(), ns.PlainText(UnitIsDeadOrGhost("player")) ~= true
+    end
+    if now ~= inside then doubt, lastZone = false, nil end
     if now and now ~= inside then
         checkCopy = true
         if run and run.instance == now and (not run.leftAt or Now() - run.leftAt <= ResumeLimit(run)) then
-            if run.leftAt then run.outside, run.leftAt = run.outside + Now() - run.leftAt, nil end
+            if run.leftAlive then doubt = true -- el tiempo sigue parado hasta saberlo
+            elseif run.leftAt then run.outside, run.leftAt = run.outside + Now() - run.leftAt, nil end
+            run.leftAlive = nil
         elseif run then
             Close(run)
         end
@@ -460,6 +495,7 @@ end
 -- tiene): no depende de leer GUID ni cadaveres, que pueden llegar secretos
 local function StartOnCombat()
     if not inside then return end
+    if doubt then Resolve(false) end -- tras salir vivo, sin GUID: el primer combate es de otra copia
     local run = Active()
     if run and run.first then return end
     run = run or StartRun()
