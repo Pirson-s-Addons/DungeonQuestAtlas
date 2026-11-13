@@ -86,7 +86,7 @@ ns.Raids = {
         -- no pediran attunement al salir: puede no hacer falta.
         attunement = { item = 16309, itemName = "Drakefire Amulet", warning = "RAID_ATTUNE_WARNING",
             Alliance = { 4182, 4183, 4184, 4185, 4186, 4223, 4224, 4241, 4242, 4264, 4282, 4322, 6402, 6403, 6501, 6502 },
-            Horde = { 4903, 4941, 4974, 6566, 6567, 6568, 6569, 6570, 6584, 6582, 6583, 6585, 6601, 6602 } } },
+            Horde = { 98325, 4903, 4941, 4974, 6566, 6567, 6568, 6569, 6570, 6584, 6582, 6583, 6585, 6601, 6602 } } },
 }
 
 ns.Upcoming = {

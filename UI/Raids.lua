@@ -1054,3 +1054,56 @@ function ns.CreateRaidsSection(parent)
 
     return section
 end
+
+-- ------------------------------------------
+-- Icono de Onyxia en la portada de Mazmorras
+-- ------------------------------------------
+-- Su cara redonda junto al historial: abre el requisito de acceso de tu faccion
+-- en Bandas (la pestana elige sola el primer paso sin hacer). Sale al llegar al
+-- nivel del primer paso (ns.db.onyxiaIcon "auto"); "show" siempre, "hide" nunca.
+-- Clic derecho: ocultarlo (Opciones > Modo aventura lo devuelve).
+
+local function OnyxiaRaid()
+    for _, raid in ipairs(ns.Raids or {}) do
+        if raid.key == "ONYXIA" then return raid end
+    end
+end
+
+function ns.OnyxiaIconShown()
+    local mode, raid = ns.db.onyxiaIcon, OnyxiaRaid()
+    if not raid or mode == "hide" then return false end
+    if mode == "show" then return true end
+    local chain = raid.attunement[UnitFactionGroup("player") == "Horde" and "Horde" or "Alliance"]
+    local first = chain and ns.Quests[chain[1]]
+    return UnitLevel("player") >= (first and first.minLevel or 0)
+end
+
+function ns.CreateOnyxiaButton(parent)
+    local button = CreateFrame("Button", nil, parent)
+    button:SetSize(28, 28)
+    local portrait = button:CreateTexture(nil, "ARTWORK")
+    portrait:SetAllPoints()
+    local raid = OnyxiaRaid()
+    if raid then ns.SetBossPortrait(portrait, raid.bosses[1]) end
+    local hl = button:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(1, 1, 1, 0.2)
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button:SetScript("OnClick", function(_, mouse)
+        GameTooltip:Hide()
+        if mouse == "RightButton" then
+            ns.db.onyxiaIcon = "hide"
+            return ns.RefreshUI()
+        end
+        if raid then ns.ShowRaid(raid, nil, "attune") end
+    end)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L.ONYXIA_ICON, 1, 0.82, 0)
+        GameTooltip:AddLine(L.ONYXIA_ICON_TIP, 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", GameTooltip_Hide)
+    function button:Update() self:SetShown(ns.OnyxiaIconShown()) end
+    return button
+end

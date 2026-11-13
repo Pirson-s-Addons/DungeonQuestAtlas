@@ -43,7 +43,23 @@ end
 -- Las que aun no tienen jefes (no abren en la beta) no se bloquean: no habria
 -- con que abrirlas
 function ns.IsDungeonLocked(d)
-    return d ~= nil and ns.IsRPGMode() and not ns.char.unlocked[d.key] and ns.FinalBoss(d) ~= nil
+    return d ~= nil and ns.IsRPGMode() and not ns.IsUnlocked(d.key) and ns.FinalBoss(d) ~= nil
+end
+
+-- Desbloqueada por este personaje o, con "Desbloqueos de cuenta", por cualquiera
+-- de la cuenta (ns.db.unlocked se apunta siempre)
+function ns.IsUnlocked(key)
+    return ns.char.unlocked[key] or (ns.db.rpgAccount and ns.db.unlocked[key]) or false
+end
+
+-- "Ver misiones de las bloqueadas": su pagina se abre, pero solo en Misiones
+function ns.CanPeekQuests(d)
+    return ns.db.rpgShowQuests and ns.IsDungeonLocked(d)
+end
+
+-- Bloqueada del todo: su pagina no se abre por ningun camino
+function ns.IsPageClosed(d)
+    return ns.IsDungeonLocked(d) and not ns.db.rpgShowQuests
 end
 
 function ns.SetJournalMode(mode)
@@ -67,7 +83,7 @@ function ns.JourneyProgress()
     for _, d in ipairs(ns.Dungeons) do
         if ns.FinalBoss(d) then
             pageTotal = pageTotal + 1
-            if ns.char.unlocked[d.key] then pages = pages + 1 end
+            if ns.IsUnlocked(d.key) then pages = pages + 1 end
         end
         local done, total = ns.DungeonProgress(d, faction)
         quests, questTotal = quests + done, questTotal + total
@@ -191,8 +207,10 @@ end
 -- Lo llama Core/BossKills.lua con cada jefe que muere
 function ns.OnBossKilled(d, boss)
     if ns.char.unlocked[d.key] or boss ~= ns.FinalBoss(d) then return end
+    local was = ns.IsUnlocked(d.key)
     ns.char.unlocked[d.key] = true
-    if ns.IsRPGMode() then
+    ns.db.unlocked[d.key] = true
+    if ns.IsRPGMode() and not was then
         ns.Print("|cff40ff40" .. L.RPG_UNLOCKED_MSG:format(ns.DungeonName(d)) .. "|r")
         ShowToast(d)
     end
@@ -298,10 +316,81 @@ function ns.ShowModeChooser()
     chooser:Show()
 end
 
--- Primera vez de cada personaje: la ventana, unos segundos despues de entrar
+-- ------------------------------------------
+-- Exportar / importar el progreso
+-- ------------------------------------------
+-- Un codigo de texto con las mazmorras desbloqueadas ("DQA1:DM,RFD,..."): se
+-- copia en un ordenador y se pega en otro. Importar suma, no quita nada.
+
+local CODE_PREFIX = "DQA1:"
+
+function ns.ExportProgress()
+    local keys = {}
+    for _, d in ipairs(ns.Dungeons) do
+        if ns.IsUnlocked(d.key) then keys[#keys + 1] = d.key end
+    end
+    return CODE_PREFIX .. table.concat(keys, ",")
+end
+
+-- Devuelve cuantas son nuevas, o nil si el codigo no vale
+function ns.ImportProgress(code)
+    code = (code or ""):gsub("%s", "")
+    if code:sub(1, #CODE_PREFIX) ~= CODE_PREFIX then return nil end
+    local known = {}
+    for _, d in ipairs(ns.Dungeons) do known[d.key] = true end
+    local added = 0
+    for key in code:sub(#CODE_PREFIX + 1):gmatch("[^,]+") do
+        if not known[key] then return nil end
+        if not ns.char.unlocked[key] then added = added + 1 end
+        ns.char.unlocked[key] = true
+        ns.db.unlocked[key] = true
+    end
+    if ns.RefreshUI then ns.RefreshUI() end
+    return added
+end
+
+local function EditBoxOf(dialog)
+    return dialog.GetEditBox and dialog:GetEditBox() or dialog.editBox
+end
+
+StaticPopupDialogs["DQA_EXPORT_PROGRESS"] = {
+    text = "%s", button1 = OKAY, hasEditBox = true, editBoxWidth = 320,
+    OnShow = function(self, data)
+        local box = EditBoxOf(self)
+        box:SetText(data or "")
+        box:HighlightText()
+        box:SetFocus()
+    end,
+    EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+    timeout = 0, whileDead = true, hideOnEscape = true,
+}
+StaticPopupDialogs["DQA_IMPORT_PROGRESS"] = {
+    text = "%s", button1 = ACCEPT, button2 = CANCEL, hasEditBox = true, editBoxWidth = 320,
+    OnAccept = function(self)
+        local box = EditBoxOf(self)
+        local added = ns.ImportProgress(box:GetText())
+        ns.Print(added and L.RPG_IMPORT_DONE:format(added) or ("|cffff6060" .. L.RPG_IMPORT_BAD .. "|r"))
+    end,
+    EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+    timeout = 0, whileDead = true, hideOnEscape = true,
+}
+
+function ns.ShowExportProgress()
+    StaticPopup_Show("DQA_EXPORT_PROGRESS", L.RPG_EXPORT_TEXT, nil, ns.ExportProgress())
+end
+
+function ns.ShowImportProgress()
+    StaticPopup_Show("DQA_IMPORT_PROGRESS", L.RPG_IMPORT_TEXT)
+end
+
+-- Primera vez de cada personaje: la ventana, unos segundos despues de entrar.
+-- Y lo desbloqueado por este personaje pasa a la cuenta (desbloqueos de cuenta)
 local login = CreateFrame("Frame")
 login:RegisterEvent("PLAYER_LOGIN")
 login:SetScript("OnEvent", function()
+    if ns.char and ns.db then
+        for key in pairs(ns.char.unlocked) do ns.db.unlocked[key] = true end
+    end
     C_Timer.After(3, function()
         if ns.char and ns.char.journalMode == nil then ns.ShowModeChooser() end
     end)

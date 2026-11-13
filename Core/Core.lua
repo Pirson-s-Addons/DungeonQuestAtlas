@@ -43,6 +43,13 @@ local DEFAULTS = {
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     trackerPos = {},
     itemSourceTip = true, -- "Jefe - Mazmorra" en el tooltip de cualquier objeto (UI/ItemSource.lua)
+    -- Modo aventura (UI/JournalMode.lua): desbloqueos de todos los personajes de la cuenta
+    -- (siempre se apuntan; solo cuentan con rpgAccount) y ver las misiones de las bloqueadas
+    unlocked = {},
+    rpgAccount = false,
+    rpgShowQuests = false,
+    onyxiaIcon = "auto",  -- icono de Onyxia en la portada: "auto" (al nivel de su cadena), "show" o "hide"
+    mapQuests = true,     -- ! ? y gemas de mision en los planos (UI/DungeonMap.lua)
     favorites = {},       -- objetos favoritos [itemID] = true (clic derecho; UI/LootSearch.lua)
     -- Portada: ocultar solas las mazmorras de nivel superado o con todas las misiones hechas
     hideOutleveled = false,
@@ -262,20 +269,39 @@ end
 
 -- Mayus+clic en una mision: su enlace al chat, como en el registro del juego (si
 -- no hay caja abierta, la abre con el enlace). true si el clic era para eso.
-function ns.LinkQuestOnModifiedClick(id)
-    if not (id and IsModifiedClick and IsModifiedClick("CHATLINK")) then return false end
-    -- El del juego: la caja del chat descarta los enlaces de mision hechos a mano.
-    -- Sin la mision en cache aun no lo da: se pide y el siguiente clic ya vale.
-    local link = GetQuestLink and GetQuestLink(id)
-    if not link then
-        if C_QuestLog and C_QuestLog.RequestLoadQuestByID then C_QuestLog.RequestLoadQuestByID(id) end
-        link = string.format("|cffffff00|Hquest:%d:%d|h[%s]|h|r", id,
-            ns.QuestLevel(ns.Quests[id] or {}, id) or 0, ns.QuestTitle(id))
-    end
+local pendingLink, ManualQuestLink, InsertQuestLink
+
+-- Ultimo recurso: el chat lo deja en texto plano al enviarlo.
+function ManualQuestLink(id)
+    return string.format("|cffffff00|Hquest:%d:%d|h[%s]|h|r", id,
+        ns.QuestLevel(ns.Quests[id] or {}, id) or 0, ns.QuestTitle(id))
+end
+
+function InsertQuestLink(link)
     local insert = ChatFrameUtil and ChatFrameUtil.InsertLink or ChatEdit_InsertLink
     if not (insert and insert(link)) then
         local open = ChatFrameUtil and ChatFrameUtil.OpenChat or ChatFrame_OpenChat
         if open then open(link) end
+    end
+end
+
+function ns.LinkQuestOnModifiedClick(id)
+    if not (id and IsModifiedClick and IsModifiedClick("CHATLINK")) then return false end
+    -- El del juego: la caja del chat descarta los enlaces de mision hechos a mano.
+    -- Sin la mision en cache aun no lo da: se pide y se mete al llegar
+    -- (QUEST_DATA_LOAD_RESULT), sin hacer falta un segundo clic.
+    local link = GetQuestLink and GetQuestLink(id)
+    if link then
+        InsertQuestLink(link)
+    elseif C_QuestLog and C_QuestLog.RequestLoadQuestByID then
+        pendingLink = id
+        C_QuestLog.RequestLoadQuestByID(id)
+        -- Si el servidor no contesta, el enlace a mano
+        if C_Timer then C_Timer.After(2, function()
+            if pendingLink == id then pendingLink = nil; InsertQuestLink(ManualQuestLink(id)) end
+        end) end
+    else
+        InsertQuestLink(ManualQuestLink(id))
     end
     return true
 end
@@ -434,9 +460,16 @@ On("PLAYER_LOGIN", function()
 end)
 
 for _, event in ipairs({ "QUEST_REMOVED", "QUEST_LOG_UPDATE",
-    "QUEST_DATA_LOAD_RESULT", "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP", "GROUP_ROSTER_UPDATE" }) do
+    "ITEM_DATA_LOAD_RESULT", "PLAYER_LEVEL_UP", "GROUP_ROSTER_UPDATE" }) do
     On(event, ns.RequestRefresh)
 end
+On("QUEST_DATA_LOAD_RESULT", function(questID, success)
+    if pendingLink and questID == pendingLink then
+        pendingLink = nil
+        InsertQuestLink(GetQuestLink and GetQuestLink(questID) or ManualQuestLink(questID))
+    end
+    ns.RequestRefresh()
+end)
 
 -- Coger una mision: su texto, desde el registro (por si no se vio la oferta)
 On("QUEST_ACCEPTED", function(questID)

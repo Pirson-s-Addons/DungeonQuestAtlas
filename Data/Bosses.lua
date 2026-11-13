@@ -33,11 +33,11 @@ ns.Bosses = {
     -- hasta tenerlo; el de los bichos, Satyr's Touch (Wowhead Forever).
     BLACKMAW = {
         { name = "Impaan the Imprisoner", npcID = 247206, display = 130432, level = 57, loot = { { 280056 }, { 280058 }, { 280057 } } },
-        { name = "Bonesnout the Unbroken", npcID = 247198, display = 130427, level = 58, loot = { { 280060 }, { 280059 }, { 249696, quest = true } } },
+        { name = "Bonesnout the Unbroken", npcID = 247198, display = 130427, level = 58, loot = { { 280060 }, { 280059 }, { 280061 }, { 249696, quest = true } } },
         { name = "Moontouched Wanderer", npcID = 269104, display = 12235, level = 55, kind = "rare", loot = { { 280080 }, { 280079 } } },
         { name = "Gortek the Apprentice", npcID = 269111, display = 145808, level = 55, kind = "rare", loot = { { 280077 }, { 280078 } } },
         { name = "Tunnelweb Matriarch", npcID = 250034, level = 55, kind = "rare", loot = { { 280085 } } },
-        { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = { { 280064 }, { 280061, probable = true }, { 280062 }, { 280063 }, { 249697, quest = true } } },
+        { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = { { 280064 }, { 280062 }, { 280063 }, { 249697, quest = true } } },
         { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, level = 59, loot = { { 280068 }, { 280069 }, { 280070 }, { 276893, quest = true } } },
         { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, level = 59, loot = { { 280065 }, { 280066 }, { 280067 } } },
         { name = "Unbound Spirit", npcID = 247231, display = 131644, level = 59, loot = { { 280071 }, { 280073 }, { 280072 } } },
@@ -67,6 +67,7 @@ ns.Bosses = {
         { name = "Nar'gurk", npcID = 258964, display = 141215, level = 44, loot = { { 275005 }, { 275004 }, { 275006 }, { 267104, quest = true } } },
         { name = "Bossman Toof", npcID = 264773, display = 14424, level = 42, loot = { { 286430 }, { 286429 }, { 286428 } } },
         { name = "Overlord Mugg", npcID = 258968, display = 141218, level = 45, loot = { { 275009 }, { 275007 }, { 275010 }, { 275008, probable = true }, { 267086, quest = true } } },
+        { name = "Kroog", npcID = 262716, kind = "rare", level = 41, loot = { { 279863 }, { 279857 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 287014, probable = true }, { 287012, probable = true }, { 287013, probable = true }, { 287008 }, { 287010 } } },
     },
     -- Abierta (09-11-2026). Orden sin confirmar, salvo Nanaya al final. Sin dato de la sala de cada jefe.
@@ -405,9 +406,9 @@ ns.Bosses = {
         { faction = "Horde", name = "Baelog", npcID = 6906, display = 5710, level = 41, loot = { { 9401, 9.3 }, { 9399, 87.6 }, { 9400, 39.6 } } },
         { faction = "Horde", name = "Olaf", npcID = 6908, display = 5709, level = 40, loot = { { 9404, 13.2 }, { 9403, 77.9 }, { 1177, 85.4 } } },
         { name = "Revelosh", npcID = 6910, display = 5945, level = 40, loot = { { 9389, 23.3 }, { 9388, 21 }, { 9390, 21.1 }, { 9387, 22.7 }, { 7741, 40.2 } } },
-        { name = "Ironaya", npcID = 7228, display = 6089, level = 40, loot = { { 9409, 37.7 }, { 9407, 37.7 }, { 9408, 20.5 } } },
+        { name = "Ironaya", npcID = 7228, display = 6089, level = 40, loot = { { 9409, 37.7 }, { 9407, 37.7 }, { 9408, 20.5 }, { 274484 } } },
         { name = "Obsidian Sentinel", npcID = 7023, display = 5285, level = 42, loot = { { 8053 }, { 274425 }, { 274428 }, { 274430 }, { 274485 }, { 251400 } } },
-        { name = "Ancient Stone Keeper", npcID = 7206, display = 10798, level = 44, loot = { { 9410, 47.7 }, { 9411, 47 } } },
+        { name = "Ancient Stone Keeper", npcID = 7206, display = 10798, level = 44, loot = { { 9410, 47.7 }, { 9411, 47 }, { 274431 } } },
         { name = "Galgann Firehammer", npcID = 7291, display = 6059, level = 45, loot = { { 11310, 19.5 }, { 9412, 17.7 }, { 11311, 38.1 }, { 9419, 19.9 } } },
         { name = "Grimlok", npcID = 4854, display = 11165, level = 45, loot = { { 9415, 39.7 }, { 9416, 19.4 }, { 9414, 28.8 }, { 7670 } } },
         { name = "Archaedas", npcID = 2748, display = 5988, level = 47, loot = { { 11118, 62.4 }, { 9413, 13.6 }, { 9418, 13.2 }, { 274432 } } },

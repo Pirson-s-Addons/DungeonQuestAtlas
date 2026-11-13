@@ -78,6 +78,7 @@ local function CreateCard(row, onSelect)
         if ns.IsDungeonLocked(d) then
             GameTooltip:AddLine(L.RPG_LOCKED, 1, 0.3, 0.3)
             GameTooltip:AddLine(ns.LockedHint(d), 1, 1, 1, true)
+            if ns.db.rpgShowQuests then GameTooltip:AddLine(L.RPG_PEEK_HINT, 0.6, 0.85, 0.6, true) end
             GameTooltip:AddLine(hideHint, 0.5, 0.5, 0.5)
             return GameTooltip:Show()
         end
@@ -110,7 +111,8 @@ local function UpdateCard(card, d)
     card.art:SetDesaturated(locked)
     card.art:SetVertexColor(locked and 0.4 or 1, locked and 0.4 or 1, locked and 0.4 or 1)
     card.lock:SetShown(locked)
-    if locked then card.progress:SetText("|cffff6060" .. L.RPG_LOCKED .. "|r") end
+    -- Bloqueada: el candado y, con "Ver misiones de las bloqueadas", sus misiones
+    if locked and not ns.db.rpgShowQuests then card.progress:SetText("|cffff6060" .. L.RPG_LOCKED .. "|r") end
     card:SetAlpha(ns.IsDungeonHidden(d) and 0.45 or 1) -- oculta, vista con "Mostrar ocultas"
 end
 

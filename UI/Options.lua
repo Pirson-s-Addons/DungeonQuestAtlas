@@ -9,7 +9,7 @@ local L = ns.L
 
 local HEADER = "|cffC47FF3"
 local X = 16
-local general, tracker
+local general, tracker, adventure
 
 local function Header(panel, y, text)
     local fs = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -281,6 +281,88 @@ local function CreateTrackerPanel()
     return panel
 end
 
+-- Subcategoria "Modo aventura" (UI/JournalMode.lua) y el icono de Onyxia de la portada
+local function CreateAdventurePanel()
+    local db = ns.db
+    local panel = CreateFrame("Frame")
+    panel:Hide()
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", X, -16)
+    title:SetText(L.MODE_RPG)
+    local logo = panel:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(110, 110)
+    logo:SetPoint("TOPRIGHT", -38, -5)
+    logo:SetTexture(ns.LOGO)
+    local version = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    version:SetPoint("TOP", logo, "BOTTOM", 0, -2)
+    version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
+
+    local widgets = {}
+    local function Refresh()
+        local rpg = ns.IsRPGMode()
+        for _, w in ipairs(widgets) do
+            if w.Refresh then w:Refresh() end
+            if w.dependent then
+                w:SetEnabled(rpg)
+                w:SetAlpha(rpg and 1 or 0.5)
+            end
+        end
+    end
+    local function Box(label, tooltip, y, dependent, get, set)
+        local name = "DungeonQuestAtlas_Adventure" .. (#widgets + 1)
+        local cb = CreateFrame("CheckButton", name, panel, "InterfaceOptionsCheckButtonTemplate")
+        cb:SetPoint("TOPLEFT", X + (dependent and 20 or 0), y)
+        _G[name .. "Text"]:SetText(label)
+        cb.dependent = dependent
+        cb:SetScript("OnClick", function(self)
+            set(self:GetChecked() and true or false)
+            Refresh()
+            ns.RefreshUI()
+        end)
+        cb.Refresh = function(self) self:SetChecked(get()) end
+        ns.AddTooltip(cb, tooltip)
+        widgets[#widgets + 1] = cb
+        return cb
+    end
+    local function Flag(key) return function() return db[key] end, function(v) db[key] = v end end
+    local function Button(label, tooltip, x, y, onClick)
+        local b = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        b:SetSize(180, 24)
+        b:SetPoint("TOPLEFT", X + x, y)
+        b:SetText(label)
+        b:SetScript("OnClick", onClick)
+        ns.AddTooltip(b, tooltip)
+        b.dependent = true
+        widgets[#widgets + 1] = b
+    end
+
+    Header(panel, -56, L.MODE_RPG)
+    Box(L.RPG_OPTION, L.RPG_OPTION_TOOLTIP, -78, false,
+        function() return ns.IsRPGMode() end, function(v) ns.SetJournalMode(v and "rpg" or "full") end)
+    Box(L.RPG_ACCOUNT, L.RPG_ACCOUNT_TOOLTIP, -104, true, Flag("rpgAccount"))
+    Box(L.RPG_SHOW_QUESTS, L.RPG_SHOW_QUESTS_TOOLTIP, -130, true, Flag("rpgShowQuests"))
+    Button(L.RPG_EXPORT, L.RPG_EXPORT_TOOLTIP, 24, -164, ns.ShowExportProgress)
+    Button(L.RPG_IMPORT, L.RPG_IMPORT_TOOLTIP, 214, -164, ns.ShowImportProgress)
+    Separator(panel, -200)
+
+    Header(panel, -215, L.HEADER_HOME)
+    Box(L.ONYXIA_OPTION, L.ONYXIA_OPTION_TOOLTIP, -237, false,
+        function() return ns.OnyxiaIconShown() end, function(v) db.onyxiaIcon = v and "show" or "hide" end)
+    Separator(panel, -271)
+
+    panel:SetScript("OnShow", Refresh)
+    local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reset:SetSize(180, 26)
+    reset:SetPoint("TOPLEFT", X, -284)
+    reset:SetText(L.DEFAULTS)
+    reset:SetScript("OnClick", function()
+        for _, key in ipairs({ "rpgAccount", "rpgShowQuests", "onyxiaIcon" }) do db[key] = ns.DEFAULTS[key] end
+        Refresh()
+        ns.RefreshUI()
+    end)
+    return panel
+end
+
 function ns.CreateOptions()
     local root = ns.CreateAbout({
         name = "Dungeon Quest Atlas Forever",
@@ -293,6 +375,7 @@ function ns.CreateOptions()
     })
     general = Settings.RegisterCanvasLayoutSubcategory(root, CreateGeneral(), L.GENERAL)
     tracker = Settings.RegisterCanvasLayoutSubcategory(root, CreateTrackerPanel(), L.OPT_TRACKER)
+    adventure = Settings.RegisterCanvasLayoutSubcategory(root, CreateAdventurePanel(), L.MODE_RPG)
 end
 
 function ns.OpenTrackerOptions()

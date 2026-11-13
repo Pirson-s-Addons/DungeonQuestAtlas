@@ -165,7 +165,7 @@ local function NeighbourDungeon(delta)
     if not index then return nil end
     local i = index + delta
     while list[i] do
-        if not ns.IsDungeonLocked(list[i]) then return list[i] end
+        if not ns.IsPageClosed(list[i]) then return list[i] end
         i = i + delta
     end
 end
@@ -204,8 +204,11 @@ function ns.RefreshUI()
     end
     RefreshSection(nil)
     -- Modo aventura: una mazmorra bloqueada no abre su pagina por ningun camino
-    -- (migas, mapa del mundo, saltos a un jefe): la portada
-    if ns.char.view ~= "home" and ns.IsDungeonLocked(SelectedDungeon()) then ns.char.view = "home" end
+    -- (migas, mapa del mundo, saltos a un jefe): la portada. Con "Ver misiones de
+    -- las bloqueadas", su pagina abre, pero solo Misiones y sin plano
+    if ns.char.view ~= "home" and ns.IsPageClosed(SelectedDungeon()) then ns.char.view = "home" end
+    local peek = ns.CanPeekQuests(SelectedDungeon())
+    if peek and ns.char.view == "map" then ns.char.view = "dungeon" end
     local map = ns.char.view == "map" and ns.DungeonMaps(SelectedDungeon())
     local home = not map and ns.char.view ~= "dungeon"
     ui.home:SetShown(home)
@@ -218,6 +221,7 @@ function ns.RefreshUI()
         local rpg = ns.IsRPGMode()
         ui.pending:SetShown(not rpg)
         ui.journey:SetShown(rpg)
+        ui.onyxia:Update()
         if rpg then ui.journey:Update() end
         -- Buscador de botin (UI/LootSearch.lua) en lugar de las tarjetas
         local loot = filters.loot and true or false
@@ -244,6 +248,7 @@ function ns.RefreshUI()
     if ui.bossDungeon ~= d.key then ui.boss, ui.bossDungeon = nil, d.key end
     local tab = OLD_TABS[ns.char.tab] or ns.char.tab
     if not tContains(PANELS, tab) or (tab == "attune" and not d.attunement) then tab = "overview" end
+    if peek then tab, ui.boss = "quests", nil end
     ns.char.tab = tab
     if tab == "model" and not ui.boss and #(ns.Bosses[d.key] or {}) > 0 then ui.boss = 1 end
     UpdateNav(d, map, tab ~= "quests" and tab ~= "attune" and ui.boss)
@@ -274,7 +279,10 @@ function ns.RefreshUI()
     for _, key in ipairs(PANELS) do ui.panels[key]:SetShown(key == tab) end
     ui.bookFaction:SetShown(tab ~= "model" and tab ~= "attune")
     local attune = ui.sideTabs.attune
-    attune:SetShown(d.attunement ~= nil)
+    attune:SetShown(d.attunement ~= nil and not peek)
+    for key, side in pairs(ui.sideTabs) do
+        if key ~= "attune" and key ~= "quests" then side:SetShown(not peek) end
+    end
     if d.attunement then
         attune.icon:SetTexture(C_Item and C_Item.GetItemIconByID and C_Item.GetItemIconByID(d.attunement.item)
             or "Interface\\Icons\\INV_Misc_Key_14")
@@ -322,7 +330,7 @@ end
 
 -- Tarjeta de la portada: abre la mazmorra en la ultima pestana usada
 function ns.SelectDungeon(d)
-    if ns.IsDungeonLocked(d) then -- modo aventura (UI/JournalMode.lua)
+    if ns.IsPageClosed(d) then -- modo aventura (UI/JournalMode.lua)
         if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_QUEST_FAILED) end
         return ns.Print(ns.LockedHint(d))
     end
@@ -512,6 +520,8 @@ local function CreateHome(area)
     lootLabel:SetText(L.LOOT_SEARCH)
     ui.lootButton = lootButton
     ns.CreateRunHistoryButton(home):SetPoint("RIGHT", lootButton, "LEFT", -6, 0)
+    ui.onyxia = ns.CreateOnyxiaButton(home) -- requisito de acceso de Onyxia (UI/Raids.lua)
+    ui.onyxia:SetPoint("RIGHT", lootButton, "LEFT", -40, 0)
     local hiddenButton = CreateFrame("DropdownButton", nil, home, "WowStyle1DropdownTemplate")
     hiddenButton:SetWidth(130)
     hiddenButton:SetPoint("TOPRIGHT", -18, -40)

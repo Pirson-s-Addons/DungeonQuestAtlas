@@ -125,8 +125,8 @@ ns.Maps = {
     -- _project/tools/dqa_maps/forever_maps.py.
     -- Sin chinchetas: aun no se sabe en que sala esta cada jefe
     ALCAZ = { { id = "ALCAZ", pins = {} } },
-    DROWNED = { { id = "DROWNED", pins = {} } },
-    KROLDOK = { { id = "KROLDOK", pins = {} } },
+    DROWNED = { { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 5, 0.618, 0.672 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 } } } },
+    KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.703 }, { 2, 0.392, 0.734 }, { 3, 0.621, 0.527 }, { 4, 0.411, 0.579 }, { 5, 0.617, 0.432 }, { 6, 0.688, 0.242 } } } },
     SHAPERS = { { id = "SHAPERS", pins = {} } },
     EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },

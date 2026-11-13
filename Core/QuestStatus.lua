@@ -57,6 +57,7 @@ function ns.QuestStatus(id)
     if IsCompleted(id) then return ns.STATUS_COMPLETED end
     if IsInLog(id) then return IsReady(id) and ns.STATUS_READY or ns.STATUS_IN_LOG end
     local q = ns.Quests[id] or {}
+    if q.unavailable then return ns.STATUS_BLOCKED, L.BLOCKED_UNAVAILABLE end
     if ns.IsQuestLost(id) then return ns.STATUS_BLOCKED, L.BLOCKED_LOST end
     if not ns.IsMyClass(q) then return ns.STATUS_BLOCKED, L.BLOCKED_CLASS:format(ns.ClassNames(q)) end
     for _, pre in ipairs(q.prereqs or {}) do
@@ -98,7 +99,7 @@ function ns.DungeonProgress(d, faction)
     local done, total = 0, 0
     for _, id in ipairs(d.quests) do
         local q = ns.Quests[id] or {}
-        if ns.MatchesFaction(q, faction) and ns.IsMyClass(q) and not ns.IsQuestLost(id) then
+        if ns.MatchesFaction(q, faction) and ns.IsMyClass(q) and not q.unavailable and not ns.IsQuestLost(id) then
             total = total + 1
             if IsCompleted(id) then done = done + 1 end
         end

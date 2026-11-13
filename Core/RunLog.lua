@@ -5,7 +5,7 @@ local _, ns = ...
 -- ==========================================
 -- Cada copia de una mazmorra es una partida (ns.char.runLog, la mas nueva la primera):
 -- tiempo, XP de los bichos, dinero, muertes, bichos, jefes, botin, grupo y objetos a
--- Necesidad. Empieza con el primer bicho muerto. Salir y volver a la misma copia
+-- Necesidad. Empieza con el primer combate dentro o el primer bicho muerto. Salir y volver a la misma copia
 -- sigue la misma partida; otra copia (zoneUID del GUID) empieza otra.
 -- Forever cierra el registro de combate: los muertos salen de PARTY_KILL, UNIT_DIED
 -- (si no llegan secretos), los cadaveres que se ven (Core/BossKills.lua) y los jefes de
@@ -456,6 +456,19 @@ local function OnGUID(guid, onlyKnown)
     end
 end
 
+-- El primer combate dentro empieza la partida (o el tiempo de una abierta que aun no lo
+-- tiene): no depende de leer GUID ni cadaveres, que pueden llegar secretos
+local function StartOnCombat()
+    if not inside then return end
+    local run = Active()
+    if run and run.first then return end
+    run = run or StartRun()
+    if not run then return end
+    run.first = Now()
+    ns.Debug("partida: empieza con el combate")
+    Changed()
+end
+
 local HANDLERS = {
     PLAYER_ENTERING_WORLD = UpdateZone,
     ZONE_CHANGED_NEW_AREA = UpdateZone,
@@ -463,6 +476,9 @@ local HANDLERS = {
     PLAYER_LEVEL_UP = OnXP,
     PLAYER_MONEY = OnMoney,
     QUEST_TURNED_IN = function() ignoreXPUntil = GetTime() + 1.5 end,
+    -- El primer combate dentro empieza la partida: no depende de leer GUID ni cadaveres,
+    -- que pueden llegar secretos (entonces no empezaba hasta el primer jefe)
+    PLAYER_REGEN_DISABLED = function() StartOnCombat() end,
     PLAYER_DEAD = function()
         local run = Active()
         if inside and run then
@@ -507,5 +523,9 @@ for event in pairs(HANDLERS) do pcall(events.RegisterEvent, events, event) end -
 
 if C_Timer and C_Timer.NewTicker then
     C_Timer.NewTicker(30, function() if ns.char then ExpireRuns() end end)
-    C_Timer.NewTicker(1, ChimeTick)
+    C_Timer.NewTicker(1, function()
+        ChimeTick()
+        -- Por si PLAYER_REGEN_DISABLED no llega
+        if ns.char and inside and ns.PlainText(UnitAffectingCombat("player")) == true then StartOnCombat() end
+    end)
 end

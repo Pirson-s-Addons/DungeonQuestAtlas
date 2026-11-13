@@ -423,6 +423,31 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
     end
     plans[#plans + 1] = plan
 
+    -- A su derecha, la casilla de las misiones (! ? y gemas); la misma en todos los planos
+    local questBar = ns.CreateDarkBox(parent, 10)
+    questBar:SetFrameLevel(viewport:GetFrameLevel() + 10)
+    questBar:SetSize(120, 30)
+    questBar:SetPoint("LEFT", sizeBar, "RIGHT", 6, 0)
+    local questCheck = CreateFrame("CheckButton", nil, questBar, "UICheckButtonTemplate")
+    questCheck:SetSize(24, 24)
+    questCheck:SetPoint("LEFT", 4, 0)
+    local questText = questBar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    questText:SetPoint("LEFT", questCheck, "RIGHT", 0, 0)
+    questCheck:SetScript("OnClick", function(self)
+        ns.db.mapQuests = self:GetChecked() and true or false
+        for _, other in ipairs(plans) do
+            if other.dungeon and other.index then other:ShowFloor(other.index) end
+        end
+    end)
+    ns.AddTooltip(questCheck, L.MAP_QUESTS_TOOLTIP)
+    plan.questCheck = questCheck
+    local updateScale = plan.UpdateBossScale
+    function plan:UpdateBossScale()
+        updateScale(self)
+        questText:SetText(L.MAP_QUESTS)
+        questCheck:SetChecked(ns.db.mapQuests)
+    end
+
     -- Otra planta: zoom fuera. La misma (refresco de jefes muertos): se queda como esta
     function plan:ShowFloor(index)
         local floors = self.floors
@@ -479,7 +504,14 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
             mark:Show()
         end
-        for k, spot in ipairs(QuestSpots(self.dungeon, index)) do
+        -- Misiones: con la casilla apagada, solo la que se acaba de marcar
+        local spots = {}
+        for _, spot in ipairs(QuestSpots(self.dungeon, index)) do
+            if ns.db.mapQuests or (self.focusQuest and HasQuest(spot.entries, self.focusQuest)) then
+                spots[#spots + 1] = spot
+            end
+        end
+        for k, spot in ipairs(spots) do
             local n = #floorMarks + k
             local mark = marks[n] or CreateMark(canvas, self)
             marks[n] = mark
