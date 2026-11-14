@@ -65,8 +65,8 @@ ns.Places = {
     ["npc:1719"] = { npcID = 1719, name = "Warden Thelwater", mapID = 1453, x = 51.5, y = 69.4 },
     ["npc:263445"] = { npcID = 263445, name = "Mayena Earthseeker", mapID = 1412, x = 34.8, y = 22.2 },
     ["npc:20735"] = { npcID = 20735, name = "Archmage Lan'dalock", mapID = 1416, x = 15.9, y = 73.1 },
-    ["name:Mathrengyl Bearwalker"] = { name = "Mathrengyl Bearwalker", mapID = 1457, x = 35.4, y = 8.4 },
-    ["name:Jediga"] = { name = "Jediga", mapID = 1447, x = 22.5, y = 51.4 },
+    ["npc:4217"] = { npcID = 4217, name = "Mathrengyl Bearwalker", mapID = 1457, x = 35.4, y = 8.4 },
+    ["npc:8587"] = { npcID = 8587, name = "Jediga", mapID = 1447, x = 22.5, y = 51.4 },
     ["name:Alphonse Dumas"] = { name = "Alphonse Dumas" },
     ["name:Kreza Darkthorn"] = { name = "Kreza Darkthorn" },
     ["name:Melanie Sable"] = { name = "Melanie Sable" },
@@ -359,7 +359,7 @@ ns.Places = {
     ["npc:11044"] = { npcID = 11044, name = "Doctor Martin Felben", mapID = 1458, x = 46.4, y = 74.4 },
     ["npc:247264"] = { npcID = 247264, name = "Emissary Jacques", mapID = 1424, x = 48.3, y = 60.1 },
     ["npc:268743"] = { npcID = 268743, name = "Rexxie Copperclutch", inside = true },
-    ["npc:269127"] = { npcID = 269127, name = "Image of Archmage Modera", mapID = 1421, x = 68.5, y = 45.3 },
+    ["npc:269127"] = { npcID = 269127, name = "Image of Archmage Modera", mapID = 1416, x = 7.7, y = 58.8 }, -- junto al lago Lordamere (FDJ 2.0.5)
     -- Trabajos de picaro y cadenas previas de Ruinas de Lordaeron (05-11-2026)
     ["name:Dead Drop"] = { name = "Dead Drop", mapID = 1421, x = 47.1, y = 71.1 },
     ["npc:1937"] = { npcID = 1937, name = "Apothecary Renferrel", mapID = 1421, x = 42.8, y = 40.9 },
@@ -430,6 +430,18 @@ ns.Places = {
     ["name:Prate Cloudseer"] = { name = "Prate Cloudseer", mapID = 1441, x = 53.0, y = 42.0 },
     ["name:Tran'gul"] = { name = "Tran'gul", mapID = 2548, x = 59.4, y = 44.0 },
     ["name:Da'grosh"] = { name = "Da'grosh", mapID = 2548, x = 33.4, y = 38.0 },
+    -- Terraza del Modelador y cadena de Blackmaw (FDJ 2.0.5 y 2.0.6: Icy Veins y Wowhead Forever; Rageroar, de jugadores)
+    ["npc:10136"] = { npcID = 10136, name = "Chemist Fuely", mapID = 1458, x = 47.5, y = 73.3 },
+    ["npc:8256"] = { npcID = 8256, name = "Curator Thorius", mapID = 1455, x = 71.5, y = 15.7 },
+    ["name:Partially Digested Journal"] = { name = "Partially Digested Journal", inside = true },
+    ["npc:249853"] = { npcID = 249853, name = "Lorekeeper Nok", mapID = 1447, x = 41.4, y = 20.0 },
+    ["npc:236573"] = { npcID = 236573, name = "Gatekeeper Rageroar", mapID = 1447, x = 42.4, y = 20.2 },
+    ["npc:249855"] = { npcID = 249855, name = "Unele", mapID = 1447, x = 43.4, y = 17.4 },
+    ["npc:236770"] = { npcID = 236770, name = "Korsa", mapID = 1447, x = 63.0, y = 23.3 },
+    ["npc:237007"] = { npcID = 237007, name = "Graal", mapID = 1447, x = 65.9, y = 14.4 },
+    ["npc:11555"] = { npcID = 11555, name = "Gorn One Eye", mapID = 1448, x = 65.2, y = 2.6 },
+    ["npc:239822"] = { npcID = 239822, name = "Commander Truesong", mapID = 1447, x = 11.8, y = 78.3 },
+    ["item:5791"] = { itemID = 5791, mapID = 1441, x = 30.7, y = 24.4 }, -- junto al cadaver de Henrig Lonebrow, al pie del Gran Elevador
 }
 
 -- Donde se consigue un objeto que pide una mision (need): clic en su tarjeta, marcador ahi

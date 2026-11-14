@@ -231,10 +231,22 @@ function ns.CreateOverviewPanel(page)
     local header = ns.CreatePaperHeader(bossView, L.LORE)
     header:SetPoint("RIGHT", -4, 0)
     local bossLore = LoreScroll(bossView, header, 6)
-    local function ShowSummon(summon)
-        summonHeader:SetShown(summon ~= nil)
-        summonText:SetShown(summon ~= nil)
-        summonText:SetText(summon and L[summon.text] or "")
+    -- members: los que forman un grupo (minijefes del altar del Templo Sumergido), cada uno
+    -- con su marca de muerto; van en el sitio de "Como invocarlo" (sin tarjetas)
+    local function MembersText(d, boss)
+        local lines = {}
+        for _, m in ipairs(boss.members) do
+            local dead = ns.IsMemberKilled(d, boss, m)
+            lines[#lines + 1] = (dead and ns.StatusMarkup(ns.STATUS_COMPLETED, 14) or "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:14|t")
+                .. " " .. ns.PlaceName({ npcID = m.npcID, name = m.name }) .. "  |cff6e5a3a" .. L.LEVEL .. " " .. m.level .. "|r"
+        end
+        return L.ALTAR_GUARDIANS_TEXT .. "\n" .. table.concat(lines, "\n")
+    end
+    local function ShowSummon(summon, membersText)
+        summonHeader:SetShown(summon ~= nil or membersText ~= nil)
+        summonHeader.text:SetText(membersText and L.ALTAR_GUARDIANS or L.SUMMON_HEADER)
+        summonText:SetShown(summon ~= nil or membersText ~= nil)
+        summonText:SetText(membersText or (summon and L[summon.text]) or "")
         local half = (ns.Width(bossView, 330) - 10) / 2
         for i, card in ipairs(summonCards) do
             card:SetShown(summon ~= nil)
@@ -249,6 +261,8 @@ function ns.CreateOverviewPanel(page)
         header:SetPoint("RIGHT", -4, 0)
         if summon then
             header:SetPoint("TOPLEFT", summonCards[1], "BOTTOMLEFT", 0, -8)
+        elseif membersText then
+            header:SetPoint("TOPLEFT", summonText, "BOTTOMLEFT", -6, -8)
         else
             header:SetPoint("TOPLEFT", onMap, "BOTTOMLEFT", -6, -8)
         end
@@ -300,7 +314,7 @@ function ns.CreateOverviewPanel(page)
         bossName:SetText(ns.BossName(boss, d))
         bossInfo:SetText((dead and ("|cffa01010" .. L.BOSS_KILLED .. "|r  ·  ") or "") .. ns.BossInfo(boss, ns.RARE_PREFIX))
         onMap:SetEnabled(ns.BossFloor(d, panel.index) ~= nil)
-        ShowSummon(boss.summon)
+        ShowSummon(boss.summon, boss.members and MembersText(d, boss) or nil)
         local journal = ns.JournalBoss(d, boss)
         bossLore.text:SetText(journal and journal.description or L.NO_BOSS_LORE)
         bossLore:Fit()

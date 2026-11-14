@@ -315,8 +315,18 @@ ns.STATUS_COLOR = {
     BLOCKED = { paper = "|cff801408", light = "|cffff4040" },
 }
 
-function ns.SetStatusIcon(texture, status)
-    local icon = ns.STATUS_ICON[status]
+-- Repetibles (q.repeatable): la ? azul del juego mientras esta por coger o por entregar
+local REPEATABLE = { atlas = "QuestRepeatableTurnin" }
+local function Icon(status, repeatable)
+    if repeatable and (status == "AVAILABLE" or status == "READY")
+        and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(REPEATABLE.atlas) then
+        return REPEATABLE
+    end
+    return ns.STATUS_ICON[status]
+end
+
+function ns.SetStatusIcon(texture, status, repeatable)
+    local icon = Icon(status, repeatable)
     if icon.atlas then
         texture:SetAtlas(icon.atlas)
     else
@@ -326,8 +336,8 @@ function ns.SetStatusIcon(texture, status)
 end
 
 -- Para meterlo en un texto: "|A:atlas:14:14|a" o "|Tfichero:14|t"
-function ns.StatusMarkup(status, size)
-    local icon = ns.STATUS_ICON[status]
+function ns.StatusMarkup(status, size, repeatable)
+    local icon = Icon(status, repeatable)
     size = size or 14
     if icon.atlas then return ("|A:%s:%d:%d|a"):format(icon.atlas, size, size) end
     return ("|T%s:%d|t"):format(icon.file, size)

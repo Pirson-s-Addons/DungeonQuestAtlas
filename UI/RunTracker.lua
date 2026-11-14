@@ -22,7 +22,19 @@ local dismissed, forced = false, false
 
 local function BossTooltip(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(ns.BossName(self.boss, self.dungeon), 1, 0.82, 0)
+    GameTooltip:SetText(ns.BossName(self.came or self.boss, self.dungeon), 1, 0.82, 0)
+    if self.boss.oneOf and not self.came then GameTooltip:AddLine(L.RING_OF_LAW_ANY, 1, 1, 1, true) end
+    -- Grupo (los seis del altar): cuantos van y cuales
+    if self.boss.members then
+        local dead = 0
+        for _, m in ipairs(self.boss.members) do
+            local killed = ns.IsMemberKilled(self.dungeon, self.boss, m)
+            if killed then dead = dead + 1 end
+            local c = killed and 0.5 or 1
+            GameTooltip:AddLine(ns.PlaceName({ npcID = m.npcID, name = m.name }), c, c, c)
+        end
+        GameTooltip:AddLine(L.GROUP_KILLED:format(dead, #self.boss.members), 1, 0.4, 0.4)
+    end
     local run = ns.RunActive()
     if run then
         local list = ns.RunLootOf(run, self.boss.name)
@@ -99,7 +111,7 @@ local function BuildFaces(d)
     local bosses = ns.RunBosses(d)
     for i, boss in ipairs(bosses) do
         local face = faces[i] or CreateFace(i)
-        face.boss, face.dungeon = boss, d
+        face.boss, face.dungeon, face.came = boss, d, nil
         ns.SetBossPortrait(face.portrait, boss)
         face.rare:SetShown(boss.kind == "rare")
         face:ClearAllPoints()
@@ -223,6 +235,18 @@ function ns.RefreshRunTracker()
         if boss and not InCombatLockdown() then face:SetShown(showBosses) end
         if boss then
             local killed = ns.IsBossKilled(face.dungeon, boss) or (run ~= nil and run.bosses[boss.name] ~= nil)
+            -- Anillo de la Ley: la cara del retador que salio, tachada
+            if boss.oneOf then
+                local came = ns.OneOfKilled(face.dungeon, boss.oneOf)
+                for _, other in ipairs(not came and run and ns.Bosses[face.dungeon.key] or {}) do
+                    if other.oneOf == boss.oneOf and run.bosses[other.name] then came = other end
+                end
+                killed = came ~= nil
+                if came and face.came ~= came then
+                    face.came = came
+                    ns.SetBossPortrait(face.portrait, came)
+                end
+            end
             local alive = boss.kind == "rare" and not killed and ns.RunRareAlive(boss.name)
             face.portrait:SetDesaturated(killed)
             face.cross:SetShown(killed)

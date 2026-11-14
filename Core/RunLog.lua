@@ -72,11 +72,21 @@ local function BossFor(npcID, name)
 end
 
 -- Los jefes de la ventana y del historial: primero los de verdad, luego los raros
+-- Del Anillo de la Ley, una sola cara: el retador que salio (si ya murio) o el primero.
 function ns.RunBosses(d)
-    local bosses, found = {}, {}
+    local bosses, found, groups = {}, {}, {}
+    local run = ns.RunActive and ns.RunActive()
     for _, boss in ipairs(ns.Bosses[d.key] or {}) do
         if not boss.faction or boss.faction == UnitFactionGroup("player") then
-            if boss.kind == nil then bosses[#bosses + 1] = boss
+            if boss.kind == nil and boss.oneOf then
+                local at = groups[boss.oneOf]
+                if not at then
+                    bosses[#bosses + 1] = boss
+                    groups[boss.oneOf] = #bosses
+                elseif run and run.bosses and run.bosses[boss.name] then
+                    bosses[at] = boss
+                end
+            elseif boss.kind == nil then bosses[#bosses + 1] = boss
             elseif boss.kind == "rare" then found[#found + 1] = boss end
         end
     end
@@ -86,14 +96,19 @@ end
 
 -- Terminada: todos los que salen siempre (ni raros ni invocados) muertos
 local function IsDone(run, d)
-    local any = false
+    local any, groups = false, {}
     for _, boss in ipairs(ns.Bosses[d.key] or {}) do
         if boss.kind == nil and not boss.summon and not boss.optional
             and (not boss.faction or boss.faction == UnitFactionGroup("player")) then
             any = true
-            if not run.bosses[boss.name] then return false end
+            if boss.oneOf then
+                groups[boss.oneOf] = groups[boss.oneOf] or run.bosses[boss.name] ~= nil
+            elseif not run.bosses[boss.name] then
+                return false
+            end
         end
     end
+    for _, killed in pairs(groups) do if not killed then return false end end
     return any
 end
 
@@ -125,7 +140,7 @@ local function UpdateParty(run)
     for i = 1, 4 do
         local unit = "party" .. i
         if UnitExists(unit) then
-            local name = ns.PlainText(UnitName(unit))
+            local name = ns.UnitFullName(unit) -- con apellido: en Forever hay nombres repetidos
             local _, class = UnitClass(unit)
             class = ns.PlainText(class)
             if name then run.party[name] = class or run.party[name] or "" end
@@ -396,7 +411,7 @@ local function LootMessage(message)
     if others then who, link = message:match(others) end
     if not link and own then
         link = message:match(own)
-        who = link and ns.PlainText(UnitName("player"))
+        who = link and ns.UnitFullName("player")
     end
     local id = ItemIDOf(link)
     if not (id and who) then return end

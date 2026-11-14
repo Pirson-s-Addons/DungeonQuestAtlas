@@ -35,16 +35,37 @@ function ns.IsBossKilled(d, boss)
 end
 
 -- Cuentan los jefes de verdad: ni raros (no siempre salen), ni cofres, ni bichos
+-- Grupo oneOf (Anillo de la Ley): cuenta como uno, hecho si murio cualquiera
+function ns.OneOfKilled(d, group)
+    for _, boss in ipairs(ns.Bosses[d.key] or {}) do
+        if boss.oneOf == group and ns.IsBossKilled(d, boss) then return boss end
+    end
+end
+
 function ns.BossKillProgress(d)
-    local done, total = 0, 0
+    local done, total, seen = 0, 0, {}
     for _, boss in ipairs(ns.Bosses[d.key] or {}) do
         -- Los de la otra faccion no cuentan: no se pueden atacar
         if boss.kind == nil and (not boss.faction or boss.faction == UnitFactionGroup("player")) then
-            total = total + 1
-            if ns.IsBossKilled(d, boss) then done = done + 1 end
+            if boss.oneOf then
+                if not seen[boss.oneOf] then
+                    seen[boss.oneOf] = true
+                    total = total + 1
+                    if ns.OneOfKilled(d, boss.oneOf) then done = done + 1 end
+                end
+            else
+                total = total + 1
+                if ns.IsBossKilled(d, boss) then done = done + 1 end
+            end
         end
     end
     return done, total
+end
+
+-- Uno de un grupo (boss.members): se apunta como "grupo/miembro"
+function ns.IsMemberKilled(d, boss, member)
+    local kills = ns.char and ns.char.kills[d.key]
+    return kills ~= nil and kills[boss.name .. "/" .. member.name] == true
 end
 
 local UpdateDone -- (mas abajo)
@@ -165,7 +186,19 @@ function ns.MarkBossKilled(npcID, name, encounterID, source)
     for _, d in ipairs(DungeonsOf(currentInstance)) do
         for _, boss in ipairs(ns.Bosses[d.key] or {}) do
             local journal = ns.JournalBoss(d, boss)
-            local match = (npcID and boss.npcID == npcID)
+            -- Grupo: el miembro que ha muerto; el grupo, cuando ya estan todos
+            local member
+            for _, m in ipairs(boss.members or {}) do
+                if (npcID and m.npcID == npcID) or (name and Same(name, m.name)) then member = m end
+            end
+            if member and not ns.IsMemberKilled(d, boss, member) then
+                Kills(d)[boss.name .. "/" .. member.name] = true
+                ns.Debug("miembro muerto (%s): %s", source or "?", member.name)
+                marked = true
+            end
+            local all = boss.members ~= nil
+            for _, m in ipairs(boss.members or {}) do all = all and ns.IsMemberKilled(d, boss, m) end
+            local match = (npcID and boss.npcID == npcID) or (member and all)
                 or (encounterID and journal and journal.encounterID == encounterID)
                 or (name and (Same(name, boss.name) or Same(name, ns.BossName(boss, d))
                     or (journal and (Same(name, journal.name) or Same(name, journal.encounter)))))
@@ -175,6 +208,16 @@ function ns.MarkBossKilled(npcID, name, encounterID, source)
                 ns.OnBossKilled(d, boss) -- jefe final: su pagina en el modo aventura
                 if ns.RunLogBossKilled then ns.RunLogBossKilled(d, boss) end
                 marked = true
+                -- Final del encuentro de dos (Gyth y Rend): el otro tambien ha caido
+                if source == "encuentro" and boss.pair then
+                    for _, other in ipairs(ns.Bosses[d.key]) do
+                        if other.name == boss.pair and not ns.IsBossKilled(d, other) then
+                            Kills(d)[other.name] = true
+                            if ns.RunLogBossKilled then ns.RunLogBossKilled(d, other) end
+                        end
+                    end
+                    UpdateDone(d)
+                end
                 ns.Debug("jefe muerto (%s): %s", source or "?", boss.name)
             end
         end

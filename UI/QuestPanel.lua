@@ -168,7 +168,7 @@ local function CreateQuestList(parent, onSelect)
         end
         row.bg:SetColorTexture(0.1, 0.07, 0.04, isSelected and 0.95 or 0.78)
         row.glow:SetShown(isSelected)
-        ns.SetStatusIcon(row.status, status)
+        ns.SetStatusIcon(row.status, status, q.repeatable)
         local faction = ns.FACTION_ATLAS[q.faction or ""]
         if faction then row.faction:SetAtlas(faction) end
         row.faction:SetShown(faction ~= nil)
@@ -300,6 +300,18 @@ local function CreateDetail(parent)
             local hl = b:CreateTexture(nil, "HIGHLIGHT")
             hl:SetAllPoints()
             hl:SetColorTexture(ns.INK[1], ns.INK[2], ns.INK[3], 0.12)
+            -- El paso en el que vas late en dorado unos segundos al abrir la hoja
+            b.pulse = b:CreateTexture(nil, "BACKGROUND")
+            b.pulse:SetAllPoints()
+            b.pulse:SetColorTexture(1, 0.8, 0.2, 0.35)
+            b.pulse:SetBlendMode("ADD")
+            b.pulse:Hide()
+            b.pulseAnim = b.pulse:CreateAnimationGroup()
+            b.pulseAnim:SetLooping("BOUNCE")
+            local fade = b.pulseAnim:CreateAnimation("Alpha")
+            fade:SetFromAlpha(1)
+            fade:SetToAlpha(0.2)
+            fade:SetDuration(0.5)
             -- Cualquier paso abre su hoja, tambien los de fuera de la mazmorra
             -- (Data/Quests.lua los trae con su inicio y final para marcarlos)
             b:SetScript("OnClick", function(self)
@@ -588,7 +600,7 @@ local function CreateDetail(parent)
         end
         if q.classes then parts[#parts + 1] = L.CLASS_ONLY:format(ns.ClassNames(q, true)) end
         meta:SetText(table.concat(parts, SEP))
-        statusLine:SetText(ns.StatusMarkup(status, 18) .. " " .. StatusText(status, reason, "light"))
+        statusLine:SetText(ns.StatusMarkup(status, 18, q.repeatable) .. " " .. StatusText(status, reason, "light"))
         statusBadge:SetWidth(statusLine:GetStringWidth() + 14)
         Set(unverified, not ns.IsVerified(id) and (Icon(UNVERIFIED, 12) .. " " .. L.UNVERIFIED) or nil)
         local shareable = ns.QuestShareable(id)
@@ -616,11 +628,37 @@ local function CreateDetail(parent)
             local link = Link(i)
             link.questID = stepID
             local label = ns.QuestTitle(stepID)
+            -- Paso que vale con una de varias (q.alt): todas, separadas por " / "
+            for _, other in ipairs(ns.Quests[stepID] and ns.Quests[stepID].alt or {}) do
+                label = label .. " / " .. ns.QuestTitle(other)
+            end
             label = stepID == id and ("|cff000000" .. label .. "|r") or (LINK .. label .. "|r")
             link:SetText("|cff402608" .. i .. ".|r " .. ns.StatusMarkup((ns.QuestStatus(stepID))) .. " " .. label)
             link:Show()
         end
         Set(chainNote, q.chain == true and L.CHAIN_UNKNOWN or nil)
+        if changed then
+            local pulsing
+            for i, stepID in ipairs(steps) do
+                local link = links[i]
+                link.pulseAnim:Stop()
+                link.pulse:Hide()
+                if not pulsing and #steps > 1 and ns.QuestStatus(stepID) ~= ns.STATUS_COMPLETED then
+                    pulsing = link
+                    link.pulse:Show()
+                    link.pulseAnim:Play()
+                end
+            end
+            if pulsing then
+                local token = {}
+                pulsing.pulseToken = token
+                C_Timer.After(3, function()
+                    if pulsing.pulseToken ~= token then return end -- otra hoja lo volvio a encender
+                    pulsing.pulseAnim:Stop()
+                    pulsing.pulse:Hide()
+                end)
+            end
+        end
         -- El paso anterior sin hacer: lo primero que hay que saber (salvo si es opcional:
         -- `breadcrumb`, una que solo te manda al PNJ de la siguiente)
         local previous = current > 1 and steps[current - 1]

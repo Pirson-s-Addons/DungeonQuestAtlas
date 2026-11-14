@@ -42,6 +42,7 @@ local DEFAULTS = {
     rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     trackerPos = {},
+    autoCompare = false,  -- comparar con lo equipado sin pulsar Mayus (UI/Items.lua)
     itemSourceTip = true, -- "Jefe - Mazmorra" en el tooltip de cualquier objeto (UI/ItemSource.lua)
     -- Modo aventura (UI/JournalMode.lua): desbloqueos de todos los personajes de la cuenta
     -- (siempre se apuntan; solo cuentan con rpgAccount) y ver las misiones de las bloqueadas
@@ -50,6 +51,7 @@ local DEFAULTS = {
     rpgShowQuests = false,
     onyxiaIcon = "auto",  -- icono de Onyxia en la portada: "auto" (al nivel de su cadena), "show" o "hide"
     mapQuests = true,     -- ! ? y gemas de mision en los planos (UI/DungeonMap.lua)
+    npcDisplays = {},     -- [npcID] = displayID de los PNJ de la flecha (su cara; UI/Arrow.lua)
     favorites = {},       -- objetos favoritos [itemID] = true (clic derecho; UI/LootSearch.lua)
     -- Portada: ocultar solas las mazmorras de nivel superado o con todas las misiones hechas
     hideOutleveled = false,
@@ -339,6 +341,17 @@ end
 function ns.PlainText(value)
     if issecretvalue and issecretvalue(value) then return nil end -- antes de compararlo con nada
     return value
+end
+
+-- Nombre de un jugador con su apellido (WoW Forever: UnitName da nombre y apellido; el juego los
+-- une con NameUtil.FormatUnitNameForDisplay). Sin apellido, o si llega secreto, solo el nombre.
+function ns.UnitFullName(unit)
+    if NameUtil and NameUtil.FormatUnitNameForDisplay then
+        local ok, full = pcall(NameUtil.FormatUnitNameForDisplay, unit)
+        full = ok and ns.PlainText(full)
+        if type(full) == "string" and full ~= "" then return full end
+    end
+    return ns.PlainText((UnitName(unit)))
 end
 
 local npcNames = {}

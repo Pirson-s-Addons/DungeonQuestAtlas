@@ -8,7 +8,10 @@ local _, ns = ...
 --   "floor": paso a otra planta sin saber si sube o baja;
 --   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista };
 --   "note": como llegar a un jefe { "note", x, y, indice del jefe, clave de L con %s = su nombre }.
---   Horado Rajacieno: salto y liana hasta Roogug.
+--   Horado Rajacieno: liana hasta Roogug (el salto por la pared ya no funciona, FDJ 2.0.5).
+--   "statue": estatua { "statue", x, y, orden, clave de L con su lado }. Templo Sumergido: las seis
+--   serpientes que traen a Atal'alarion, en el orden de activarlas (AzerothCore, gameobject
+--   148830-148835 de la 109, pasadas al plano con UiMapAssignment; el orden de sus ID es el del evento).
 -- Sitios comprobados sobre cada plano (08-10-2026). Sube o baja solo donde se sabe
 -- (Colmillo Oscuro, el salto de Gnomeregan) o se ve (Dalaran: la ciudad sobre las
 -- cloacas). Excavacion: el remolino del mapa del autor.
@@ -57,30 +60,35 @@ ns.MapMarks = {
         { { "floor", 0.370, 0.720, 4 }, { "floor", 0.274, 0.150, 2 } },
         { { "floor", 0.601, 0.772, 3 } },
     },
+    ST = { {
+        { "statue", 0.500, 0.562, 1, "MAP_STATUE_S" }, { "statue", 0.501, 0.355, 2, "MAP_STATUE_N" },
+        { "statue", 0.441, 0.510, 3, "MAP_STATUE_SW" }, { "statue", 0.560, 0.510, 4, "MAP_STATUE_SE" },
+        { "statue", 0.441, 0.407, 5, "MAP_STATUE_NW" }, { "statue", 0.560, 0.406, 6, "MAP_STATUE_NE" },
+    } },
     RFK = { {
         { "entrance", 0.714, 0.840 },
-        { "note", 0.606, 0.725, 3, "MAP_NOTE_WALLJUMP" },
         { "note", 0.626, 0.562, 3, "MAP_NOTE_VINE" },
     } },
     SM_GY = { { { "entrance", 0.841, 0.831 } } },
-    THANES = { { { "entrance", 0.510, 0.944 } } },
+    THANES = { { { "entrance", 0.510, 0.946 } } },
     -- Blason de Lordaeron (inicia 95189/95204): sale en uno de 5 sitios al azar (guia de
     -- Warcraft Tavern, 17-10-2026). Puestos a ojo sobre el plano siguiendo su recorrido.
     LORDAERON = { {
-        { "entrance", 0.612, 0.214 },
-        { "item", 0.568, 0.598, 275521, "MAP_ITEM_CRYPT" },
-        { "item", 0.455, 0.255, 275521, "MAP_ITEM_FLOOR" },
-        { "item", 0.346, 0.222, 275521, "MAP_ITEM_WALL" },
-        { "item", 0.672, 0.272, 275521, "MAP_ITEM_TOP" },
-        { "item", 0.370, 0.430, 275521, "MAP_ITEM_TOP" },
+        { "entrance", 0.609, 0.204 },
+        { "item", 0.566, 0.586, 275521, "MAP_ITEM_CRYPT" },
+        { "item", 0.455, 0.245, 275521, "MAP_ITEM_FLOOR" },
+        { "item", 0.349, 0.212, 275521, "MAP_ITEM_WALL" },
+        { "item", 0.668, 0.262, 275521, "MAP_ITEM_TOP" },
+        { "item", 0.372, 0.419, 275521, "MAP_ITEM_TOP" },
     } },
-    EXCAVATION = { { { "entrance", 0.077, 0.610 } } },
-    ALCAZ = { { { "entrance", 0.352, 0.160 } } },
+    EXCAVATION = { { { "entrance", 0.888, 0.258 } } },
+    ALCAZ = { { { "entrance", 0.367, 0.171 } } },
     DROWNED = { { { "entrance", 0.845, 0.522 } } },
-    KROLDOK = { { { "entrance", 0.204, 0.808 } } },
-    SHAPERS = { { { "entrance", 0.026, 0.400 } } },
+    BLACKMAW = { { { "entrance", 0.218, 0.723 } } }, -- el remolino de la planta I
+    KROLDOK = { { { "entrance", 0.205, 0.806 } } },
+    SHAPERS = { { { "entrance", 0.088, 0.409 } } },
     DALARAN = {
-        { { "entrance", 0.190, 0.838 }, { "up", 0.642, 0.593, 2 } },
+        { { "entrance", 0.192, 0.835 }, { "up", 0.641, 0.591, 2 } },
         { { "down", 0.610, 0.560, 1 } },
     },
     -- Calculadas con datos del cliente (ver arriba); las que tapaban una cara u otra marca, apartadas

@@ -83,7 +83,8 @@ local function CreateCard(row, onSelect)
             return GameTooltip:Show()
         end
         local done, total = ns.DungeonProgress(d, ns.FactionFilter())
-        if total > 0 then GameTooltip:AddLine(L.PROGRESS:format(done, total), 1, 1, 1) end
+        if total > 0 then GameTooltip:AddLine(L.PROGRESS:format(done, total), 1, 1, 1)
+        elseif ns.char.unlocked[d.key] then GameTooltip:AddLine(L.LAST_BOSS_KILLED, 0.25, 1, 0.25) end
         local killed, bosses = ns.BossKillProgress(d)
         if killed > 0 then GameTooltip:AddLine(L.BOSSES_PROGRESS:format(killed, bosses), 1, 0.4, 0.4) end
         GameTooltip:AddLine(hideHint, 0.5, 0.5, 0.5)
@@ -105,6 +106,9 @@ local function UpdateCard(card, d)
     if total > 0 then
         local icon = done == total and ns.StatusMarkup(ns.STATUS_COMPLETED, 14) or ns.StatusMarkup(ns.STATUS_AVAILABLE, 14)
         progress = icon .. " " .. (done == total and GREEN or "|cffffffff") .. done .. "/" .. total .. "|r"
+    elseif ns.char.unlocked[d.key] then
+        -- Sin misiones para este personaje: la marca de hecha al matar a su jefe final
+        progress = ns.StatusMarkup(ns.STATUS_COMPLETED, 14) .. " " .. GREEN .. L.LAST_BOSS_KILLED .. "|r"
     end
     card.progress:SetText(progress)
     local locked = ns.IsDungeonLocked(d)

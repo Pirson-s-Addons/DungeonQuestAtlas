@@ -79,9 +79,17 @@ ns.MapQuests = {
             { 0.307, 0.818, "Unfinished Painting", { 5848, "loot", item = 14679 } },
         },
     },
+    -- Excavacion: Ardin en la torre de madera junto al Relic Guardian; el cuerpo de Daewyn en una tienda
+    -- del Lost Dig Site (sitios de FDJ sobre este mismo dibujo).
+    EXCAVATION = {
+        [1] = {
+            { 0.262, 0.668, "Ardin Grassman", { 95647, "end" }, { 95809, "start" } },
+            { 0.074, 0.497, "Daewyn Songblade", { 95772, "end" }, { 95795, "start" } },
+        },
+    },
     LORDAERON = {
         [1] = {
-            { 0.612, 0.272, "Captain Truman", { 95250, "start", "end" } },
+            { 0.609, 0.262, "Captain Truman", { 95250, "start", "end" } },
         },
     },
     RFK = {

@@ -19,7 +19,7 @@ ns.Maps = {
         { id = 219, tex = "interface\\worldmap\\zulfarrak\\zulfarrak%d", pins = { { 1, 0.69, 0.256 }, { 2, 0.553, 0.297 }, { 3, 0.441, 0.548 }, { 4, 0.44, 0.152 }, { 5, 0.235, 0.136 }, { 6, 0.266, 0.183 }, { 7, 0.342, 0.204 }, { 8, 0.235, 0.23 }, { 9, 0.204, 0.183 }, { 10, 0.299, 0.383 }, { 11, 0.328, 0.435 }, { 12, 0.439, 0.352 }, { 13, 0.521, 0.409 } } },
     },
     ST = {
-        { id = 220, tex = "interface\\worldmap\\thetempleofatalhakkar\\thetempleofatalhakkar1_%d", pins = { { 1, 0.501, 0.358 }, { 2, 0.498, 0.486 }, { 3, 0.603, 0.595 }, { 4, 0.24, 0.457 }, { 5, 0.761, 0.323 }, { 6, 0.761, 0.413 }, { 7, 0.44, 0.428 }, { 8, 0.453, 0.44 }, { 9, 0.521, 0.89 }, { 10, 0.489, 0.89 }, { 11, 0.688, 0.87 } } },
+        { id = 220, tex = "interface\\worldmap\\thetempleofatalhakkar\\thetempleofatalhakkar1_%d", pins = { { 1, 0.501, 0.29 }, { 2, 0.498, 0.486 }, { 3, 0.603, 0.595 }, { 4, 0.24, 0.457 }, { 5, 0.761, 0.323 }, { 6, 0.761, 0.413 }, { 7, 0.40, 0.43 }, { 8, 0.41, 0.46 }, { 9, 0.521, 0.89 }, { 10, 0.489, 0.89 }, { 11, 0.688, 0.87 } } },
     },
     BFD = {
         { id = 221, tex = "interface\\worldmap\\blackfathomdeeps\\blackfathomdeeps1_%d", pins = { { 1, 0.329, 0.602 }, { 2, 0.101, 0.36 }, { 3, 0.522, 0.551 } } },
@@ -124,17 +124,29 @@ ns.Maps = {
     -- id = clave: Art/Maps/<CLAVE>_<1-12>.tga, generadas con
     -- _project/tools/dqa_maps/forever_maps.py.
     -- Sin chinchetas: aun no se sabe en que sala esta cada jefe
-    ALCAZ = { { id = "ALCAZ", pins = {} } },
-    DROWNED = { { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 5, 0.618, 0.672 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 } } } },
-    KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.703 }, { 2, 0.392, 0.734 }, { 3, 0.621, 0.527 }, { 4, 0.411, 0.579 }, { 5, 0.617, 0.432 }, { 6, 0.688, 0.242 } } } },
+    ALCAZ = { { id = "ALCAZ", pins = {} }, { id = "ALCAZ2", pins = {} } }, -- Main Unit y Maximum Security Unit
+    DROWNED = {
+        { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 5, 0.618, 0.672 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 } } },
+        { id = "DROWNED2", pins = {} }, -- Atal'Byzal
+    },
+    KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.701 }, { 2, 0.392, 0.732 }, { 3, 0.621, 0.526 }, { 4, 0.411, 0.578 }, { 5, 0.617, 0.431 }, { 6, 0.688, 0.242 } } } },
     SHAPERS = { { id = "SHAPERS", pins = {} } },
-    EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.381, 0.545 }, { 2, 0.664, 0.499 }, { 3, 0.581, 0.301 } } } },
-    LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.591, 0.713 }, { 2, 0.693, 0.469 }, { 3, 0.399, 0.515 }, { 4, 0.415, 0.288 }, { 5, 0.451, 0.604 }, { 6, 0.367, 0.626 }, { 7, 0.342, 0.377 } } } },
-    THANES = { { id = "THANES", pins = { { 1, 0.479, 0.674 }, { 2, 0.737, 0.469 }, { 3, 0.501, 0.513 }, { 4, 0.501, 0.16 } } } },
+    -- Bastion Fauce Negra, 6 plantas en el orden de FDJ: Blackmaw Grove, Festering Grotto, Depths of the
+    -- Fallen Grove, Depths of the Elders, Depths of the Burrow, Depths of Forbidden Magic. Dibujos de
+    -- "Atlas de Azeroth: Forever" (Santiago Reyes) con el marco del addon, sin aclarar su permiso
+    -- (_project/docs/DungeonQuestAtlas/logs.md, 14-11). Chinchetas solo donde el dibujo lo dice: en la I, Bonesnout
+    -- (su original rotula "Bonesnout's Thicket") e Impaan (la otra cabeza, junto a la entrada); en la VI, Varrox en el altar final.
+    BLACKMAW = {
+        { id = "BLACKMAW1", pins = { { 1, 0.180, 0.665 }, { 2, 0.781, 0.494 } } }, { id = "BLACKMAW2", pins = {} }, { id = "BLACKMAW3", pins = {} },
+        { id = "BLACKMAW4", pins = {} }, { id = "BLACKMAW5", pins = {} }, { id = "BLACKMAW6", pins = { { 10, 0.718, 0.690 } } },
+    },
+    EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.550, 0.361 }, { 2, 0.305, 0.484 }, { 3, 0.324, 0.687 } } } },
+    LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.588, 0.700 }, { 2, 0.688, 0.458 }, { 3, 0.401, 0.504 }, { 4, 0.416, 0.278 }, { 5, 0.451, 0.592 }, { 6, 0.369, 0.614 }, { 7, 0.342, 0.377 } } } },
+    THANES = { { id = "THANES", pins = { { 1, 0.479, 0.675 }, { 2, 0.738, 0.470 }, { 3, 0.501, 0.514 }, { 4, 0.501, 0.16 } } } },
     -- Dalaran: planta 1 las cloacas (la entrada), planta 2 la ciudad. Todos los
     -- jefes, con la mazmorra ya abierta
     DALARAN = {
-        { id = "DALARAN1", pins = { { 1, 0.535, 0.505 }, { 7, 0.680, 0.177 } } },
+        { id = "DALARAN1", pins = { { 1, 0.535, 0.503 }, { 7, 0.680, 0.177 } } },
         { id = "DALARAN2", pins = { { 2, 0.527, 0.843 }, { 3, 0.669, 0.503 }, { 4, 0.614, 0.413 }, { 5, 0.416, 0.730 }, { 6, 0.513, 0.549 }, { 8, 0.520, 0.240 } } },
     },
     -- Guarida de Onyxia (banda, Data/Raids.lua): el mapa de Blizzard de WoW Classic (uiMap 248,

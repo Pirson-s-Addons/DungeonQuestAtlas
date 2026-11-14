@@ -356,6 +356,20 @@ function ns.SortLootByRarity(items)
     return out
 end
 
+-- "Recetas y patrones": primero las propias de la mazmorra (las del juego original, ID por
+-- debajo de 250000, y las sueltas de Forever de UNIQUE_RECIPES), luego las series de Forever
+-- que caen en todas partes; cada grupo en su orden.
+local UNIQUE_RECIPES = { [252893] = true, [251453] = true, [274049] = true } -- Timbermaw Tunic, Breastplate of Salvation, 9-60 Battery Pack
+function ns.SortRecipesUniqueFirst(items)
+    local own, rest = {}, {}
+    for _, item in ipairs(items) do
+        local list = (item[1] < 250000 or UNIQUE_RECIPES[item[1]]) and own or rest
+        list[#list + 1] = item
+    end
+    for _, item in ipairs(rest) do own[#own + 1] = item end
+    return own
+end
+
 -- page: la pagina derecha entera; bar: la franja de arriba (desplegables)
 function ns.CreateLootPanel(page, bar)
     local panel = { dungeon = nil, index = nil, filter = "all" }
@@ -457,6 +471,12 @@ function ns.CreateLootPanel(page, bar)
         return boss and (ns.BossName(boss, d) .. (#from > 1 and (" +" .. (#from - 1)) or ""))
     end
 
+    -- Botin de los bichos: quien lo suelta (item.mobs) o cualquiera (item.all), en el tooltip
+    local function MobsLine(item)
+        if item.all then return L.DROPS_FROM_ALL end
+        if item.mobs then return L.DROPS_FROM:format((item.mobs:gsub(" / ", ", "))) end
+    end
+
     local bossArea = CreateFrame("Frame", nil, frame)
     bossArea:SetAllPoints()
     local bossLoot = ns.CreateScrollList(bossArea, ns.ITEM_ROW_HEIGHT + 2, function(row)
@@ -468,6 +488,7 @@ function ns.CreateLootPanel(page, bar)
         local from = BossLabel(item.from)
         if from then extra = from .. (extra and ("  " .. extra) or "") end
         ns.SetItemButton(row, item[1], nil, extra)
+        row.tipLine = MobsLine(item)
         row.source.from, row.source.itemID = item.from, item[1]
         row.source:SetShown(from ~= nil)
     end)
@@ -490,6 +511,7 @@ function ns.CreateLootPanel(page, bar)
         row.source = SourceButton(row, row.boss)
     end, function(row, item)
         ns.SetItemButton(row.item, item[1], nil, ns.LootExtra(item))
+        row.item.tipLine = MobsLine(item)
         row.boss:SetText(L.LOOT_BOSS:format(BossLabel(item.from) or "?"))
         row.source.from, row.source.itemID = item.from, item[1]
     end)
@@ -505,7 +527,8 @@ function ns.CreateLootPanel(page, bar)
         local boss = d and self.index and ns.Bosses[d.key][self.index]
         local items = boss and boss.loot or ns.DungeonLoot(d)
         items = FilterLoot(items, self.filter, self.class)
-        if not (boss and boss.kind == "recipes") then items = ns.SortLootByRarity(items) end
+        if not (boss and boss.kind == "recipes") then items = ns.SortLootByRarity(items)
+        else items = ns.SortRecipesUniqueFirst(items) end
         classFilter:Update()
         allArea:SetShown(boss == nil)
         bossArea:SetShown(boss ~= nil)

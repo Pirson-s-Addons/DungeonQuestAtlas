@@ -89,7 +89,8 @@ local function ShowTooltip(self)
     else
         GameTooltip:SetItemByID(self.itemID)
     end
-    if IsModifiedClick and IsModifiedClick("COMPAREITEMS") and GameTooltip_ShowCompareItem then
+    if ((ns.db and ns.db.autoCompare) or (IsModifiedClick and IsModifiedClick("COMPAREITEMS")))
+        and GameTooltip_ShowCompareItem then
         GameTooltip_ShowCompareItem(GameTooltip)
     end
     if self.tipLine then GameTooltip:AddLine(self.tipLine, 0.25, 1, 0.25, true) end

@@ -780,6 +780,21 @@ local function CreateMainFrame()
     end)
     if frame.SetTitle then frame:SetTitle("|cffd597ffDungeon Quest Atlas Forever|r") end
     if frame.SetPortraitToAsset then frame:SetPortraitToAsset(LOGO) end
+    -- Rueda dentada de las opciones en la barra del titulo, a la izquierda de la X
+    local cog = CreateFrame("Button", nil, frame)
+    cog:SetSize(18, 18)
+    if frame.CloseButton then cog:SetPoint("RIGHT", frame.CloseButton, "LEFT", -2, 0)
+    else cog:SetPoint("TOPRIGHT", -28, -3) end
+    local cogIcon = cog:CreateTexture(nil, "ARTWORK")
+    cogIcon:SetAllPoints()
+    if not (C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("QuestLog-icon-setting")) then
+        cogIcon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+    else
+        cogIcon:SetAtlas("QuestLog-icon-setting")
+    end
+    cog:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    cog:SetScript("OnClick", function() ns.OpenOptions() end)
+    ns.AddTooltip(cog, L.MAP_MENU_OPTIONS)
     ns.ApplyScale()
 
     CreateTopBar()

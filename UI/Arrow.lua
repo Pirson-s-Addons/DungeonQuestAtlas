@@ -32,6 +32,49 @@ local RAID_MARK = 1
 
 local arrow, minimapPin, elapsedSum = nil, nil, 0
 local nameAt = 0 -- ultima vez que se pidio el nombre del PNJ al cliente
+local FACE_YARDS = 40 -- a esta distancia, fuera de combate, sale la cara del PNJ (un clic lo selecciona)
+
+-- Apariencia del PNJ para su cara: un modelo oculto con su npcID dice su displayID
+-- (se guarda en ns.db.npcDisplays). Si el cliente aun no lo tiene, se vuelve a pedir.
+local probe, probing, probeAt
+local function NpcDisplay(npcID)
+    local saved = ns.db.npcDisplays[npcID]
+    if saved then return saved end
+    if not probe then
+        local ok, model = pcall(CreateFrame, "PlayerModel", nil, UIParent)
+        if not ok or not model or not model.SetCreature then return end
+        probe = model
+        probe:SetSize(1, 1)
+        probe:SetPoint("CENTER")
+        probe:SetAlpha(0)
+    end
+    if probing ~= npcID or GetTime() - (probeAt or 0) > 5 then
+        probing, probeAt = npcID, GetTime()
+        probe:Show()
+        pcall(probe.SetCreature, probe, npcID)
+        return
+    end
+    local ok, display = pcall(probe.GetDisplayInfo, probe)
+    if ok and type(display) == "number" and display > 0 then
+        ns.db.npcDisplays[npcID] = display
+        probing = nil
+        probe:Hide()
+        return display
+    end
+end
+
+-- "Ve a <zona>" si no estas en el mapa del marcador (ni dentro de el)
+local function Destination(target)
+    if not target.mapID or not C_Map.GetBestMapForUnit then return end
+    local mapID = C_Map.GetBestMapForUnit("player")
+    while mapID and mapID > 0 do
+        if mapID == target.mapID then return end
+        local info = C_Map.GetMapInfo(mapID)
+        mapID = info and info.parentMapID
+    end
+    local info = C_Map.GetMapInfo(target.mapID)
+    return info and info.name and L.ARROW_GET_TO:format(info.name)
+end
 
 -- Pin en el borde si el marcador queda fuera del minimapa
 local function UpdateMinimapPin(dx, dy)
@@ -93,6 +136,16 @@ local function Update(self, elapsed)
     end
     local yards = L.YARDS:format(math.floor(distance + 0.5))
     self.distance:SetText(target.under and (yards .. " · " .. L.UNDERGROUND) or yards)
+    self.dest:SetText(Destination(target) or "")
+    -- Cerca del PNJ y fuera de combate: su cara (el clic lo selecciona y lo marca)
+    local display = target.npcID and NpcDisplay(target.npcID)
+    local near = display and distance <= FACE_YARDS and not InCombatLockdown()
+    if near and self.faceID ~= display and SetPortraitTextureFromCreatureDisplayID then
+        self.faceID = display
+        SetPortraitTextureFromCreatureDisplayID(self.face, display)
+    end
+    self.face:SetShown(near and self.faceID == display or false)
+    self.faceRing:SetShown(self.face:IsShown())
     local angle = ns.ArrowAngle(dx, dy)
     self.image:SetAlpha(angle and 1 or 0.3)
     if angle then SetDirection(self.image, angle) end
@@ -137,6 +190,24 @@ local function CreateArrow()
     arrow.title:SetPoint("TOP", arrow, "BOTTOM", 0, -2)
     arrow.distance = arrow:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     arrow.distance:SetPoint("TOP", arrow.title, "BOTTOM", 0, -2)
+    arrow.dest = arrow:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    arrow.dest:SetPoint("TOP", arrow.distance, "BOTTOM", 0, -2)
+    arrow.dest:SetTextColor(0.6, 0.85, 1)
+    -- Cara del PNJ a la izquierda de la flecha, con el aro del minimapa
+    arrow.face = arrow:CreateTexture(nil, "ARTWORK")
+    arrow.face:SetSize(34, 34)
+    arrow.face:SetPoint("RIGHT", arrow, "LEFT", -4, 0)
+    arrow.face:Hide()
+    local mask = arrow:CreateMaskTexture()
+    mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    mask:SetAllPoints(arrow.face)
+    arrow.face:AddMaskTexture(mask)
+    -- El aro del minimapa con las medidas de las caras del plano (53 por cada 20 de cara)
+    arrow.faceRing = arrow:CreateTexture(nil, "OVERLAY")
+    arrow.faceRing:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    arrow.faceRing:SetSize(53 * 34 / 20, 53 * 34 / 20)
+    arrow.faceRing:SetPoint("TOPLEFT", arrow.face, "TOPLEFT", -7 * 34 / 20, 5 * 34 / 20)
+    arrow.faceRing:Hide()
     arrow:SetScript("OnUpdate", Update)
 
     minimapPin = CreateFrame("Frame", nil, Minimap)

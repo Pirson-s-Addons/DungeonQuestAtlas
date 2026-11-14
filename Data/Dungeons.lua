@@ -112,7 +112,7 @@ ns.Dungeons = {
     { key = "SHAPERS", name = "Shaper's Terrace", instanceID = nil, minLevel = 58, maxLevel = 60, isForever = true, faction = "Both", entrance = { mapID = 1449, x = 48.1, y = 6.1 },
         names = { esES = "Terraza del Modelador", deDE = "Terrasse des Formers", frFR = "Terrasse du Façonneur", itIT = "Terrazza del Plasmatore", ptBR = "Terraço do Moldador",
             ruRU = "Терраса Ваятеля", koKR = "조형자의 테라스", zhCN = "塑造者平台", zhTW = "塑造者平臺" },
-        quests = { 95928 } },
+        quests = { 95928, 97049, 95926, 95924, 95925, 95790 } },
     { key = "STRAT_LIVE", name = "Stratholme (Main Gate)", instanceID = 329, minLevel = 58, maxLevel = 60, isForever = false, faction = "Both", part = "MAIN_GATE",
         entrance = { mapID = 1423, x = 27.8, y = 11.6 },
         quests = { 5848, 5125, 5243, 5213, 5251, 5214, 5282, 5262, 5463, 8945, 8968, 8991, 5305, 5307, 7622, 9257, 5122 } },

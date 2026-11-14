@@ -222,7 +222,7 @@ end
 local function ChainStep(chain)
     local last = 0
     for i, id in ipairs(chain) do
-        if C_QuestLog.IsQuestFlaggedCompleted(id) then last = i
+        if ns.IsQuestDone(id) then last = i
         elseif InLog(id) then last = i - 1 end
     end
     local id = chain[last + 1]
@@ -248,7 +248,7 @@ end
 function ns.JourneyPlan()
     local plan = { ready = {}, dungeons = {}, chains = {}, news = {} }
     local faction, here = UnitFactionGroup("player"), C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
-    local function Mine(q) return ns.MatchesFaction(q, faction) and ns.IsMyClass(q) end
+    local function Mine(q) return ns.MatchesFaction(q, faction) and ns.IsForMe(q) end
     local seen = {}
     for id, q in pairs(ns.Quests) do
         if Mine(q) then

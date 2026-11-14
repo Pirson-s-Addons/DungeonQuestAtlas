@@ -121,10 +121,13 @@ local MARK_ICON = {
     item = { size = 16 }, -- el icono del propio objeto
     -- Como llegar a un jefe: escalera de mano propia (_project/tools/dqa_art/ladder.py)
     note = { file = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\ladder", size = 30 },
+    -- Estatuas de serpiente del Templo Sumergido, con su numero de orden debajo
+    statue = { file = "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", size = 22 },
     -- Misiones (Data/MapQuests.lua): ! empieza, ? se entrega, la gema, hay que hacer algo ahi
     quest_start = { atlas = "QuestNormal", file = "Interface\\GossipFrame\\AvailableQuestIcon", size = 22 },
     quest_end = { atlas = "QuestTurnin", file = "Interface\\GossipFrame\\ActiveQuestIcon", size = 22 },
     quest_do = { file = "Interface\\AddOns\\DungeonQuestAtlas\\img\\pin_dqa", size = 20 },
+    quest_repeat = { atlas = "QuestRepeatableTurnin", file = "Interface\\GossipFrame\\ActiveQuestIcon", size = 22 },
 }
 
 local function HasAct(entry, act)
@@ -141,7 +144,7 @@ local function QuestSpots(d, floor)
     for _, spot in ipairs(ns.MapQuests[d.key] and ns.MapQuests[d.key][floor] or {}) do
         for i = 4, #spot do
             local e, q = spot[i], ns.Quests[spot[i][1]]
-            if q and ns.MatchesFaction(q, faction) and ns.IsMyClass(q)
+            if q and ns.MatchesFaction(q, faction) and ns.IsForMe(q)
                 and ns.QuestStatus(e[1]) ~= ns.STATUS_COMPLETED then
                 local key = spot[1] .. ":" .. spot[2]
                 local place = byPlace[key]
@@ -164,6 +167,12 @@ local function QuestSpots(d, floor)
             start = start or (not inLog and HasAct(e, "start"))
         end
         place.kind = (turnIn and "quest_end") or (start and "quest_start") or (anyEnd and "quest_end") or "quest_do"
+        -- Solo repetibles: la ? azul
+        local allRepeatable = true
+        for _, e in ipairs(place.entries) do
+            if not (ns.Quests[e[1]] and ns.Quests[e[1]].repeatable) then allRepeatable = false end
+        end
+        if allRepeatable and place.kind ~= "quest_do" then place.kind = "quest_repeat" end
     end
     return spots
 end
@@ -235,7 +244,7 @@ local function CreateMark(canvas, plan)
     mark.focus:SetScript("OnHide", function() markPulse:Stop() end)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
-        if self.kind == "item" or self.kind == "note" then return end
+        if self.kind == "item" or self.kind == "note" or self.kind == "statue" then return end
         if self.entries then
             ns.char.dungeon = plan.dungeon.key
             ns.ShowQuest(self.entries[1][1])
@@ -262,6 +271,9 @@ local function CreateMark(canvas, plan)
             local item = ns.ItemInfo(mark.itemID)
             return ns.QualityColor(item.quality) .. (item.name or ("#" .. mark.itemID)) .. "|r\n|cffffffff"
                 .. L[mark.hint] .. (mark.spots > 1 and ("\n" .. L.MAP_ITEM_SPOT) or "") .. "|r"
+        end
+        if mark.kind == "statue" then
+            return L.MAP_STATUE:format(mark.order, L[mark.hint]) .. "\n|cffffffff" .. L.MAP_STATUE_HINT .. "|r"
         end
         if mark.kind == "note" then
             local boss = ns.Bosses[plan.dungeon.key] and ns.Bosses[plan.dungeon.key][mark.boss]
@@ -483,9 +495,10 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k, m in ipairs(floorMarks) do
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
-            local item, note = m[1] == "item", m[1] == "note"
+            local item, note, statue = m[1] == "item", m[1] == "note", m[1] == "statue"
             mark.kind, mark.x, mark.y, mark.entries = m[1], m[2], m[3], nil
-            mark.to = not (item or note) and m[4] or nil
+            mark.to = not (item or note or statue) and m[4] or nil
+            mark.order = statue and m[4] or nil
             mark.boss = note and m[4] or nil
             mark.itemID, mark.hint = item and m[4] or nil, m[5]
             -- Sitios del mismo objeto en la planta: con uno solo, no es "uno de estos sitios"
@@ -500,7 +513,8 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             ns.TintPortal(mark.icon, raid)
             ns.TintPortal(mark.glow, raid)
             mark:SetSize(MARK_ICON[m[1]].size, MARK_ICON[m[1]].size)
-            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
+            mark.label:SetText(m[1] == "entrance" and L.MAP_ENTRANCE or statue and tostring(m[4])
+                or (item or note) and "" or L.MAP_FLOOR_SHORT:format(m[4]))
             mark:SetFrameLevel(canvas:GetFrameLevel() + 2) -- encima de las caras si coinciden
             mark:Show()
         end
@@ -516,7 +530,7 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             local mark = marks[n] or CreateMark(canvas, self)
             marks[n] = mark
             mark.kind, mark.x, mark.y, mark.entries = spot.kind, spot.x, spot.y, spot.entries
-            mark.to, mark.boss, mark.itemID, mark.hint = nil, nil, nil, nil
+            mark.to, mark.boss, mark.itemID, mark.hint, mark.order = nil, nil, nil, nil, nil
             SetMarkIcon(mark.icon, spot.kind)
             SetMarkIcon(mark.glow, spot.kind)
             ns.TintPortal(mark.icon, false)
