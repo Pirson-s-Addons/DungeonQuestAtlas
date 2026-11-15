@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Доспехи"
 L["LOOT_ACCESSORIES"] = "Аксессуары"
 L["LOOT_OTHER"] = "Прочее"
 L["LOOT_CLASS_ALL"] = "Все классы"
+L["RECIPE_PROF_TIP"] = "Щелчок: только рецепты этой профессии. Ещё щелчок: все."
 L["LOOT_BOSS"] = "Добыча: %s"
 L["LOOT_NONE"] = "Нет добычи этого типа."
 -- [Bandas]

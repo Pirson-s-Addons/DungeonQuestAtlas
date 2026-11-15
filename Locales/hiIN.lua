@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "कवच"
 L["LOOT_ACCESSORIES"] = "सहायक वस्तुएँ"
 L["LOOT_OTHER"] = "अन्य"
 L["LOOT_CLASS_ALL"] = "सभी क्लास"
+L["RECIPE_PROF_TIP"] = "क्लिक: केवल इस पेशे की विधियाँ। फिर क्लिक: सभी।"
 L["LOOT_BOSS"] = "लूट: %s"
 L["LOOT_NONE"] = "इस प्रकार की कोई लूट नहीं।"
 -- [Bandas]

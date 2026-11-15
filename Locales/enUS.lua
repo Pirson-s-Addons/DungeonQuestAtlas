@@ -260,6 +260,7 @@ L["LOOT_ARMOR"] = "Armor"
 L["LOOT_ACCESSORIES"] = "Accessories"
 L["LOOT_OTHER"] = "Other"
 L["LOOT_CLASS_ALL"] = "All classes"
+L["RECIPE_PROF_TIP"] = "Click to show only this profession's recipes. Click again to show them all."
 L["LOOT_BOSS"] = "Loot: %s"
 L["LOOT_NONE"] = "No loot of this type."
 -- [Bandas]

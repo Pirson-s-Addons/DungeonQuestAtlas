@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "เกราะ"
 L["LOOT_ACCESSORIES"] = "เครื่องประดับ"
 L["LOOT_OTHER"] = "อื่นๆ"
 L["LOOT_CLASS_ALL"] = "ทุกคลาส"
+L["RECIPE_PROF_TIP"] = "คลิก: แสดงเฉพาะสูตรของอาชีพนี้ คลิกอีกครั้ง: แสดงทั้งหมด"
 L["LOOT_BOSS"] = "ของดรอป: %s"
 L["LOOT_NONE"] = "ไม่มีของประเภทนี้"
 -- [Bandas]

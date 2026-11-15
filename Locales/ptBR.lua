@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Armadura"
 L["LOOT_ACCESSORIES"] = "Acessórios"
 L["LOOT_OTHER"] = "Outros"
 L["LOOT_CLASS_ALL"] = "Todas as classes"
+L["RECIPE_PROF_TIP"] = "Clique: só as receitas desta profissão. Outro clique: todas."
 L["LOOT_BOSS"] = "Saque: %s"
 L["LOOT_NONE"] = "Nenhum saque deste tipo."
 -- [Bandas]

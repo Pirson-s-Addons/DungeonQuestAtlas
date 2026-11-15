@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Rustning"
 L["LOOT_ACCESSORIES"] = "Smykker"
 L["LOOT_OTHER"] = "Annet"
 L["LOOT_CLASS_ALL"] = "Alle klasser"
+L["RECIPE_PROF_TIP"] = "Klikk: bare oppskrifter for dette yrket. Klikk igjen: alle."
 L["LOOT_BOSS"] = "Bytte: %s"
 L["LOOT_NONE"] = "Ingen bytte av denne typen."
 -- [Bandas]

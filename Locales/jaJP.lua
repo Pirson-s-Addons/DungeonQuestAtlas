@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "防具"
 L["LOOT_ACCESSORIES"] = "アクセサリー"
 L["LOOT_OTHER"] = "その他"
 L["LOOT_CLASS_ALL"] = "すべてのクラス"
+L["RECIPE_PROF_TIP"] = "クリック：この専門技術のレシピだけを表示。もう一度クリック：すべて表示。"
 L["LOOT_BOSS"] = "ドロップ: %s"
 L["LOOT_NONE"] = "この種類の戦利品はありません。"
 -- [Bandas]

@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "護甲"
 L["LOOT_ACCESSORIES"] = "飾品"
 L["LOOT_OTHER"] = "其他"
 L["LOOT_CLASS_ALL"] = "所有職業"
+L["RECIPE_PROF_TIP"] = "點擊：只顯示該專業的配方。再次點擊：顯示全部。"
 L["LOOT_BOSS"] = "掉落：%s"
 L["LOOT_NONE"] = "沒有此類戰利品。"
 -- [Bandas]

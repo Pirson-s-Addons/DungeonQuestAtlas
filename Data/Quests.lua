@@ -673,7 +673,7 @@ ns.Quests = {
     [92065] = { name = "Blackmaw Reclamation", level = 60, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, choice = { 260216, 260217, 260218, 260219 }, xp = 13200, starts = { "npc:236573" }, ends = { "npc:236573" }, verified = false },
     [97327] = { name = "Blackmaw Pouches", level = 60, minLevel = 55, faction = "Both", need = { { 273050, 5 } }, xp = 1450, starts = { "npc:235903" }, ends = { "npc:235903" }, verified = false },
     -- Profundidades, Maraudon y Rajacieno
-    [97197] = { name = "Fragment of the Firelands", level = 55, minLevel = 49, faction = "Horde", xp = 14800, money = 8500, starts = { "name:Alaana Stormwalker" }, ends = { "name:Alaana Stormwalker" }, verified = false },
+    [97197] = { name = "Fragment of the Firelands", level = 55, minLevel = 49, faction = "Horde", need = { { 277129, 1 } }, xp = 14800, money = 8500, starts = { "name:Alaana Stormwalker" }, ends = { "name:Alaana Stormwalker" }, verified = false },
     [96776] = { name = "An'she's Radiance", level = 51, minLevel = 43, faction = "Horde", xp = 11900, starts = { "name:Olana Brighthoof" }, ends = { "name:Olana Brighthoof" }, verified = false },
     [96773] = { name = "The Coldbringer's Eye", level = 41, minLevel = 34, faction = "Alliance", need = { { 276916, 1 } }, xp = 8600, starts = { "npc:20735" }, ends = { "npc:20735" }, verified = false },
     -- Shen'dralas: la cadena de los pilones pasa por Maraudon (93404) y Horado Rajacieno (93604).

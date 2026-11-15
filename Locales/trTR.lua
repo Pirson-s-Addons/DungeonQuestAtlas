@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Zırh"
 L["LOOT_ACCESSORIES"] = "Aksesuarlar"
 L["LOOT_OTHER"] = "Diğer"
 L["LOOT_CLASS_ALL"] = "Tüm sınıflar"
+L["RECIPE_PROF_TIP"] = "Tıkla: yalnızca bu mesleğin tarifleri. Tekrar tıkla: hepsi."
 L["LOOT_BOSS"] = "Ganimet: %s"
 L["LOOT_NONE"] = "Bu türde ganimet yok."
 -- [Bandas]

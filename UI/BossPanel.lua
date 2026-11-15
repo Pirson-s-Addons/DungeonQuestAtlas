@@ -323,6 +323,23 @@ function ns.ClassCanUse(itemID, class)
     return list:find(class, 1, true) ~= nil
 end
 
+-- Profesion de una receta (subclase del juego, classID 9) y su icono
+local PROF_SIZE = 22
+local PROF_ICONS = { [1] = "Trade_LeatherWorking", [2] = "Trade_Tailoring", [3] = "Trade_Engineering",
+    [4] = "Trade_BlackSmithing", [5] = "INV_Misc_Food_15", [6] = "Trade_Alchemy", [7] = "Spell_Holy_SealOfSacrifice",
+    [8] = "Trade_Engraving", [9] = "Trade_Fishing", [10] = "INV_Misc_Gem_01" }
+function ns.RecipeProfession(itemID)
+    local instant = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    if not instant then return nil end
+    local _, _, _, _, _, classID, subID = instant(itemID)
+    if classID == 9 and PROF_ICONS[subID] then return subID end
+end
+function ns.RecipeProfessionName(sub)
+    local info = C_Item and C_Item.GetItemSubClassInfo or GetItemSubClassInfo
+    local name = info and info(9, sub)
+    return type(name) == "string" and name ~= "" and name or ("#" .. sub)
+end
+
 local function FilterLoot(items, filter, class)
     if filter == "all" and not class then return items end
     local out = {}
@@ -433,6 +450,78 @@ function ns.CreateLootPanel(page, bar)
     end
     panel.classButton = classFilter
 
+    -- Recetas por profesion (como FDJ 2.0.7, codigo propio): fila de iconos encima de la lista
+    -- con las profesiones que hay; clic, solo las de esa; otro clic, todas. Nombres, del juego.
+    local profBar = CreateFrame("Frame", nil, frame)
+    profBar:SetPoint("TOPLEFT", 4, 0)
+    profBar:SetSize(1, PROF_SIZE)
+    local profButtons = {}
+    local function ProfButton(i)
+        local b = profButtons[i]
+        if b then return b end
+        b = CreateFrame("Button", nil, profBar)
+        b:SetSize(PROF_SIZE, PROF_SIZE)
+        b:SetPoint("LEFT", (i - 1) * (PROF_SIZE + 4), 0)
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetAllPoints()
+        local h = b:CreateTexture(nil, "HIGHLIGHT")
+        h:SetAllPoints()
+        h:SetColorTexture(1, 1, 1, 0.25)
+        b:SetScript("OnClick", function(self)
+            panel.profession = panel.profession ~= self.sub and self.sub or nil
+            panel:Refresh()
+        end)
+        b:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(ns.RecipeProfessionName(self.sub) .. " (" .. self.count .. ")")
+            GameTooltip:AddLine(L.RECIPE_PROF_TIP, 1, 1, 1, true)
+            GameTooltip:Show()
+        end)
+        b:SetScript("OnLeave", GameTooltip_Hide)
+        profButtons[i] = b
+        return b
+    end
+
+    -- Enseña la fila con las profesiones de items (2 o mas) y deja solo la elegida
+    local function ProfessionFilter(items, show)
+        local count, subs = {}, {}
+        if show then
+            for _, it in ipairs(items) do
+                local sub = ns.RecipeProfession(it[1])
+                if sub then
+                    if not count[sub] then subs[#subs + 1] = sub end
+                    count[sub] = (count[sub] or 0) + 1
+                end
+            end
+        end
+        if #subs < 2 then subs = {} end
+        table.sort(subs)
+        if not count[panel.profession or -1] or #subs == 0 then panel.profession = nil end
+        for i, sub in ipairs(subs) do
+            local b = ProfButton(i)
+            b.sub, b.count = sub, count[sub]
+            b.icon:SetTexture("Interface\\Icons\\" .. PROF_ICONS[sub])
+            local off = panel.profession and panel.profession ~= sub
+            b.icon:SetDesaturated(off)
+            b:SetAlpha(off and 0.5 or 1)
+            b:Show()
+        end
+        for i = #subs + 1, #profButtons do profButtons[i]:Hide() end
+        profBar:SetShown(#subs > 0)
+        local top = #subs > 0 and -(PROF_SIZE + 6) or 0
+        for _, area in ipairs({ panel.bossArea, panel.allArea }) do
+            area:ClearAllPoints()
+            area:SetPoint("TOPLEFT", 0, top)
+            area:SetPoint("BOTTOMRIGHT")
+        end
+        if not panel.profession then return items end
+        local out = {}
+        for _, it in ipairs(items) do
+            if ns.RecipeProfession(it[1]) == panel.profession then out[#out + 1] = it end
+        end
+        return out
+    end
+
     local empty = ns.PaperText(frame, "QuestFont")
     empty:SetPoint("TOP", 0, -30)
     empty:SetWidth(300)
@@ -479,6 +568,7 @@ function ns.CreateLootPanel(page, bar)
 
     local bossArea = CreateFrame("Frame", nil, frame)
     bossArea:SetAllPoints()
+    panel.bossArea = bossArea
     local bossLoot = ns.CreateScrollList(bossArea, ns.ITEM_ROW_HEIGHT + 2, function(row)
         ns.SetupItemButton(row)
         row.extra.color = ns.INK
@@ -496,6 +586,7 @@ function ns.CreateLootPanel(page, bar)
     -- Sin jefe: la fila de botin y "Jefe: X" debajo, sobre el papel (tinta)
     local allArea = CreateFrame("Frame", nil, frame)
     allArea:SetAllPoints()
+    panel.allArea = allArea
     local allLoot = ns.CreateScrollList(allArea, ns.ITEM_ROW_HEIGHT + 16, function(row)
         local item = CreateFrame("Button", nil, row)
         item:SetPoint("TOPLEFT")
@@ -527,6 +618,7 @@ function ns.CreateLootPanel(page, bar)
         local boss = d and self.index and ns.Bosses[d.key][self.index]
         local items = boss and boss.loot or ns.DungeonLoot(d)
         items = FilterLoot(items, self.filter, self.class)
+        items = ProfessionFilter(items, (boss and boss.kind == "recipes") or (not boss and self.filter == "recipes"))
         if not (boss and boss.kind == "recipes") then items = ns.SortLootByRarity(items)
         else items = ns.SortRecipesUniqueFirst(items) end
         classFilter:Update()
@@ -534,11 +626,12 @@ function ns.CreateLootPanel(page, bar)
         bossArea:SetShown(boss ~= nil)
         if boss then bossLoot:SetItems(items) else allLoot:SetItems(items) end
         empty:SetShown(#items == 0)
-        empty:SetText((self.filter == "all" and not self.class) and L.NO_BOSSES or L.LOOT_NONE)
+        empty:SetText((self.filter == "all" and not self.class and not self.profession) and L.NO_BOSSES or L.LOOT_NONE)
         self.items = items
     end
 
     function panel:SetDungeon(d, index)
+        if d ~= self.dungeon then self.profession = nil end
         self.dungeon, self.index = d, index
         self:Refresh()
     end

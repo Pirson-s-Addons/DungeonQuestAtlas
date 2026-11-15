@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "방어구"
 L["LOOT_ACCESSORIES"] = "장신구"
 L["LOOT_OTHER"] = "기타"
 L["LOOT_CLASS_ALL"] = "모든 직업"
+L["RECIPE_PROF_TIP"] = "클릭: 이 전문 기술의 도안만 표시합니다. 다시 클릭: 모두 표시."
 L["LOOT_BOSS"] = "전리품: %s"
 L["LOOT_NONE"] = "이 종류의 전리품이 없습니다."
 -- [Bandas]

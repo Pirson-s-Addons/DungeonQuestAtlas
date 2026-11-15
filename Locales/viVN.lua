@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Giáp"
 L["LOOT_ACCESSORIES"] = "Phụ kiện"
 L["LOOT_OTHER"] = "Khác"
 L["LOOT_CLASS_ALL"] = "Tất cả lớp nhân vật"
+L["RECIPE_PROF_TIP"] = "Nhấp: chỉ công thức của nghề này. Nhấp lần nữa: tất cả."
 L["LOOT_BOSS"] = "Vật phẩm rơi: %s"
 L["LOOT_NONE"] = "Không có chiến lợi phẩm loại này."
 -- [Bandas]

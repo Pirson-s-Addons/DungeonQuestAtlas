@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Zbroj"
 L["LOOT_ACCESSORIES"] = "Doplňky"
 L["LOOT_OTHER"] = "Ostatní"
 L["LOOT_CLASS_ALL"] = "Všechna povolání"
+L["RECIPE_PROF_TIP"] = "Klik: jen recepty této profese. Další klik: všechny."
 L["LOOT_BOSS"] = "Kořist: %s"
 L["LOOT_NONE"] = "Žádná kořist tohoto typu."
 -- [Bandas]

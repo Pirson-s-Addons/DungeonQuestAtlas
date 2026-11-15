@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Pancerz"
 L["LOOT_ACCESSORIES"] = "Akcesoria"
 L["LOOT_OTHER"] = "Inne"
 L["LOOT_CLASS_ALL"] = "Wszystkie klasy"
+L["RECIPE_PROF_TIP"] = "Kliknij: tylko przepisy tej profesji. Kliknij ponownie: wszystkie."
 L["LOOT_BOSS"] = "Łupy: %s"
 L["LOOT_NONE"] = "Brak łupu tego typu."
 -- [Bandas]

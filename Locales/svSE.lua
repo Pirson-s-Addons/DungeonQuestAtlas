@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "Rustning"
 L["LOOT_ACCESSORIES"] = "Smycken"
 L["LOOT_OTHER"] = "Övrigt"
 L["LOOT_CLASS_ALL"] = "Alla klasser"
+L["RECIPE_PROF_TIP"] = "Klicka: bara recept för detta yrke. Klicka igen: alla."
 L["LOOT_BOSS"] = "Byte: %s"
 L["LOOT_NONE"] = "Inget byte av den här typen."
 -- [Bandas]

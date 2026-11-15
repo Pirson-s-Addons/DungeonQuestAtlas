@@ -247,6 +247,7 @@ L["LOOT_ARMOR"] = "الدروع"
 L["LOOT_ACCESSORIES"] = "الإكسسوارات"
 L["LOOT_OTHER"] = "أخرى"
 L["LOOT_CLASS_ALL"] = "كل الفئات"
+L["RECIPE_PROF_TIP"] = "انقر: وصفات هذه المهنة فقط. انقر مرة أخرى: الكل."
 L["LOOT_BOSS"] = "الغنائم: %s"
 L["LOOT_NONE"] = "لا توجد غنائم من هذا النوع."
 -- [Bandas]
