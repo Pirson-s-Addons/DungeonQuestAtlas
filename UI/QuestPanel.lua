@@ -187,6 +187,13 @@ local function CreateQuestList(parent, onSelect)
         elseif q.chain == true then
             info[#info + 1] = CHAIN_HEX .. L.CHAIN_PART .. "|r"
         end
+        -- Cadena hecha hasta aqui y la mision sin coger: brilla en dorado y dice "Recogela"
+        local ready = ns.db.pickupGlow and status == ns.STATUS_AVAILABLE and step and step > 1
+        for i = 1, ready and step - 1 or 0 do
+            if not ns.IsQuestDone(q.chain[i]) then ready = false break end
+        end
+        if ready then info[#info + 1] = "|cffffd100" .. L.PICK_IT_UP .. "|r" end
+        row.glow:SetShown(isSelected or ready)
         row.info:SetText(table.concat(info, SEP))
         row.chainBar:SetShown(step ~= nil or q.chain == true)
         local level = ns.QuestLevel(q, id)

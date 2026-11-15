@@ -106,6 +106,7 @@ local function CreateGeneral()
         function(v) return ("%d%%"):format(math.floor(v * 100 + 0.5)) end, ns.ApplyScale):SetWidth(270)
     -- A su derecha: comparar con lo equipado sin pulsar Mayus (UI/Items.lua)
     Checkbox("autoCompare", L.AUTO_COMPARE, L.AUTO_COMPARE_TOOLTIP, -168):SetPoint("TOPLEFT", X + 300, -168)
+    Checkbox("pickupGlow", L.PICKUP_GLOW, L.PICKUP_GLOW_TOOLTIP, -190, ns.RefreshUI):SetPoint("TOPLEFT", X + 300, -190)
     Separator(panel, -214)
 
     -- Mapa y enlaces ------------------------------------------------------------

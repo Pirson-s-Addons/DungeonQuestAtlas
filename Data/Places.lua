@@ -430,6 +430,13 @@ ns.Places = {
     ["name:Prate Cloudseer"] = { name = "Prate Cloudseer", mapID = 1441, x = 53.0, y = 42.0 },
     ["name:Tran'gul"] = { name = "Tran'gul", mapID = 2548, x = 59.4, y = 44.0 },
     ["name:Da'grosh"] = { name = "Da'grosh", mapID = 2548, x = 33.4, y = 38.0 },
+    ["name:Clubtoe"] = { name = "Clubtoe", mapID = 2548, x = 50.0, y = 47.0, under = true }, -- cueva bajo Sunnyglade (FDJ 2.0.8)
+    ["name:Twilight Brute"] = { name = "Twilight Brute", mapID = 2548, x = 49.2, y = 46.7, under = true },
+    ["name:Clugfist"] = { name = "Clugfist", mapID = 2548, x = 64.4, y = 14.8 },
+    ["name:Crag'rog"] = { name = "Crag'rog", mapID = 2548, x = 27.4, y = 37.0 },
+    ["name:Katherine the Pure"] = { name = "Katherine the Pure", mapID = 1453, x = 48.5, y = 49.1 }, -- Catedral de la Luz
+    ["name:Aeonas"] = { name = "Aeonas", inside = true }, -- sala del fondo de la Catedral
+    ["name:Aeonas the Vindicated"] = { name = "Aeonas", mapID = 1453, x = 48.5, y = 49.1 }, -- Catedral de la Luz (aprox.)
     -- Terraza del Modelador y cadena de Blackmaw (FDJ 2.0.5 y 2.0.6: Icy Veins y Wowhead Forever; Rageroar, de jugadores)
     ["npc:10136"] = { npcID = 10136, name = "Chemist Fuely", mapID = 1458, x = 47.5, y = 73.3 },
     ["npc:8256"] = { npcID = 8256, name = "Curator Thorius", mapID = 1455, x = 71.5, y = 15.7 },

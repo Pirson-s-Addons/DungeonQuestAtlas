@@ -92,7 +92,7 @@ ns.Dungeons = {
         quests = { 1051, 1160, 1049, 1050, 1113, 1048, 1053, 1951 } },
     { key = "SM_CATH", name = "Scarlet Monastery (Cathedral)", instanceID = 189, minLevel = 38, maxLevel = 46, isForever = false, faction = "Both", part = "CATHEDRAL",
         entrance = { mapID = 1420, x = 85.3, y = 30.3 },
-        quests = { 1051, 1160, 1049, 1050, 1113, 1048, 1053 } },
+        quests = { 1051, 1160, 1049, 1050, 1113, 1048, 1053, 79946, 79963, 79970 } },
     { key = "SM_GY", name = "Scarlet Monastery (Graveyard)", instanceID = 189, minLevel = 30, maxLevel = 38, isForever = false, faction = "Both", part = "GRAVEYARD",
         entrance = { mapID = 1420, x = 84.8, y = 30.3 },
         quests = { 1051, 1160, 1049, 1050, 1113, 78699 } },
@@ -101,7 +101,7 @@ ns.Dungeons = {
         quests = { 1051, 1160, 1049, 1050, 1113, 1048, 1053, 78699, 96800 } },
     { key = "SCHOLO", name = "Scholomance", instanceID = 289, minLevel = 58, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1422, x = 69.0, y = 72.7 },
-        quests = { 5341, 5343, 5529, 5382, 5384, 5515, 5531, 4771, 5466, 8969, 8992, 5582, 7629, 7647, 8258 },
+        quests = { 5341, 5343, 5529, 5382, 5384, 5515, 5531, 4771, 5466, 8969, 8992, 5582, 7629, 7647, 8258, 7668 },
         -- Llave esqueleto: cadena de Classic (AzerothCore, quest_template_addon PrevQuestID)
         attunement = { item = 13704, itemName = "Skeleton Key",
             Alliance = { 5092, 5097, 5533, 5537, 5538, 5801, 5803, 5505 },

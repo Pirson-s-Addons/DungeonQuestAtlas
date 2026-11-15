@@ -236,7 +236,10 @@ function ns.FilterDungeons(filters)
                 or d.name:lower():find(search, 1, true) ~= nil
                 or tContains(aliased, d)
             for _, boss in ipairs(not ok and ns.Bosses and ns.Bosses[d.key] or {}) do
-                if boss.name and boss.name:lower():find(search, 1, true) then ok = true break end
+                if boss.name and (boss.name:lower():find(search, 1, true)
+                    or (boss.npcID and ns.PlaceName and (ns.PlaceName(boss) or ""):lower():find(search, 1, true))) then -- nombre del juego
+                    ok = true break
+                end
             end
         end
         if ok then list[#list + 1] = d end

@@ -60,6 +60,10 @@ local function CreateCard(row, onSelect)
     card.lock:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK")
     card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     card:SetScript("OnClick", function(self, button)
+        if button == "RightButton" and IsShiftKeyDown() and ns.IsDungeonLocked(self.dungeon) then
+            GameTooltip:Hide()
+            return ns.MarkDungeonDone(self.dungeon) -- hecha antes de instalar el addon
+        end
         if button == "RightButton" then -- ocultarla (o volver a mostrarla) en este personaje
             local hidden = ns.char.hiddenDungeons
             hidden[self.dungeon.key] = not hidden[self.dungeon.key] or nil
@@ -79,6 +83,7 @@ local function CreateCard(row, onSelect)
             GameTooltip:AddLine(L.RPG_LOCKED, 1, 0.3, 0.3)
             GameTooltip:AddLine(ns.LockedHint(d), 1, 1, 1, true)
             if ns.db.rpgShowQuests then GameTooltip:AddLine(L.RPG_PEEK_HINT, 0.6, 0.85, 0.6, true) end
+            GameTooltip:AddLine(L.RPG_MARK_DONE_HINT, 0.5, 0.5, 0.5, true)
             GameTooltip:AddLine(hideHint, 0.5, 0.5, 0.5)
             return GameTooltip:Show()
         end

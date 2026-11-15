@@ -42,6 +42,7 @@ local DEFAULTS = {
     rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     trackerPos = {},
+    pickupGlow = true,    -- brillo dorado en las misiones listas para coger (UI/QuestPanel.lua)
     autoCompare = false,  -- comparar con lo equipado sin pulsar Mayus (UI/Items.lua)
     itemSourceTip = true, -- "Jefe - Mazmorra" en el tooltip de cualquier objeto (UI/ItemSource.lua)
     -- Modo aventura (UI/JournalMode.lua): desbloqueos de todos los personajes de la cuenta

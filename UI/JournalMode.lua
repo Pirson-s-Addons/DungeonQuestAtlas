@@ -216,6 +216,75 @@ function ns.OnBossKilled(d, boss)
     end
 end
 
+-- Mazmorra hecha antes de instalar el addon: se desbloquea a mano (Mayus + clic derecho
+-- en su tarjeta, UI/DungeonList.lua)
+function ns.MarkDungeonDone(d)
+    ns.char.unlocked[d.key] = true
+    ns.db.unlocked[d.key] = true
+    ns.Print(L.RPG_MARKED_DONE:format(ns.DungeonName(d)))
+    if ns.RefreshUI then ns.RefreshUI() end
+end
+
+-- Legacy Challenges de Forever (logros de la cuenta, Blizzard_LegacySystem): los logros cuyos
+-- criterios nombran mazmorras (3 o mas, y casi todos) desbloquean las que tienen el criterio
+-- hecho. Por nombre exacto, en el idioma del cliente o en ingles: las alas (Monasterio, La
+-- Masacre...) no casan y se quedan a mano. Idea de otro addon, sin su codigo.
+local function NormName(s) return (s or ""):lower():gsub("^%s+", ""):gsub("%s+$", "") end
+function ns.LegacyUnlocks()
+    if type(GetCategoryList) ~= "function" or type(GetCategoryNumAchievements) ~= "function"
+        or type(GetAchievementNumCriteria) ~= "function" or type(GetAchievementCriteriaInfo) ~= "function" then
+        return {}
+    end
+    local byName, twice = {}, {}
+    for _, d in ipairs(ns.Dungeons) do
+        for _, name in ipairs({ NormName(ns.DungeonName(d)), NormName(d.name) }) do
+            if name ~= "" then
+                if byName[name] and byName[name] ~= d then twice[name] = true end
+                byName[name] = d
+            end
+        end
+    end
+    local found = {}
+    local okL, cats = pcall(GetCategoryList)
+    for _, cat in ipairs(okL and type(cats) == "table" and cats or {}) do
+        local okN, n = pcall(GetCategoryNumAchievements, cat, true)
+        for i = 1, okN and tonumber(n) or 0 do
+            local okA, id, _, _, whole = pcall(GetAchievementInfo, cat, i)
+            local okC, count = pcall(GetAchievementNumCriteria, okA and id or 0)
+            local hits, done = 0, {}
+            for j = 1, okA and okC and tonumber(count) or 0 do
+                local ok, text, _, isDone = pcall(GetAchievementCriteriaInfo, id, j)
+                local name = ok and NormName(text)
+                local d = name and not twice[name] and byName[name]
+                if d then
+                    hits = hits + 1
+                    if isDone or whole then done[#done + 1] = d end
+                end
+            end
+            if hits >= 3 and hits >= (tonumber(count) or 0) * 0.6 then
+                for _, d in ipairs(done) do found[d.key] = d end
+            end
+        end
+    end
+    return found
+end
+
+local function ApplyLegacy()
+    if not (ns.char and ns.db) then return end
+    local names = {}
+    for key, d in pairs(ns.LegacyUnlocks()) do
+        if not ns.char.unlocked[key] then names[#names + 1] = ns.DungeonName(d) end
+        ns.char.unlocked[key] = true
+        ns.db.unlocked[key] = true
+    end
+    if #names > 0 then
+        table.sort(names)
+        if ns.IsRPGMode() then ns.Print(L.RPG_LEGACY_UNLOCKED:format(table.concat(names, ", "))) end
+        if ns.RefreshUI then ns.RefreshUI() end
+    end
+end
+ns.ApplyLegacyUnlocks = ApplyLegacy
+
 -- ------------------------------------------
 -- Ventana para elegir el modo
 -- ------------------------------------------
@@ -387,7 +456,10 @@ end
 -- Y lo desbloqueado por este personaje pasa a la cuenta (desbloqueos de cuenta)
 local login = CreateFrame("Frame")
 login:RegisterEvent("PLAYER_LOGIN")
-login:SetScript("OnEvent", function()
+pcall(login.RegisterEvent, login, "ACHIEVEMENT_EARNED")
+login:SetScript("OnEvent", function(_, event)
+    if event == "ACHIEVEMENT_EARNED" then return C_Timer.After(1, ApplyLegacy) end
+    C_Timer.After(6, ApplyLegacy) -- los logros ya cargados
     if ns.char and ns.db then
         for key in pairs(ns.char.unlocked) do ns.db.unlocked[key] = true end
     end
