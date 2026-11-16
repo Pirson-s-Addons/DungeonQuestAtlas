@@ -41,6 +41,7 @@ local DEFAULTS = {
     rareChime = true,     -- sonido al encontrar un raro vivo
     rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
+    questAlert = true,    -- avisar en el chat de las misiones que faltan (Core/QuestAlert.lua)
     trackerPos = {},
     pickupGlow = true,    -- brillo dorado en las misiones listas para coger (UI/QuestPanel.lua)
     autoCompare = false,  -- comparar con lo equipado sin pulsar Mayus (UI/Items.lua)

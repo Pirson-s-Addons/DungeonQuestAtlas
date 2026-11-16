@@ -532,3 +532,11 @@ L["RPG_LEGACY_UNLOCKED"] = "Unlocked by your Legacy Challenges: %s."
 local english = {}
 for key, text in pairs(L) do english[key] = text end
 ns.LOCALES.enUS, ns.LOCALES.enGB = english, english
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "You still have %d quests to pick up for %s, whose entrance is in this zone:"
+L["QUEST_ALERT_HINT"] = "Open them in the atlas with %s."
+L["QUEST_ALERT_INSIDE"] = "You carry %d quests for %s:"
+L["QUEST_ALERT_MORE"] = "and %d more"
+L["OPT_QUEST_ALERT"] = "Warn about missing dungeon quests"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "When you reach the zone of a dungeon for your level, says in the chat which of its quests you can still pick up (the quest givers are usually outside). Inside, it reminds you of the ones you carry. Once per dungeon and session."

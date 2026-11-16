@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "任務鏈先前的步驟全部完成後，該任務�
 L["RPG_MARK_DONE_HINT"] = "Shift+右鍵：標記為已完成（如果你之前已通關）"
 L["RPG_MARKED_DONE"] = "已標記為完成：%s。"
 L["RPG_LEGACY_UNLOCKED"] = "由你的傳承挑戰解鎖：%s。"
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "還有%d個任務可以接 - %s（入口在本區域）："
+L["QUEST_ALERT_HINT"] = "用 %s 在圖鑑中開啟。"
+L["QUEST_ALERT_INSIDE"] = "你身上有%d個任務 - %s："
+L["QUEST_ALERT_MORE"] = "還有%d個"
+L["OPT_QUEST_ALERT"] = "提醒遺漏的地城任務"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "到達適合你等級的地城所在區域時，在聊天中列出你還能接的任務（任務給予者通常在外面）。在裡面則提醒你身上的任務。每個地城每次登入一次。"

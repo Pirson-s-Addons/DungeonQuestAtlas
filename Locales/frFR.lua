@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Une quête dont toutes les étapes précédentes de 
 L["RPG_MARK_DONE_HINT"] = "Maj+clic droit : marquer comme terminé (si vous l'avez déjà fait)"
 L["RPG_MARKED_DONE"] = "Marqué comme terminé : %s."
 L["RPG_LEGACY_UNLOCKED"] = "Débloqués par vos Défis d'héritage : %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Il vous reste %d quêtes à prendre pour %s, dont l'entrée est dans cette zone :"
+L["QUEST_ALERT_HINT"] = "Ouvrez-les dans l'atlas avec %s."
+L["QUEST_ALERT_INSIDE"] = "Vous avez %d quêtes pour %s :"
+L["QUEST_ALERT_MORE"] = "et %d de plus"
+L["OPT_QUEST_ALERT"] = "Avertir des quêtes de donjon manquantes"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "En arrivant dans la zone d'un donjon de votre niveau, indique dans la discussion les quêtes que vous pouvez encore prendre (les donneurs sont souvent dehors). À l'intérieur, rappelle celles que vous avez. Une fois par donjon et par session."

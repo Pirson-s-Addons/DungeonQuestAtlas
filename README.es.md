@@ -56,6 +56,7 @@
 
 - **Todas las mazmorras** de WoW Forever, las clásicas y las nuevas, ordenadas por nivel y coloreadas según la dificultad para tu personaje.
 - **Más de 300 misiones de mazmorra** con nivel, facción y estado, con los iconos de misión del propio juego: **Disponible** (!), **En curso** (…), **Lista para entregar** (?), **Completada** (✓) o **Bloqueada** (candado, por nivel o misión previa). Leyenda bajo la lista y tooltip en cada misión. Contador "3/7 completadas" por mazmorra.
+- **Aviso de misiones que faltan**: al llegar a la zona de una mazmorra de tu nivel, el chat te dice qué misiones suyas aún puedes coger (con enlaces), antes de entrar. Dentro, te recuerda las que llevas. Una vez por mazmorra y sesión; se puede quitar en las opciones.
 - **Cadenas de misiones**: todos los pasos de la cadena con su estado y un "(2/5)" en la lista. Clic en cualquier paso, también los de fuera de la mazmorra, para abrir su hoja y marcar dónde empieza. Al entregar un paso, la flecha te lleva al siguiente (opción).
 - **Misiones de clase** (brujo, paladín, mago...) con el icono de su clase, bloqueadas para las demás clases y sin contar en el total "x/y". Opción para ocultarlas.
 - **Tu progreso** en las misiones que llevas ("Cabeza de Arugal: 0/1") y botón **Compartir** para pasársela al grupo.

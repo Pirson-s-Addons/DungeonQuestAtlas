@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "연계의 이전 단계를 모두 마친 퀘스트�
 L["RPG_MARK_DONE_HINT"] = "Shift+우클릭: 완료로 표시 (이미 마쳤다면)"
 L["RPG_MARKED_DONE"] = "완료로 표시됨: %s."
 L["RPG_LEGACY_UNLOCKED"] = "유산 도전으로 해제됨: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "아직 받을 수 있는 퀘스트 %d개 - %s (입구가 이 지역에 있음):"
+L["QUEST_ALERT_HINT"] = "%s 명령으로 지도책에서 여세요."
+L["QUEST_ALERT_INSIDE"] = "가지고 있는 퀘스트 %d개 - %s:"
+L["QUEST_ALERT_MORE"] = "외 %d개"
+L["OPT_QUEST_ALERT"] = "놓친 던전 퀘스트 알림"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "내 레벨의 던전 지역에 도착하면 아직 받을 수 있는 퀘스트를 대화창에 알려줍니다(퀘스트 제공자는 보통 밖에 있습니다). 안에서는 가지고 있는 퀘스트를 알려줍니다. 던전과 접속마다 한 번."

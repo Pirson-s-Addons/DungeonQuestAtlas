@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Una misión con todos los pasos anteriores de su cad
 L["RPG_MARK_DONE_HINT"] = "Mayús + clic derecho: marcarla como hecha (si ya la terminaste)"
 L["RPG_MARKED_DONE"] = "Marcada como hecha: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Desbloqueadas por tus Desafíos de legado: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Aún te faltan %d misiones por coger de %s, que tiene la entrada en esta zona:"
+L["QUEST_ALERT_HINT"] = "Ábrelas en el atlas con %s."
+L["QUEST_ALERT_INSIDE"] = "Llevas %d misiones de %s:"
+L["QUEST_ALERT_MORE"] = "y %d más"
+L["OPT_QUEST_ALERT"] = "Avisar de las misiones de mazmorra que faltan"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Al llegar a la zona de una mazmorra de tu nivel, dice en el chat qué misiones suyas aún puedes coger (quien las da suele estar fuera). Dentro, te recuerda las que llevas. Una vez por mazmorra y sesión."

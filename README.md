@@ -60,6 +60,7 @@
 
 - **Every dungeon** of WoW Forever, the classic ones and the new ones (Hall of Thanes, Ruins of Lordaeron, Excavation Site, City of Dalaran, The Drowned City, Krol'dok Stronghold, Alcaz Prison, Blackmaw Hold, Shaper's Terrace), sorted by level and colored by difficulty for your character.
 - **300+ dungeon quests** with level, faction and status, shown with the game's own quest icons: **Available** (!), **In progress** (…), **Ready to turn in** (?), **Completed** (✓) or **Locked** (padlock, by level or previous quest). A legend under the list and a tooltip on every quest. A "3/7 completed" counter per dungeon.
+- **Missing quest alert**: when you reach the zone of a dungeon for your level, the chat lists the quests you can still pick up for it (with links), before you go in. Inside, it reminds you of the ones you carry. Once per dungeon and session; it can be turned off in the options.
 - **Quest chains**: every step of the chain with its status and a "(2/5)" in the list. Click any step, even one outside the dungeon, to open its page and mark where it starts. When you turn in a step, the arrow takes you to the next one (option).
 - **Class quests** (warlock, paladin, mage...) show the class icon, are locked for other classes and don't count in the "x/y" total. Option to hide them.
 - **Your progress** on the quests you carry ("Head of Arugal: 0/1") and a **Share** button to push the quest to your group.

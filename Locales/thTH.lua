@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "เควสต์ที่ทำขั้นก่�
 L["RPG_MARK_DONE_HINT"] = "Shift+คลิกขวา: ทำเครื่องหมายว่าเสร็จแล้ว (ถ้าเคยผ่านแล้ว)"
 L["RPG_MARKED_DONE"] = "ทำเครื่องหมายว่าเสร็จแล้ว: %s"
 L["RPG_LEGACY_UNLOCKED"] = "ปลดล็อกโดย Legacy Challenges: %s"
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "ยังรับเควสต์ได้อีก %d เควสต์ - %s (ทางเข้าอยู่ในโซนนี้):"
+L["QUEST_ALERT_HINT"] = "เปิดดูในแอตลาสด้วย %s"
+L["QUEST_ALERT_INSIDE"] = "คุณมีเควสต์ %d เควสต์ - %s:"
+L["QUEST_ALERT_MORE"] = "และอีก %d"
+L["OPT_QUEST_ALERT"] = "เตือนเควสต์ดันเจี้ยนที่ยังไม่ได้รับ"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "เมื่อถึงโซนของดันเจี้ยนที่เหมาะกับเลเวลคุณ จะบอกในแชตว่ายังรับเควสต์ไหนได้ (ผู้ให้เควสต์มักอยู่ข้างนอก) ข้างในจะเตือนเควสต์ที่คุณมี ครั้งเดียวต่อดันเจี้ยนและเซสชัน"

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "チェーンの前のステップがすべて完了�
 L["RPG_MARK_DONE_HINT"] = "Shift+右クリック：完了済みにする（以前にクリアした場合）"
 L["RPG_MARKED_DONE"] = "完了済みにしました：%s。"
 L["RPG_LEGACY_UNLOCKED"] = "Legacy Challengesで解放：%s。"
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "まだ受けられるクエストが%d件 - %s（入口はこのゾーン）："
+L["QUEST_ALERT_HINT"] = "%s で図鑑を開いて確認できます。"
+L["QUEST_ALERT_INSIDE"] = "持っているクエスト%d件 - %s："
+L["QUEST_ALERT_MORE"] = "ほか%d件"
+L["OPT_QUEST_ALERT"] = "受け忘れたダンジョンクエストを知らせる"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "自分のレベルに合ったダンジョンのゾーンに着くと、まだ受けられるクエストをチャットに表示します（クエストをくれる人はたいてい外にいます）。中では持っているクエストを知らせます。ダンジョンとセッションごとに1回。"

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Ett uppdrag vars tidigare kedjesteg är klara glöde
 L["RPG_MARK_DONE_HINT"] = "Skift+högerklick: markera som klar (om du redan klarat den)"
 L["RPG_MARKED_DONE"] = "Markerad som klar: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Upplåsta av dina Legacy Challenges: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Du kan fortfarande ta %d uppdrag till %s, vars ingång finns i den här zonen:"
+L["QUEST_ALERT_HINT"] = "Öppna dem i atlasen med %s."
+L["QUEST_ALERT_INSIDE"] = "Du har %d uppdrag till %s:"
+L["QUEST_ALERT_MORE"] = "och %d till"
+L["OPT_QUEST_ALERT"] = "Varna för saknade dungeonuppdrag"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "När du når zonen för en dungeon på din nivå skriver den i chatten vilka av dess uppdrag du fortfarande kan ta (uppdragsgivarna står oftast utanför). Inne påminner den om dem du har. En gång per dungeon och session."

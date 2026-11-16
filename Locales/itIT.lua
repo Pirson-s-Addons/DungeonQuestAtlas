@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Una missione con tutti i passi precedenti della cate
 L["RPG_MARK_DONE_HINT"] = "Maiusc+clic destro: segna come completato (se l'hai già finito)"
 L["RPG_MARKED_DONE"] = "Segnato come completato: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Sbloccati dalle tue Sfide dell'eredità: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Ti mancano ancora %d missioni da prendere per %s, il cui ingresso è in questa zona:"
+L["QUEST_ALERT_HINT"] = "Aprile nell'atlante con %s."
+L["QUEST_ALERT_INSIDE"] = "Hai %d missioni per %s:"
+L["QUEST_ALERT_MORE"] = "e altre %d"
+L["OPT_QUEST_ALERT"] = "Avvisa delle missioni di spedizione mancanti"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Quando arrivi nella zona di una spedizione del tuo livello, dice in chat quali sue missioni puoi ancora prendere (chi le dà di solito è fuori). Dentro, ti ricorda quelle che hai. Una volta per spedizione e sessione."

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Zadanie, którego wszystkie wcześniejsze kroki ła�
 L["RPG_MARK_DONE_HINT"] = "Shift+PPM: oznacz jako ukończone (jeśli już je przeszedłeś)"
 L["RPG_MARKED_DONE"] = "Oznaczono jako ukończone: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Odblokowane przez Wyzwania dziedzictwa: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Możesz jeszcze wziąć %d zadań do %s, którego wejście jest w tej strefie:"
+L["QUEST_ALERT_HINT"] = "Otwórz je w atlasie przez %s."
+L["QUEST_ALERT_INSIDE"] = "Masz %d zadań do %s:"
+L["QUEST_ALERT_MORE"] = "i %d więcej"
+L["OPT_QUEST_ALERT"] = "Ostrzegaj o brakujących zadaniach lochów"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Gdy dotrzesz do strefy lochu na twój poziom, napisze na czacie, które jego zadania możesz jeszcze wziąć (zleceniodawcy są zwykle na zewnątrz). W środku przypomina o tych, które masz. Raz na loch i sesję."

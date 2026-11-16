@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "जिस क्वेस्ट की श्रृ�
 L["RPG_MARK_DONE_HINT"] = "Shift+दायाँ क्लिक: पूरा चिह्नित करें (अगर आप पहले ही पूरा कर चुके हैं)"
 L["RPG_MARKED_DONE"] = "पूरा चिह्नित: %s।"
 L["RPG_LEGACY_UNLOCKED"] = "Legacy Challenges से खुला: %s।"
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "अभी भी %d क्वेस्ट लेने बाकी हैं - %s (प्रवेश इसी क्षेत्र में है):"
+L["QUEST_ALERT_HINT"] = "इन्हें %s से एटलस में खोलें।"
+L["QUEST_ALERT_INSIDE"] = "आपके पास %d क्वेस्ट हैं - %s:"
+L["QUEST_ALERT_MORE"] = "और %d"
+L["OPT_QUEST_ALERT"] = "छूटे डंजन क्वेस्ट की चेतावनी"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "अपने स्तर के डंजन के क्षेत्र में पहुँचने पर चैट में बताता है कि उसके कौन से क्वेस्ट आप अभी भी ले सकते हैं (क्वेस्ट देने वाले आमतौर पर बाहर होते हैं)। अंदर, आपके पास वाले याद दिलाता है। हर डंजन और सत्र में एक बार।"

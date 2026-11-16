@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Et oppdrag der alle tidligere steg i kjeden er gjort
 L["RPG_MARK_DONE_HINT"] = "Shift+høyreklikk: merk som fullført (hvis du allerede har fullført den)"
 L["RPG_MARKED_DONE"] = "Merket som fullført: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Låst opp av dine Legacy Challenges: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Du kan fortsatt ta %d oppdrag til %s, som har inngangen i denne sonen:"
+L["QUEST_ALERT_HINT"] = "Åpne dem i atlaset med %s."
+L["QUEST_ALERT_INSIDE"] = "Du har %d oppdrag til %s:"
+L["QUEST_ALERT_MORE"] = "og %d til"
+L["OPT_QUEST_ALERT"] = "Varsle om manglende dungeonoppdrag"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Når du kommer til sonen for en dungeon på ditt nivå, skriver den i chatten hvilke av oppdragene du fortsatt kan ta (oppdragsgiverne står som regel utenfor). Inne minner den deg på dem du har. Én gang per dungeon og økt."

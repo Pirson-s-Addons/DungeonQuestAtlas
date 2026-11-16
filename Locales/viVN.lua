@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Nhiệm vụ đã xong mọi bước trước trong 
 L["RPG_MARK_DONE_HINT"] = "Shift+chuột phải: đánh dấu đã xong (nếu bạn đã hoàn thành trước đó)"
 L["RPG_MARKED_DONE"] = "Đã đánh dấu xong: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Mở khóa bởi Legacy Challenges: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Bạn vẫn còn %d nhiệm vụ có thể nhận cho %s, lối vào ở khu vực này:"
+L["QUEST_ALERT_HINT"] = "Mở chúng trong atlas bằng %s."
+L["QUEST_ALERT_INSIDE"] = "Bạn đang mang %d nhiệm vụ cho %s:"
+L["QUEST_ALERT_MORE"] = "và %d nữa"
+L["OPT_QUEST_ALERT"] = "Nhắc nhiệm vụ hầm ngục còn thiếu"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Khi tới khu vực của một hầm ngục hợp cấp độ, báo trong khung chat những nhiệm vụ của nó bạn vẫn có thể nhận (người giao thường ở bên ngoài). Bên trong, nhắc những nhiệm vụ bạn đang mang. Một lần mỗi hầm ngục và phiên chơi."

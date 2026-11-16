@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Úkol, jehož všechny předchozí kroky řetězce j
 L["RPG_MARK_DONE_HINT"] = "Shift+pravé tlačítko: označit jako hotové (pokud jsi ho už dokončil)"
 L["RPG_MARKED_DONE"] = "Označeno jako hotové: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Odemčeno tvými Legacy Challenges: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Ještě můžeš vzít %d úkolů do %s, který má vchod v této oblasti:"
+L["QUEST_ALERT_HINT"] = "Otevři je v atlasu příkazem %s."
+L["QUEST_ALERT_INSIDE"] = "Neseš %d úkolů do %s:"
+L["QUEST_ALERT_MORE"] = "a %d dalších"
+L["OPT_QUEST_ALERT"] = "Upozorňovat na chybějící úkoly z dungeonů"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Když dorazíš do oblasti dungeonu pro tvou úroveň, napíše do chatu, které jeho úkoly ještě můžeš vzít (zadavatelé bývají venku). Uvnitř připomene ty, které neseš. Jednou za dungeon a sezení."

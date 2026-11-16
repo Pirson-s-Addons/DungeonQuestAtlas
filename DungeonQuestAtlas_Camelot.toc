@@ -149,6 +149,7 @@ Core/Collector.lua
 Core/Integrations.lua
 Core/BossKills.lua
 Core/RunLog.lua
+Core/QuestAlert.lua
 Core/VersionCheck.lua
 
 UI/Theme.lua

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Zincirin önceki tüm adımları tamamlanmış bir g
 L["RPG_MARK_DONE_HINT"] = "Shift+sağ tık: tamamlandı olarak işaretle (daha önce bitirdiysen)"
 L["RPG_MARKED_DONE"] = "Tamamlandı olarak işaretlendi: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Legacy Challenges ile açıldı: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Hâlâ alabileceğin %d görev var - %s (girişi bu bölgede):"
+L["QUEST_ALERT_HINT"] = "Atlasta %s ile aç."
+L["QUEST_ALERT_INSIDE"] = "Üzerinde %d görev var - %s:"
+L["QUEST_ALERT_MORE"] = "ve %d tane daha"
+L["OPT_QUEST_ALERT"] = "Eksik zindan görevlerini bildir"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Seviyene uygun bir zindanın bölgesine vardığında, hâlâ alabileceğin görevlerini sohbette söyler (görev verenler genelde dışarıdadır). İçeride, üzerindekileri hatırlatır. Zindan ve oturum başına bir kez."

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "任务链之前的步骤全部完成后，该任务�
 L["RPG_MARK_DONE_HINT"] = "Shift+右键：标记为已完成（如果你之前已通关）"
 L["RPG_MARKED_DONE"] = "已标记为完成：%s。"
 L["RPG_LEGACY_UNLOCKED"] = "由你的传承挑战解锁：%s。"
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "还有%d个任务可以接 - %s（入口在本区域）："
+L["QUEST_ALERT_HINT"] = "用 %s 在图鉴中打开。"
+L["QUEST_ALERT_INSIDE"] = "你身上有%d个任务 - %s："
+L["QUEST_ALERT_MORE"] = "还有%d个"
+L["OPT_QUEST_ALERT"] = "提醒遗漏的地下城任务"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "到达适合你等级的地下城所在区域时，在聊天中列出你还能接的任务（任务给予者通常在外面）。在里面则提醒你身上的任务。每个地下城每次登录一次。"

@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "المهمة التي اكتملت كل خطوات �
 L["RPG_MARK_DONE_HINT"] = "Shift+نقر يمين: وضع علامة كمكتملة (إن كنت أنهيتها من قبل)"
 L["RPG_MARKED_DONE"] = "تم وضع علامة مكتملة: %s."
 L["RPG_LEGACY_UNLOCKED"] = "فُتحت بواسطة Legacy Challenges: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "لا يزال بإمكانك أخذ %d مهام لـ %s، ومدخلها في هذه المنطقة:"
+L["QUEST_ALERT_HINT"] = "افتحها في الأطلس بالأمر %s."
+L["QUEST_ALERT_INSIDE"] = "لديك %d مهام لـ %s:"
+L["QUEST_ALERT_MORE"] = "و%d أخرى"
+L["OPT_QUEST_ALERT"] = "التنبيه إلى مهام الزنزانات الناقصة"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "عند وصولك إلى منطقة زنزانة تناسب مستواك، يخبرك في الدردشة بالمهام التي ما زال بإمكانك أخذها (مانحو المهام غالبًا في الخارج). وفي الداخل يذكّرك بالتي معك. مرة لكل زنزانة وجلسة."

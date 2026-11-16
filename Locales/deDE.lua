@@ -513,3 +513,11 @@ L["PICKUP_GLOW_TOOLTIP"] = "Eine Quest, deren frühere Kettenschritte alle erled
 L["RPG_MARK_DONE_HINT"] = "Umschalt+Rechtsklick: als erledigt markieren (falls du sie schon abgeschlossen hast)"
 L["RPG_MARKED_DONE"] = "Als erledigt markiert: %s."
 L["RPG_LEGACY_UNLOCKED"] = "Durch deine Vermächtnis-Herausforderungen freigeschaltet: %s."
+
+-- Aviso de misiones que faltan (Core/QuestAlert.lua)
+L["QUEST_ALERT"] = "Du kannst noch %d Quests für %s annehmen, dessen Eingang in diesem Gebiet liegt:"
+L["QUEST_ALERT_HINT"] = "Öffne sie im Atlas mit %s."
+L["QUEST_ALERT_INSIDE"] = "Du hast %d Quests für %s dabei:"
+L["QUEST_ALERT_MORE"] = "und %d weitere"
+L["OPT_QUEST_ALERT"] = "Vor fehlenden Dungeonquests warnen"
+L["OPT_QUEST_ALERT_TOOLTIP"] = "Wenn du das Gebiet eines Dungeons deiner Stufe erreichst, steht im Chat, welche seiner Quests du noch annehmen kannst (die Questgeber stehen meist draußen). Drinnen erinnert es dich an die, die du dabei hast. Einmal pro Dungeon und Sitzung."
