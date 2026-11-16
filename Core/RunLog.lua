@@ -402,10 +402,63 @@ local function Pattern(format)
     return format and "^" .. format:gsub("[%^%$%(%)%.%[%]%*%+%-%?]", "%%%0"):gsub("%%s", "(.+)") .. "$" or nil
 end
 
+-- "Need Roll - %d for %s by %s" -> patron de Lua y que valor va en cada hueco. Otros
+-- idiomas los reordenan con "%2$s": order[k] dice que argumento del juego es la captura k.
+local function RollPattern(format)
+    if type(format) ~= "string" then return end
+    local parts, order, i, n = {}, {}, 1, 0
+    local function Escape(text) return (text:gsub("[%^%$%(%)%.%[%]%*%+%-%?%%]", "%%%0")) end
+    while true do
+        local s, e, pos, kind = format:find("%%(%d*)%$?([sd])", i)
+        if not s then break end
+        n = n + 1
+        parts[#parts + 1] = Escape(format:sub(i, s - 1))
+        parts[#parts + 1] = kind == "d" and "(%d+)" or "(.+)"
+        order[#order + 1] = tonumber(pos) or n
+        i = e + 1
+    end
+    parts[#parts + 1] = Escape(format:sub(i))
+    return "^" .. table.concat(parts) .. "$", order
+end
+ns.RollPattern = RollPattern
+
+-- Formato del juego -> tipo de tirada y posicion de { tirada, objeto, jugador } en sus argumentos
+local ROLLS = {
+    { "LOOT_ROLL_ROLLED_NEED", "need", 1, 2, 3 },
+    { "LOOT_ROLL_ROLLED_NEED_ROLE_BONUS", "need", 1, 3, 4 },
+    { "LOOT_ROLL_ROLLED_GREED", "greed", 1, 2, 3 },
+    { "LOOT_ROLL_ROLLED_DE", "greed", 1, 2, 3 },
+}
+
+-- La tirada de cada jugador, por objeto: run.rolls[itemID] = { { who, roll, kind }, ... }
+-- ponytail: por itemID; dos copias del mismo objeto en una partida juntan sus tiradas
+local function RollMessage(run, message)
+    for _, def in ipairs(ROLLS) do
+        local pattern, order = RollPattern(_G[def[1]])
+        local caps = pattern and { message:match(pattern) }
+        if caps and caps[1] then
+            local args = {}
+            for k, v in ipairs(caps) do args[order[k]] = v end
+            local roll, id, who = tonumber(args[def[3]]), ItemIDOf(args[def[4]]), args[def[5]]
+            if not (roll and id and who) then return true end
+            run.rolls = run.rolls or {}
+            local list = run.rolls[id] or {}
+            run.rolls[id] = list
+            for _, r in ipairs(list) do
+                if r.who == who and r.roll == roll then return true end
+            end
+            list[#list + 1] = { who = who, roll = roll, kind = def[2] }
+            Changed()
+            return true
+        end
+    end
+end
+
 local function LootMessage(message)
     local run = Active()
     message = ns.PlainText(message)
     if not (run and type(message) == "string") then return end
+    if RollMessage(run, message) then return end
     local others, own = Pattern(LOOT_ITEM), Pattern(LOOT_ITEM_SELF)
     local who, link
     if others then who, link = message:match(others) end

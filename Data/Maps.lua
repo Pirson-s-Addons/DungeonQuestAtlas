@@ -124,10 +124,12 @@ ns.Maps = {
     -- id = clave: Art/Maps/<CLAVE>_<1-12>.tga, generadas con
     -- _project/tools/dqa_maps/forever_maps.py.
     -- Sin chinchetas: aun no se sabe en que sala esta cada jefe
-    ALCAZ = { { id = "ALCAZ", pins = {} }, { id = "ALCAZ2", pins = {} } }, -- Main Unit y Maximum Security Unit
+    -- Alcaz, planta 1: salas de un mapa marcado por jugadores, pasado a este dibujo alineando los dos (16-11).
+    ALCAZ = { { id = "ALCAZ", pins = { { 1, 0.627, 0.339 }, { 2, 0.273, 0.175 }, { 3, 0.370, 0.715 } } }, { id = "ALCAZ2", pins = { { 4, 0.404, 0.714 }, { 5, 0.646, 0.713 } } } }, -- Main Unit y Maximum Security Unit
     DROWNED = {
-        { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 5, 0.618, 0.672 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 } } },
-        { id = "DROWNED2", pins = {} }, -- Atal'Byzal
+        -- Primeval Elemental esta en la sala redonda de Atal'Byzal; Umbra y Braxton, raros (16-11).
+        { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 }, { 7, 0.545, 0.829 }, { 8, 0.495, 0.368 } } },
+        { id = "DROWNED2", pins = { { 5, 0.667, 0.549 } } }, -- Atal'Byzal
     },
     KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.701 }, { 2, 0.392, 0.732 }, { 3, 0.621, 0.526 }, { 4, 0.411, 0.578 }, { 5, 0.617, 0.431 }, { 6, 0.688, 0.242 } } } },
     SHAPERS = { { id = "SHAPERS", pins = {} } },

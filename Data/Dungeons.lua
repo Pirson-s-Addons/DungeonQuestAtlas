@@ -8,7 +8,8 @@ local _, ns = ...
 -- juego (sin confirmar dentro); sin el aun: Krol'dok, Ciudad Sumergida y Terraza del Modelador.
 -- part: las que comparten instancia (Cumbre de Roca Negra, y las alas del
 -- Monasterio Escarlata, La Masacre y Stratholme); se le anade "(<parte>)".
--- minLevel / maxLevel: de foreverchanges.pro.
+-- minLevel / maxLevel: de foreverchanges.pro; donde el cliente ya las trae, las del buscador de grupo
+-- (GroupFinderActivity de la build 1.60.1.70450: MinLevel y MaxLevelSuggestion).
 -- entrance: { mapID = uiMapID, x = 0-100, y = 0-100 }, donde entra el jugador.
 -- Portal al aire libre: su AreaTrigger (wago.tools, wow_classic_era) cruzado con
 -- areatrigger_teleport de AzerothCore y pasado a la zona con UiMapAssignment.
@@ -40,7 +41,7 @@ ns.Dungeons = {
         quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848, 4295, 97197 },
         -- Llave Sombraforja: abre la puerta del fondo (basta con que la lleve uno)
         attunement = { item = 11000, itemName = "Shadowforge Key", Both = { 3801, 3802 } } },
-    { key = "DALARAN", name = "City of Dalaran", instanceID = 2959, minLevel = 28, maxLevel = 33, isForever = true, faction = "Both",
+    { key = "DALARAN", name = "City of Dalaran", instanceID = 2959, minLevel = 28, maxLevel = 35, isForever = true, faction = "Both",
         entrance = { mapID = 1416, x = 8.0, y = 61.2 },
         quests = { 96986, 96988, 96984, 96987, 92489, 92458, 92456, 92457 },
         -- Llave de las cloacas: la da Heart of Disruption (wowhead.com/forever/quest=96984); la Horda
@@ -56,13 +57,13 @@ ns.Dungeons = {
     { key = "DM_W", name = "Dire Maul (West)", instanceID = 429, minLevel = 56, maxLevel = 60, isForever = false, faction = "Both", part = "WEST",
         entrance = { mapID = 1444, x = 60.3, y = 30.2 },
         quests = { 7499, 7505, 7498, 7502, 7504, 7500, 7506, 7503, 7501, 7461, 7462, 7877, 1318, 5528, 8948, 8949, 8950, 8967, 8990, 7507, 7508, 5247 } },
-    { key = "EXCAVATION", name = "Excavation Site", instanceID = 2998, minLevel = 24, maxLevel = 29, isForever = true, faction = "Both",
+    { key = "EXCAVATION", name = "Excavation Site", instanceID = 2998, minLevel = 26, maxLevel = 33, isForever = true, faction = "Both",
         entrance = { mapID = 1437, x = 47.8, y = 56.3 },
         quests = { 95697, 95682, 95664, 98823, 95646, 95647, 95809, 95772, 95795, 95810, 98824, 98815 } },
     { key = "GNOMER", name = "Gnomeregan", instanceID = 90, minLevel = 29, maxLevel = 38, isForever = false, faction = "Both",
         entrance = { mapID = 1426, x = 24.3, y = 39.8 },
         quests = { 2922, 2926, 2928, 2962, 2843, 2904, 2924, 2930, 2951, 2952, 2841, 2929, 2945, 2947, 2949 } },
-    { key = "THANES", name = "Hall of Thanes", instanceID = 3065, minLevel = 13, maxLevel = 18, isForever = true, faction = "Both",
+    { key = "THANES", name = "Hall of Thanes", instanceID = 3065, minLevel = 13, maxLevel = 20, isForever = true, faction = "Both",
         entrance = { mapID = 1455, x = 43.5, y = 52.0 },
         quests = { 96393, 96394, 96395, 96403, 98423 } },
     { key = "KROLDOK", name = "Krol'dok Stronghold", instanceID = nil, minLevel = 40, maxLevel = 45, isForever = true, faction = "Both", entrance = { mapID = 2548, x = 37.5, y = 37.3 },
@@ -84,7 +85,7 @@ ns.Dungeons = {
     { key = "RFK", name = "Razorfen Kraul", instanceID = 47, minLevel = 29, maxLevel = 38, isForever = false, faction = "Both",
         entrance = { mapID = 1413, x = 42.2, y = 89.8 },
         quests = { 1221, 1144, 1142, 1102, 1101, 1109, 1701, 1838, 96016, 79442 } },
-    { key = "LORDAERON", name = "Ruins of Lordaeron", instanceID = 2999, minLevel = 15, maxLevel = 20, isForever = true, faction = "Both",
+    { key = "LORDAERON", name = "Ruins of Lordaeron", instanceID = 2999, minLevel = 15, maxLevel = 22, isForever = true, faction = "Both",
         entrance = { mapID = 1420, x = 64.4, y = 67.5 },
         quests = { 92422, 92421, 92401, 95216, 97288, 95204, 95250, 95195, 92415, 95189 } },
     { key = "SM_ARM", name = "Scarlet Monastery (Armory)", instanceID = 189, minLevel = 36, maxLevel = 44, isForever = false, faction = "Both", part = "ARMORY",
@@ -106,7 +107,7 @@ ns.Dungeons = {
         attunement = { item = 13704, itemName = "Skeleton Key",
             Alliance = { 5092, 5097, 5533, 5537, 5538, 5801, 5803, 5505 },
             Horde = { 5096, 5098, 838, 964, 5514, 5802, 5804, 5511 } } },
-    { key = "SFK", name = "Shadowfang Keep", instanceID = 33, minLevel = 22, maxLevel = 30, isForever = false, faction = "Both",
+    { key = "SFK", name = "Shadowfang Keep", instanceID = 33, minLevel = 20, maxLevel = 30, isForever = false, faction = "Both",
         entrance = { mapID = 1421, x = 44.6, y = 67.7 },
         quests = { 1013, 1098, 1014, 1654, 1740, 78307, 95140 } },
     { key = "SHAPERS", name = "Shaper's Terrace", instanceID = nil, minLevel = 58, maxLevel = 60, isForever = true, faction = "Both", entrance = { mapID = 1449, x = 48.1, y = 6.1 },
@@ -140,7 +141,7 @@ ns.Dungeons = {
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
         quests = { 4788, 6502, 4982, 5001, 4983, 4862, 4729, 5002, 6602, 5047, 4974, 5102, 4866, 5127, 4765, 4764, 4735, 4734, 4743, 4768, 5160, 8995, 8966, 8989, 6569, 6821, 7761, 8994 },
         attunement = { item = 12344, itemName = "Seal of Ascension", Both = { 4742, 4743 } } },
-    { key = "WC", name = "Wailing Caverns", instanceID = 43, minLevel = 17, maxLevel = 24, isForever = false, faction = "Both",
+    { key = "WC", name = "Wailing Caverns", instanceID = 43, minLevel = 15, maxLevel = 24, isForever = false, faction = "Both",
         entrance = { mapID = 1413, x = 46.0, y = 36.4 },
         quests = { 914, 1486, 1491, 962, 959, 1487, 6981 } },
     { key = "ZF", name = "Zul'Farrak", instanceID = 209, minLevel = 44, maxLevel = 54, isForever = false, faction = "Both",

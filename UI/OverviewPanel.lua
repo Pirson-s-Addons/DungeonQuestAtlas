@@ -247,21 +247,23 @@ function ns.CreateOverviewPanel(page)
         summonHeader.text:SetText(membersText and L.ALTAR_GUARDIANS or L.SUMMON_HEADER)
         summonText:SetShown(summon ~= nil or membersText ~= nil)
         summonText:SetText(membersText or (summon and L[summon.text]) or "")
+        -- Sin objetos (se invoca con algo que no tiene sitio): solo el texto
+        local items = summon and summon.items
         local half = (ns.Width(bossView, 330) - 10) / 2
         for i, card in ipairs(summonCards) do
-            card:SetShown(summon ~= nil)
-            if summon then
+            card:SetShown(items ~= nil)
+            if items then
                 card:ClearAllPoints()
                 card:SetWidth(half)
                 card:SetPoint("TOPLEFT", summonText, "BOTTOMLEFT", (i - 1) * (half + 6), -6)
-                ns.SetPlaceCard(card, summon.items[i])
+                ns.SetPlaceCard(card, items[i])
             end
         end
         header:ClearAllPoints()
         header:SetPoint("RIGHT", -4, 0)
-        if summon then
+        if items then
             header:SetPoint("TOPLEFT", summonCards[1], "BOTTOMLEFT", 0, -8)
-        elseif membersText then
+        elseif summon or membersText then
             header:SetPoint("TOPLEFT", summonText, "BOTTOMLEFT", -6, -8)
         else
             header:SetPoint("TOPLEFT", onMap, "BOTTOMLEFT", -6, -8)
@@ -314,7 +316,7 @@ function ns.CreateOverviewPanel(page)
         bossName:SetText(ns.BossName(boss, d))
         bossInfo:SetText((dead and ("|cffa01010" .. L.BOSS_KILLED .. "|r  ·  ") or "") .. ns.BossInfo(boss, ns.RARE_PREFIX))
         onMap:SetEnabled(ns.BossFloor(d, panel.index) ~= nil)
-        ShowSummon(boss.summon, boss.members and MembersText(d, boss) or nil)
+        ShowSummon(boss.summon, not boss.summon and boss.members and MembersText(d, boss) or nil)
         local journal = ns.JournalBoss(d, boss)
         bossLore.text:SetText(journal and journal.description or L.NO_BOSS_LORE)
         bossLore:Fit()

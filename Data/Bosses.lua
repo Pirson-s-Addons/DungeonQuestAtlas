@@ -33,7 +33,7 @@ ns.Bosses = {
         { name = "Tidemistress Ca'zass", npcID = 255997, display = 4973, level = 50, loot = { { 276735 }, { 276736 }, { 276737, probable = true }, { 273883, quest = true } } },
         { name = "Katerina the Cleaner", npcID = 257016, display = 2317, level = 52, loot = { { 276739 }, { 276738, probable = true } } },
         { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = { { 276890, quest = true }, { 276744 }, { 276745 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 276740, probable = true }, { 287019, probable = true }, { 287020, probable = true }, { 276746, probable = true }, { 287018 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 276740, probable = true }, { 287019, probable = true }, { 287020, probable = true }, { 276746, probable = true }, { 287018 }, { 287017 }, { 287022 }, { 287023 }, { 287024 }, { 287025, mobs = "Strashaz Enchantress" } } },
     },
     -- Abierta desde el 07-11-2026: jefes en el orden del juego. Botin de sus jefes visto sin ID publico aun: no se pone
     -- hasta tenerlo; el de los bichos, Satyr's Touch (Wowhead Forever).
@@ -48,7 +48,7 @@ ns.Bosses = {
         { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, level = 59, loot = { { 280065 }, { 280066 }, { 280067 } } },
         { name = "Unbound Spirit", npcID = 247231, display = 131644, level = 59, loot = { { 280071 }, { 280073 }, { 280072 } } },
         { name = "Varrox Bleakhoof", npcID = 247234, display = 130447, level = 60, loot = { { 280074 }, { 280075 }, { 280076 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287036, mobs = "Legashi Ritualist" }, { 287032 }, { 287034 }, { 287028 }, { 251453, mobs = "Legashi Summoner" }, { 287029, mobs = "Blackmaw Berserker / Blackmaw Thrall" }, { 287030, mobs = "Legashi Subjugator" }, { 287033, mobs = "Blackmaw Devotee / Blackmaw Berserker / Legashi Slayer" }, { 252893 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287036, mobs = "Legashi Ritualist" }, { 287032 }, { 287034 }, { 287028 }, { 251453, mobs = "Legashi Summoner" }, { 287029, mobs = "Blackmaw Berserker / Blackmaw Thrall" }, { 287030, mobs = "Legashi Subjugator" }, { 287033, mobs = "Blackmaw Devotee / Blackmaw Berserker / Legashi Slayer" }, { 252893 }, { 287031 }, { 287035 } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 252893, from = { 11 } }, { 251453, from = { 11 } } } },
     },
     -- Lo visto caer hasta ahora (07-11-2026). probable = true: objetos de la misma tanda del
@@ -63,7 +63,7 @@ ns.Bosses = {
         { name = "Umbra", npcID = 264172, kind = "rare", level = 38, loot = { { 286662 }, { 286658, probable = true } } },
         { name = "\"Pyromancer\" Braxton", npcID = 260468, display = 142457, kind = "rare", level = 38, loot = { { 286650 }, { 286651 } } },
         { name = "Min'loth the Serpent", npcID = 260274, display = 142322, level = 40, loot = { { 274610 }, { 274608 }, { 274609 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287002, mobs = "Risen Sentry" }, { 286997 }, { 287005, mobs = "Risen Sentry / Champion of the Deep / Brinescale Sorceress / Makrura Snapper" } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287002, mobs = "Risen Sentry" }, { 286997 }, { 287005, mobs = "Risen Sentry / Champion of the Deep / Brinescale Sorceress / Makrura Snapper" }, { 286998 }, { 286999 }, { 287000 }, { 287001 }, { 287003 }, { 287004 }, { 287006 } } },
     },
     -- Lo visto caer hasta ahora (08-11-2026). El resto del conjunto Krol'dok Warplate (el peto lo suelta Nar'gurk):
     -- sin saber quien lo suelta.
@@ -88,8 +88,9 @@ ns.Bosses = {
         { name = "Snowtalon", npcID = 262297, level = 62, loot = { { 280026 } } },
         { name = "Vitrix", npcID = 272561, display = 147098, level = 62, loot = { { 280031 }, { 280027, probable = true }, { 280028 } } },
         { name = "Izha'Rel and Tor'Rel", npcID = 253218, display = 143040, level = 61, loot = { { 280014 }, { 280013 }, { 280012 } } },
-        { name = "Nanaya", npcID = 261809, display = 143832, level = 62, loot = { { 280023 }, { 280025 }, { 280024 }, { 273128 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287037 }, { 287044, mobs = "Stegodon Young" }, { 287045, mobs = "Ravasaur Juvenile" } } },
+        { name = "Nanaya", npcID = 261809, display = 143832, level = 62, loot = { { 280023 }, { 280025 }, { 280024 }, { 273128 }, { 273116, 3.3 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287037 }, { 287044, mobs = "Stegodon Young" }, { 287045, mobs = "Ravasaur Juvenile" }, { 287038 }, { 287039 }, { 287040 }, { 287041 }, { 287042 }, { 287043 }, { 287046 } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 273116, 3.3, from = { 10 } }, { 273128, from = { 10 } } } },
     },
     BFD = {
         { name = "Ghamoo-ra", npcID = 4887, display = 5027, level = 25, loot = { { 6907, 37.3 }, { 6908, 56.4 }, { 273839 }, { 251380, 0.03 }, { 251381, 0.02 }, { 251382, 0.08 }, { 252798, 0.05 }, { 252800, 0.03 }, { 252801, 0.08 }, { 252803, 0.02 }, { 253938, 0.03 }, { 253940, 0.05 }, { 253942, 0.03 }, { 253944, 0.02 }, { 253946, 0.03 }, { 251384 }, { 251383 }, { 251345 }, { 251346 }, { 251347 }, { 251348 }, { 251349 }, { 252792 }, { 252793 }, { 252794 }, { 252795 }, { 252796 }, { 252797 }, { 253948 } } },
@@ -125,7 +126,7 @@ ns.Bosses = {
         { name = "Golem Lord Argelmach", npcID = 8983, display = 8759, level = 57, loot = { { 11823, 37.2 }, { 11822, 36.8 }, { 11669, 9.5 }, { 11819, 8.9 }, { 273113 } } },
         { name = "Guzzler", display = 8658, level = 55, loot = { { 11735, 7.6 }, { 18043, 20.4 }, { 22275, 23 }, { 18044, 23.9 }, { 18592 }, { 11612, 12.4 }, { 2662, 8.5 }, { 2663, 9 }, { 11742, 13.8 }, { 12793, 29.5 }, { 12791, 10.2 }, { 18653, 16.9 }, { 13483 }, { 15759 }, { 11325, 1.6 }, { 11602, 0.2 } } },
         { name = "Phalanx", npcID = 9502, display = 8177, level = 55, loot = { { 22212, 25.1 }, { 11745, 30.7 }, { 11744, 24.9 }, { 11743, 8.4 }, { 276879 } } },
-        { name = "Ambassador Flamelash", npcID = 9156, display = 8329, level = 57, loot = { { 11808, 0.3 }, { 11812, 39.6 }, { 11814, 38.4 }, { 11832, 8.7 }, { 11809, 9.6 }, { 23320 } } },
+        { name = "Ambassador Flamelash", npcID = 9156, display = 8329, level = 57, loot = { { 11808, 0.3 }, { 11812, 39.6 }, { 11814, 38.4 }, { 11832, 8.7 }, { 11809, 9.6 }, { 23320 }, { 273122, 0.9 } } },
         { name = "Panzor the Invincible", npcID = 8923, kind = "rare", display = 8270, level = 57, loot = { { 22245, 21.8 }, { 11787, 21.8 }, { 11785, 21.8 }, { 11786, 31 } } },
         { name = "Chest of The Seven", display = 8690, level = 55, loot = { { 11925, 25 }, { 11926, 26.7 }, { 11929, 50 }, { 11927, 46.7 }, { 11920, 25 }, { 11923, 36.2 }, { 11922, 25 }, { 11921, 25 } } },
         { name = "Magmus", npcID = 9938, display = 12162, level = 57, loot = { { 11746, 19.8 }, { 11935, 18.1 }, { 22395, 12.3 }, { 22400, 12.3 }, { 22208, 23.5 }, { 277129, quest = true } } },
@@ -135,7 +136,9 @@ ns.Bosses = {
         { name = "Plans", kind = "object", loot = { { 11614 }, { 11615 } } },
         -- Se invoca con el Estandarte de provocacion en el Anillo de la Ley (mision 9015).
         { name = "Theldren", npcID = 16059, level = 60, kind = "rare", loot = { { 22047, quest = true }, { 22330 }, { 22317 }, { 22318 } } },
-        { name = "Recipes & Patterns", kind = "recipes", loot = { { 11813, from = { 1 } }, { 11610, from = { 5 } }, { 11207, from = { 10 } }, { 11611, from = { 28 } }, { 11614, from = { 28 } }, { 11615, from = { 28 } }, { 16049, from = { 28 } }, { 16048, from = { 28 } }, { 18654, from = { 28 } }, { 16053, from = { 28 } }, { 18661, from = { 28 } } } },
+        -- Tabernero del Grim Guzzler: solo pelea si se le provoca; no cuenta para terminar la partida.
+        { name = "Plugger Spazzring", npcID = 9499, level = 54, optional = true, loot = { { 276877 } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 11813, from = { 1 } }, { 11610, from = { 5 } }, { 11207, from = { 10 } }, { 11611, from = { 28 } }, { 11614, from = { 28 } }, { 11615, from = { 28 } }, { 16049, from = { 28 } }, { 16048, from = { 28 } }, { 18654, from = { 28 } }, { 16053, from = { 28 } }, { 18661, from = { 28 } }, { 273122, 0.9, from = { 22 } } } },
     },
     DM_E = {
         { name = "Pusillin", npcID = 14354, display = 7552, level = 57, loot = { { 18267, 83 }, { 18249, 100 }, { 18316 } } },
@@ -160,7 +163,7 @@ ns.Bosses = {
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 18655, from = { 9 } }, { 18414, from = { 5 } }, { 18517, from = { 5 } }, { 18518, from = { 5 } }, { 18519, from = { 5 } }, { 18415, from = { 5 } }, { 18416, from = { 5 } }, { 18417, from = { 5 } }, { 18418, from = { 5 } }, { 18514, from = { 5 } }, { 18515, from = { 5 } }, { 18516, from = { 5 } } } },
     },
     DM_W = {
-        { name = "Tendris Warpwood", npcID = 11489, display = 14383, level = 60, loot = { { 18393, 24 }, { 18390, 24.9 }, { 18352, 23.8 }, { 18353, 24 } } },
+        { name = "Tendris Warpwood", npcID = 11489, display = 14383, level = 60, loot = { { 18393, 24 }, { 18390, 24.9 }, { 18352, 23.8 }, { 18353, 24 }, { 273120 } } },
         { name = "Illyanna Ravenoak", npcID = 11488, display = 11270, level = 60, loot = { { 18383, 23.9 }, { 18386, 22 }, { 18349, 24.2 }, { 18347, 24.3 } } },
         { name = "Magister Kalendris", npcID = 11487, display = 14384, level = 60, loot = { { 18374, 19.9 }, { 18397, 19.4 }, { 18371, 8.7 }, { 18350, 25.2 }, { 18351, 23.4 }, { 22309, 0.4 } } },
         { name = "Tsu'zee", npcID = 11467, kind = "rare", display = 11250, level = 59, loot = { { 18387, 30.4 }, { 18346, 29.1 }, { 18345, 32.7 } } },
@@ -169,7 +172,7 @@ ns.Bosses = {
         { name = "Trash mobs", kind = "trash", loot = { { 18340, 1.2 }, { 18344, 0.9 }, { 18338, 0.9 }, { 18333 }, { 18334 }, { 18332 }, { 18289, 1.7 }, { 18295, 1.3 }, { 18296, 0.6 }, { 18298, 0.7 }, { 18337, 0.8 }, { 18339, 1 }, { 18343, 1.1 }, { 18354, 24.3 }, { 18450, 9.9 }, { 18451, 9.1 }, { 18458, 9 }, { 18459, 9.6 }, { 18460, 9.4 }, { 18462, 9.2 }, { 18463, 9.1 }, { 18464, 9.4 }, { 18493, 6 }, { 18494, 6.8 }, { 18496, 6.5 }, { 18497, 5.9 }, { 18498, 6.8 } } },
         { name = "Shen'dralar Provisioner", kind = "object", display = 14412, level = 52, loot = { { 18487 } } },
         { name = "Lord Hel'nurath", npcID = 14506, kind = "object", display = 14556, level = 62, loot = { { 18757, 22.2 }, { 18754, 23.6 }, { 18755, 25.7 }, { 18756, 24.9 } } },
-        { name = "Recipes & Patterns", kind = "recipes", loot = { { 22309, from = { 3 } } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 22309, from = { 3 } }, { 273120, from = { 1 } } } },
     },
     -- Ciudad de Dalaran (09-10-2026, ya abierta): orden de la guia de Wowhead (Mana Devourer,
     -- que no sale en ella, antes de Fel Ancient: este se abre al matar a los de alrededor).
@@ -211,7 +214,7 @@ ns.Bosses = {
         { name = "Durgen Dirgehammer", npcID = 261319, display = 142837, level = 16, loot = { { 270256 }, { 270260 }, { 270261 }, { 274286 } } },
     },
     LBRS = {
-        { name = "Burning Felguard", npcID = 10263, kind = "rare", display = 5047, level = { 56, 57 }, loot = { { 13181, 31.2 }, { 13182, 32 } } },
+        { name = "Burning Felguard", npcID = 10263, kind = "rare", summon = { text = "SUMMON_FELGUARD" }, display = 5047, level = { 56, 57 }, loot = { { 13181, 31.2 }, { 13182, 32 } } },
         { name = "Spirestone Butcher", npcID = 9219, kind = "rare", display = 11574, level = 57, loot = { { 12608, 59.3 }, { 13286, 37.2 } } },
         { name = "Highlord Omokk", npcID = 9196, display = 11565, level = 59, loot = { { 16670, 13 }, { 13166, 14 }, { 13168, 10.8 }, { 13170, 12.5 }, { 13169, 14 }, { 13167, 14.6 }, { 12336, 27.5 }, { 12534, 89.8 } } },
         { name = "Spirestone Battle Lord", npcID = 9218, kind = "rare", display = 11576, level = 58, loot = { { 13284, 56.4 }, { 13285, 38.4 } } },
@@ -228,6 +231,8 @@ ns.Bosses = {
         { name = "Ghok Bashguud", npcID = 9718, kind = "rare", display = 11809, level = 59, loot = { { 13203, 39.1 }, { 13198, 22.5 }, { 13204, 34 } } },
         { name = "Overlord Wyrmthalak", npcID = 9568, display = 8711, level = 60, loot = { { 13143, 1 }, { 16679, 16.1 }, { 13162, 16.6 }, { 13164, 2.2 }, { 22321, 11 }, { 13163, 15.1 }, { 13148, 3.4 }, { 13161, 17.8 }, { 12337, 40.5 }, { 12780, 26.9 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 14513 }, { 16696, 2.9 }, { 16685 }, { 16683, 3.1 }, { 16703, 3 }, { 16713, 2.7 }, { 16716 }, { 16680, 3 }, { 16673, 2.8 }, { 16736 }, { 16735, 2.8 }, { 15749 }, { 15775 }, { 13494 }, { 16250 }, { 16244 }, { 9214 }, { 12219 }, { 12586 }, { 13260 }, { 251451 } } },
+        -- 0.5: se invoca con el Brasero de las misiones del conjunto de mazmorra 2 (trozos del amuleto de Valthalak).
+        { name = "Mor Grayhoof", npcID = 16080, kind = "rare", level = 60, summon = { text = "SUMMON_BRAZIER" }, loot = { { 22306 }, { 22319 }, { 22322 }, { 22325 }, { 22398 } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 249521, from = { 9 } }, { 12838, from = { 8 } }, { 12835, from = { 12 } }, { 14513, from = { 17 } }, { 251451, from = { 17 } }, { 15775, from = { 17 } }, { 16250, from = { 17 } }, { 16244, from = { 17 } } } },
     },
     MARA = {
@@ -324,10 +329,10 @@ ns.Bosses = {
         { name = "Rattlegore", npcID = 11622, display = 12073, level = 61, loot = { { 16711, 18.5 }, { 14539, 12.4 }, { 14538, 11.8 }, { 18686, 11.7 }, { 14537, 12.2 }, { 14528, 12.1 }, { 14531, 12.5 }, { 18782, 8.4 }, { 13873, 100 } } },
         { name = "Death Knight Darkreaver", npcID = 14516, display = 14591, level = 62, loot = { { 18760, 25.9 }, { 18761, 22.6 }, { 18758, 25 }, { 18759, 21.8 }, { 18749, quest = true }, { 18880, quest = true } } },
         { name = "Marduk Blackpool", npcID = 10433, display = 10248, level = 58, loot = { { 18692, 7 }, { 14576, 6.5 } } },
-        { name = "Vectus", npcID = 10432, display = 2606, level = 60, loot = { { 18691, 6.8 }, { 14577, 7.5 } } },
+        { name = "Vectus", npcID = 10432, display = 2606, level = 60, loot = { { 18691, 6.8 }, { 14577, 7.5 }, { 273121, 5.9 } } },
         { name = "Ras Frostwhisper", npcID = 10508, display = 7919, level = 62, loot = { { 13314, 0.4 }, { 16689, 18.8 }, { 14503, 14.2 }, { 14340, 14.7 }, { 18693, 15.2 }, { 14525, 14.7 }, { 14502, 15.6 }, { 14522, 14.9 }, { 18694, 15.4 }, { 18695, 15.4 }, { 18696, 15.4 }, { 13952, 14.9 }, { 14487, 15.9 }, { 13521, 4.5 }, { 273112 } } },
         { name = "Instructor Malicia", npcID = 10505, display = 11069, level = 60, loot = { { 16710, 4.5 }, { 18681, 1.5 }, { 14633, 4.6 }, { 14626, 1.4 }, { 14637, 1.5 }, { 14611, 1.4 }, { 14624, 1.4 }, { 14629, 4.6 }, { 14640, 4.6 }, { 14615, 4.5 }, { 14622, 4.1 }, { 14636, 4.4 }, { 14614, 4.5 }, { 14620, 4.6 }, { 14632, 4.5 }, { 14638, 4.6 }, { 18682, 1.5 }, { 14612, 4.5 }, { 14623, 4.8 }, { 14631, 4.4 }, { 14641, 4.6 }, { 14616, 4.3 }, { 14621, 4.7 }, { 18684, 1.5 }, { 23201, 0.3 }, { 23200, 0.1 }, { 18680, 1.4 }, { 18683, 1.6 } } },
-        { name = "Doctor Theolen Krastinov", npcID = 11261, display = 10901, level = 60, loot = { { 16684, 5.2 }, { 14617, 1.4 }, { 18681, 1.6 }, { 14633, 4.5 }, { 14626, 1.7 }, { 14637, 1.4 }, { 14611, 1.2 }, { 14624, 1.5 }, { 14629, 4.9 }, { 14640, 4.1 }, { 14615, 4.2 }, { 14622, 4.3 }, { 14636, 4.7 }, { 14614, 4.4 }, { 14620, 4.2 }, { 14632, 4.5 }, { 14638, 4.7 }, { 18682, 1.5 }, { 14612, 4.2 }, { 14623, 4 }, { 14631, 4.5 }, { 14641, 4.3 }, { 14616, 4.3 }, { 14621, 4.1 }, { 18684, 1.4 }, { 23201, 0.9 }, { 23200, 0.5 }, { 18680, 1.5 }, { 18683, 1.4 } } },
+        { name = "Doctor Theolen Krastinov", npcID = 11261, display = 10901, level = 60, loot = { { 16684, 5.2 }, { 14617, 1.4 }, { 18681, 1.6 }, { 14633, 4.5 }, { 14626, 1.7 }, { 14637, 1.4 }, { 14611, 1.2 }, { 14624, 1.5 }, { 14629, 4.9 }, { 14640, 4.1 }, { 14615, 4.2 }, { 14622, 4.3 }, { 14636, 4.7 }, { 14614, 4.4 }, { 14620, 4.2 }, { 14632, 4.5 }, { 14638, 4.7 }, { 18682, 1.5 }, { 14612, 4.2 }, { 14623, 4 }, { 14631, 4.5 }, { 14641, 4.3 }, { 14616, 4.3 }, { 14621, 4.1 }, { 18684, 1.4 }, { 23201, 0.9 }, { 23200, 0.5 }, { 18680, 1.5 }, { 18683, 1.4 }, { 273118, 3.8 } } },
         { name = "Lorekeeper Polkelt", npcID = 10901, display = 11492, level = 60, loot = { { 16705, 5.2 }, { 18681, 1.5 }, { 14633, 4.5 }, { 14626, 1.5 }, { 14637, 1.4 }, { 14611, 1.3 }, { 14624, 1.5 }, { 14629, 4.4 }, { 14640, 4.5 }, { 14615, 4.7 }, { 14622, 4.2 }, { 14636, 4.6 }, { 14614, 4.4 }, { 14620, 4.4 }, { 14632, 4.6 }, { 14638, 4.4 }, { 18682, 1.4 }, { 14612, 4.7 }, { 14623, 4.2 }, { 14631, 4.7 }, { 14641, 4.4 }, { 14616, 4.5 }, { 14621, 4.2 }, { 18684, 1.4 }, { 23201, 0.1 }, { 23200, 0.1 }, { 18680, 1.5 }, { 18683, 1.3 } } },
         { name = "The Ravenian", npcID = 10507, display = 10433, level = 60, loot = { { 16716, 4.6 }, { 18681, 1.4 }, { 14633, 4.5 }, { 14626, 1.3 }, { 14637, 1.3 }, { 14611, 1.5 }, { 14624, 1.4 }, { 14629, 4.4 }, { 14640, 4.7 }, { 14615, 4.6 }, { 14622, 4.6 }, { 14636, 4.6 }, { 14614, 4.6 }, { 14620, 4.5 }, { 14632, 4.3 }, { 14638, 4.7 }, { 18682, 1.4 }, { 14612, 4.3 }, { 14623, 4.3 }, { 14631, 4.6 }, { 14641, 4.5 }, { 14616, 4.7 }, { 14621, 4.2 }, { 18684, 1.6 }, { 23201, 0.3 }, { 23200, 0.1 }, { 18680, 1.4 }, { 18683, 1.4 } } },
         { name = "Lord Alexei Barov", npcID = 10504, display = 11072, level = 60, loot = { { 16722, 4.3 }, { 18681, 9.1 }, { 14633, 0.2 }, { 14626, 9.7 }, { 14637, 9.3 }, { 14611, 8.7 }, { 14624, 9 }, { 14629, 0.3 }, { 14640, 0.2 }, { 14615, 0.1 }, { 14622, 0.2 }, { 14636, 0.3 }, { 14614, 0.1 }, { 14620, 0.2 }, { 14632, 0.3 }, { 14638, 0.3 }, { 18682, 9.2 }, { 14612, 0.1 }, { 14623, 0.2 }, { 14631, 0.3 }, { 14641, 0.4 }, { 14616, 0.1 }, { 14621, 0.1 }, { 18684, 9.3 }, { 23201, 1.1 }, { 23200, 0.7 }, { 18680, 9.4 }, { 18683, 9.7 } } },
@@ -335,8 +340,8 @@ ns.Bosses = {
         { name = "Darkmaster Gandling", npcID = 1853, display = 11070, level = 61, loot = { { 13937, 1.7 }, { 14514, 8.7 }, { 16693, 10.8 }, { 16686, 13.8 }, { 16698, 11 }, { 16707, 10.4 }, { 16720, 11.2 }, { 16677, 13.2 }, { 16667, 4.3 }, { 16727, 6.6 }, { 16731, 12.3 }, { 13944, 15.2 }, { 13951, 13.1 }, { 13950, 2.1 }, { 13398, 12.8 }, { 22433, 12.5 }, { 13938, 12.9 }, { 13953, 11.2 }, { 13964, 12.6 }, { 19276, 4.3 }, { 13501, 7.5 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 16685, mobs = "Scholomance Adept" }, { 16702, mobs = "Scholomance Necromancer" }, { 16710, mobs = "Scholomance Occultist / Risen Construct" }, { 16714, mobs = "Diseased Ghoul" }, { 16716, mobs = "Spectral Researcher / Spectral Teacher / Scholomance Handler" }, { 16671, mobs = "Splintered Skeleton" }, { 16722, 3.2, mobs = "Risen Warrior / Risen Protector" }, { 12843 }, { 12841 }, { 12840 }, { 20520, mobs = "Scholomance Necromancer / Scholomance Dark Summoner" }, { 12753, mobs = "Risen Construct / Risen Bonewarder" }, { 18698, all = true }, { 18699, all = true }, { 14536, all = true }, { 18700, all = true }, { 18702, all = true }, { 18697, all = true }, { 18701, all = true }, { 16254, mobs = "Spectral Researcher" }, { 16255, mobs = "Scholomance Adept" }, { 15773, mobs = "Spectral Researcher" }, { 15776, mobs = "Scholomance Dark Summoner" }, { 13920 }, { 16684, 4.7 }, { 16705, 4.5 }, { 14611, 2.2 }, { 14612, 3.1 }, { 14614, 3.1 }, { 14615, 3.2 }, { 14616, 3.1 }, { 14620, 3.2 }, { 14621, 3.1 }, { 14622, 3.1 }, { 14623, 3 }, { 14624, 2.3 }, { 14626, 2.5 }, { 14629, 3.3 }, { 14631, 3.4 }, { 14632, 3.3 }, { 14633, 3.3 }, { 14636, 3.4 }, { 14637, 2.4 }, { 14638, 3.4 }, { 14640, 3.3 }, { 14641, 3.3 }, { 18680, 2.5 }, { 18681, 2.5 }, { 18682, 2.4 }, { 18683, 2.5 }, { 18684, 2.4 }, { 23200, 1.2 }, { 23201, 1.6 }, { 252940 } } },
         -- FDJ 2.0.8 (Wowhead Forever, % de sus muertes): se invoca en la sala de Ras con el Brasero de las misiones del Set 2
-        { name = "Kormok", npcID = 16118, kind = "rare", display = 16020, level = 60, loot = { { 22332, 14.6 }, { 22303, 15.6 }, { 22326, 12.2 }, { 21984, 15.1, quest = true }, { 22046, 3.4, quest = true } } },
-        { name = "Recipes & Patterns", kind = "recipes", loot = { { 13521, from = { 8 } }, { 14514, from = { 15 } }, { 13501, from = { 15 } }, { 16254, from = { 16 } }, { 16255, from = { 16 } }, { 15776, from = { 16 } }, { 15773, from = { 16 } }, { 252940, from = { 16 } } } },
+        { name = "Kormok", npcID = 16118, kind = "rare", summon = { text = "SUMMON_BRAZIER" }, display = 16020, level = 60, loot = { { 22332, 14.6 }, { 22303, 15.6 }, { 22326, 12.2 }, { 21984, 15.1, quest = true }, { 22046, 3.4, quest = true }, { 22331 }, { 22333 } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 13521, from = { 8 } }, { 14514, from = { 15 } }, { 13501, from = { 15 } }, { 16254, from = { 16 } }, { 16255, from = { 16 } }, { 15776, from = { 16 } }, { 15773, from = { 16 } }, { 252940, from = { 16 } }, { 273118, 3.8, from = { 10 } }, { 273121, 5.9, from = { 7 } } } },
     },
     SFK = {
         { name = "Rethilgore", npcID = 3914, display = 524, level = 20, loot = { { 5254, 89.5 }, { 273456 }, { 273457 } } },
@@ -371,12 +376,14 @@ ns.Bosses = {
         { name = "Plans", kind = "object", loot = { { 12827 }, { 12830 } } },
         -- FDJ 2.0.8 (Wowhead Forever, % de sus muertes): sale al tocar la caja de tabaco (The Great Fras Siabi)
         { name = "Ezra Grimm", npcID = 11058, display = 10475, level = 61, optional = true, loot = { { 276396, 41.2 }, { 276395, 26.5 }, { 276394, 20.6 }, { 13172, 35.3, quest = true }, { 273129, 94.1 }, { 273117, 5.9 } } },
+        -- 0.5: se invocan juntos en la sala de Balnazzar con el mismo Brasero.
+        { name = "Jarien and Sothos", kind = "rare", level = 60, summon = { text = "SUMMON_BRAZIER" }, members = { { name = "Jarien", npcID = 16101, level = 60 }, { name = "Sothos", npcID = 16102, level = 60 } }, loot = { { 22301 }, { 22327 }, { 22328 }, { 22329 } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 12839, from = { 9 } }, { 14512, from = { 11 } }, { 13520, from = { 11 } }, { 16249, from = { 12 } }, { 15777, from = { 12 } }, { 18658, from = { 12 } }, { 16052, from = { 12 } }, { 12827, from = { 12 } } } },
     },
     STRAT_UD = {
         { name = "Magistrate Barthilas", npcID = 10435, display = 10433, level = 58, loot = { { 18727, 15.6 }, { 13376, 15.3 }, { 18726, 15.1 }, { 18722, 15.4 }, { 23198, 1.2 }, { 18725, 15.7 }, { 12382, 100 } } },
         { name = "Stonespine", npcID = 10809, kind = "rare", display = 7856, level = 60, loot = { { 13397, 31.3 }, { 13954, 29.6 }, { 13399, 34 } } },
-        { name = "Baroness Anastari", npcID = 10436, display = 10698, level = 59, loot = { { 16704, 17.7 }, { 18728, 17.5 }, { 18730, 18.6 }, { 18729, 17.2 }, { 13534, 17.2 }, { 13538, 10.1 }, { 13535, 10.6 }, { 13537, 10.5 }, { 13539, 10.7 }, { 13514, 8.9 } } },
+        { name = "Baroness Anastari", npcID = 10436, display = 10698, level = 59, loot = { { 16704, 17.7 }, { 18728, 17.5 }, { 18730, 18.6 }, { 18729, 17.2 }, { 13534, 17.2 }, { 13538, 10.1 }, { 13535, 10.6 }, { 13537, 10.5 }, { 13539, 10.7 }, { 13514, 8.9 }, { 273124, 7.1 } } },
         { name = "Black Guard Swordsmith", npcID = 11121, display = 775, level = { 61, 62 }, loot = { { 18783, 42.4 } } },
         { name = "Nerub'enkan", npcID = 10437, display = 9793, level = 60, loot = { { 16675, 17.7 }, { 18740, 18.1 }, { 18739, 18 }, { 18738, 18.1 }, { 13529, 18.6 }, { 13533, 10.8 }, { 13532, 10.8 }, { 13531, 11.2 }, { 13530, 11.2 }, { 13508, 9 } } },
         { name = "Maleki the Pallid", npcID = 10438, display = 10546, level = 61, loot = { { 16691, 17.8 }, { 18734, 18.3 }, { 18735, 17.9 }, { 13524, 17.9 }, { 18737, 18.9 }, { 13528, 10.4 }, { 13525, 10.9 }, { 13526, 11.2 }, { 13527, 11.3 }, { 13509, 8.7 }, { 12833, 8 } } },
@@ -384,7 +391,7 @@ ns.Bosses = {
         { name = "Baron Rivendare", npcID = 10440, display = 10729, level = 62, loot = { { 13335 }, { 13505, 0.1 }, { 22411, 11.6 }, { 22412, 17.2 }, { 13340, 14.6 }, { 13346, 14.4 }, { 22409, 16.4 }, { 13344, 13.3 }, { 22410, 11.9 }, { 13345, 12.7 }, { 22408, 17.5 }, { 13349, 15.6 }, { 13368, 5.7 }, { 13361, 6.2 }, { 16694, 10.2 }, { 16687, 13.3 }, { 16699, 9.9 }, { 16709, 11.2 }, { 16719, 8 }, { 16678, 11.1 }, { 16668, 4.1 }, { 16728, 6.8 }, { 16732, 8.7 }, { 13251, quest = true } } },
         { name = "Trash mobs", kind = "trash", loot = { { 16697, 1.2, mobs = "Thuzadin Necromancer / Thuzadin Shadowcaster" }, { 16685, mobs = "Thuzadin Shadowcaster / Thuzadin Necromancer" }, { 16702, mobs = "Thuzadin Necromancer / Thuzadin Shadowcaster" }, { 16710, mobs = "Plague Ghoul" }, { 16714, mobs = "Shrieking Banshee / Wailing Banshee" }, { 16681, mobs = "Ghoul Ravener / Fleshflayer Ghoul" }, { 16671, mobs = "Crypt Crawler / Crypt Beast" }, { 16723, 2.1, mobs = "Rockwing Gargoyle / Rockwing Screecher" }, { 16736, mobs = "Patchwork Horror / Venom Belcher / Bile Spewer" }, { 12811 }, { 12735, mobs = "Patchwork Horror / Bile Spewer / Venom Belcher" }, { 12843 }, { 12841 }, { 12840 }, { 18742, all = true }, { 18743, all = true }, { 17061, all = true }, { 18741, all = true }, { 18744, all = true }, { 18745, all = true }, { 18736, all = true }, { 16249 }, { 16248, mobs = "Thuzadin Shadowcaster" }, { 14495, mobs = "Spectral Citizen" }, { 15777 }, { 15768, mobs = "Ghoul Ravener" }, { 18658 }, { 16052 }, { 16725, 14.2 }, { 12103, 15.6 }, { 13348, 15.6 }, { 13358, 13.6 }, { 13359, 15.5 }, { 13360, 14.6 }, { 13369, 16 }, { 18717, 14.1 }, { 18718, 12 }, { 18720, 11.8 }, { 12830 } } },
         { name = "Plans", kind = "object", loot = { { 12827 }, { 12830 } } },
-        { name = "Recipes & Patterns", kind = "recipes", loot = { { 12833, from = { 6 } }, { 16248, from = { 9 } }, { 14495, from = { 9 } }, { 15768, from = { 9 } }, { 12830, from = { 9 } } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 12833, from = { 6 } }, { 16248, from = { 9 } }, { 14495, from = { 9 } }, { 15768, from = { 9 } }, { 12830, from = { 9 } }, { 273124, 7.1, from = { 3 } } } },
     },
     ST = {
         { name = "Balcony Minibosses", display = 6701, level = 52, members = { { name = "Gasher", npcID = 5713, level = 51 }, { name = "Hukku", npcID = 5715, level = 52 }, { name = "Loro", npcID = 5714, level = 51 }, { name = "Mijan", npcID = 5717, level = 52 }, { name = "Zolo", npcID = 5712, level = 51 }, { name = "Zul'Lor", npcID = 5716, level = 52 } }, loot = { { 10783, 5 }, { 10784, 2.6 }, { 10787, 7 }, { 10788, 10.1 }, { 10785, 5.7 }, { 10786, 8.3 }, { 20606, 20 }, { 20607, 23.9 }, { 20608, 22.4 } } },

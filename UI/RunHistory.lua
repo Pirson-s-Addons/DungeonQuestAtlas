@@ -74,7 +74,8 @@ local function DetailRows(run)
         rows[#rows + 1] = Header(L.RUN_NEED)
         for _, need in ipairs(run.needs) do
             rows[#rows + 1] = { left = Plain(need.link), link = need.link, itemID = need.id,
-                right = need.won and L.RUN_WON or L.RUN_NOT_WON, dim = not need.won }
+                right = need.won and L.RUN_WON or L.RUN_NOT_WON, dim = not need.won,
+                rolls = run.rolls and run.rolls[need.id] }
         end
     end
 
@@ -104,6 +105,21 @@ local function DetailTooltip(self)
     elseif item.link and not ns.BROKEN_TOOLTIP[item.itemID] then
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetHyperlink(item.link)
+        -- Lo que saco cada uno, de mayor a menor (la Necesidad gana a la Codicia)
+        if item.rolls and #item.rolls > 0 then
+            local list = {}
+            for _, r in ipairs(item.rolls) do list[#list + 1] = r end
+            table.sort(list, function(a, b)
+                if a.kind ~= b.kind then return a.kind == "need" end
+                return a.roll > b.roll
+            end)
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine(L.RUN_ROLLS, 1, 0.82, 0)
+            for _, r in ipairs(list) do
+                GameTooltip:AddDoubleLine(r.who, (r.kind == "need" and L.RUN_ROLL_NEED or L.RUN_ROLL_GREED):format(r.roll),
+                    1, 1, 1, 0.8, 0.8, 0.8)
+            end
+        end
         GameTooltip:Show()
     end
 end

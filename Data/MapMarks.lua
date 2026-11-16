@@ -82,8 +82,13 @@ ns.MapMarks = {
         { "item", 0.372, 0.419, 275521, "MAP_ITEM_TOP" },
     } },
     EXCAVATION = { { { "entrance", 0.888, 0.258 } } },
-    ALCAZ = { { { "entrance", 0.367, 0.171 } } },
-    DROWNED = { { { "entrance", 0.845, 0.522 } } },
+    ALCAZ = { { { "entrance", 0.367, 0.171 }, { "down", 0.348, 0.553, 2 } } }, -- la escalera se abre con el llavero de Wrex
+    -- Se baja a Atal'Byzal buceando (dos sitios) y se sube por los dos extremos del pasillo
+    -- (el del norte, con tiburones).
+    DROWNED = {
+        { { "entrance", 0.845, 0.522 }, { "down", 0.575, 0.599, 2 }, { "down", 0.590, 0.837, 2 } },
+        { { "up", 0.679, 0.111, 1 }, { "up", 0.262, 0.792, 1 } },
+    },
     BLACKMAW = { { { "entrance", 0.218, 0.723 } } }, -- el remolino de la planta I
     KROLDOK = { { { "entrance", 0.205, 0.806 } } },
     SHAPERS = { { { "entrance", 0.088, 0.409 } } },
