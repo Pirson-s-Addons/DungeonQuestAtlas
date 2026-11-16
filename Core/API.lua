@@ -192,4 +192,38 @@ DungeonQuestAtlasAPI = {
         end
         return info
     end,
+
+    -- Partidas de mazmorra del personaje, la mas nueva primero (ver Core/RunLog.lua):
+    -- { { key, name, started, duration, finished, open, deaths, xp, money, trash,
+    --     bosses = { nombre, ... } (en el orden en que murieron),
+    --     loot = { { itemID, link, boss, who } } (who: quien se lo llevo, si se sabe),
+    --     needs = { { itemID, link, won } } (lo que tiraste a Necesidad),
+    --     party = { { name, class } } }, ... }
+    -- started y los tiempos en segundos de GetServerTime(); finished: mato a todos los jefes.
+    GetRuns = function()
+        local out = {}
+        for _, run in ipairs(ns.char and ns.char.runLog or {}) do
+            local d = ns.DungeonByKey and ns.DungeonByKey[run.key]
+            local info = {
+                key = run.key, name = d and ns.DungeonName(d) or run.key, started = run.first or run.started,
+                duration = ns.RunDuration(run), finished = run.finished ~= nil, open = not run.closed,
+                deaths = run.deaths, xp = run.xp, money = run.money, trash = run.trashCount,
+                bosses = {}, loot = {}, needs = {}, party = {},
+            }
+            for name in pairs(run.bosses or {}) do info.bosses[#info.bosses + 1] = name end
+            table.sort(info.bosses, function(a, b) return run.bosses[a] < run.bosses[b] end)
+            for _, l in ipairs(run.loot or {}) do
+                info.loot[#info.loot + 1] = { itemID = l.id, link = l.link, boss = l.boss, who = l.who }
+            end
+            for _, n in ipairs(run.needs or {}) do
+                info.needs[#info.needs + 1] = { itemID = n.id, link = n.link, won = n.won or false }
+            end
+            for name, class in pairs(run.party or {}) do
+                info.party[#info.party + 1] = { name = name, class = class ~= "" and class or nil }
+            end
+            table.sort(info.party, function(a, b) return a.name < b.name end)
+            out[#out + 1] = info
+        end
+        return out
+    end,
 }
