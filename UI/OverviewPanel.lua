@@ -164,7 +164,8 @@ function ns.CreateOverviewPanel(page)
         if not ns.GroupFinderShown() then return end
         -- Por encima de DQA (va en HIGH): si se pisan, que se vea la ventana del juego
         local main = DungeonQuestAtlasFrame
-        if main and not InCombatLockdown() and LFGParentFrame:GetFrameStrata() ~= main:GetFrameStrata() then
+        -- Con mando no se toca el panel del juego (lo gestiona su navegacion: accion bloqueada)
+        if main and not InCombatLockdown() and not ns.GamepadUI() and LFGParentFrame:GetFrameStrata() ~= main:GetFrameStrata() then
             LFGParentFrame:SetFrameStrata(main:GetFrameStrata())
             LFGParentFrame:SetFrameLevel(main:GetFrameLevel() + 50)
         end

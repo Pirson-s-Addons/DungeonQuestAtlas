@@ -422,6 +422,32 @@ local function RollPattern(format)
 end
 ns.RollPattern = RollPattern
 
+-- Forever pone delante de cada linea del chat de botin una etiqueta que abre el
+-- historial ("|HlootHistory:..|h[Botin]|h: ") y los nombres van como enlace de
+-- jugador y en el color de su clase: limpios, la linea es la del formato del juego.
+-- Los enlaces de objeto se quedan (llevan |H dentro del color y no casan).
+function ns.CleanLootLine(message)
+    -- El color va dentro del enlace del jugador: primero el color, luego el enlace
+    return (message:gsub("|HlootHistory:[^|]*|h.-|h:?%s*", "")
+        :gsub("|c%x%x%x%x%x%x%x%x([^|]*)|r", "%1")
+        :gsub("|Hplayer:[^|]*|h%[?([^%]|]*)%]?|h", "%1"))
+end
+
+-- Capturas de un patron de RollPattern en una linea del chat de botin, o nil. Si no
+-- casa entera, otra vez limpia y sin pedir el principio (otra etiqueta delante, que
+-- se quita de la primera captura)
+function ns.MatchLootLine(pattern, message)
+    local caps = { message:match(pattern) }
+    if caps[1] then return caps end
+    local clean = ns.CleanLootLine(message)
+    caps = { clean:match(pattern) }
+    if caps[1] then return caps end
+    caps = { clean:match((pattern:gsub("^%^", ""))) }
+    if not caps[1] then return nil end
+    caps[1] = caps[1]:gsub("^%[[^%]|]*%]:?%s*", "")
+    return caps
+end
+
 -- Formato del juego -> tipo de tirada y posicion de { tirada, objeto, jugador } en sus argumentos
 local ROLLS = {
     { "LOOT_ROLL_ROLLED_NEED_ROLE_BONUS", "need", 1, 3, 4 }, -- antes: el general se comeria el bonus en el nombre
@@ -435,8 +461,8 @@ local ROLLS = {
 local function RollMessage(run, message)
     for _, def in ipairs(ROLLS) do
         local pattern, order = RollPattern(_G[def[1]])
-        local caps = pattern and { message:match(pattern) }
-        if caps and caps[1] then
+        local caps = pattern and ns.MatchLootLine(pattern, message)
+        if caps then
             local args = {}
             for k, v in ipairs(caps) do args[order[k]] = v end
             local roll, id, who = tonumber(args[def[3]]), ItemIDOf(args[def[4]]), args[def[5]]
@@ -461,9 +487,9 @@ local function LootMessage(message)
     if RollMessage(run, message) then return end
     local others, own = Pattern(LOOT_ITEM), Pattern(LOOT_ITEM_SELF)
     local who, link
-    if others then who, link = message:match(others) end
+    if others then who, link = unpack(ns.MatchLootLine(others, message) or {}) end
     if not link and own then
-        link = message:match(own)
+        link = (ns.MatchLootLine(own, message) or {})[1]
         who = link and ns.UnitFullName("player")
     end
     local id = ItemIDOf(link)

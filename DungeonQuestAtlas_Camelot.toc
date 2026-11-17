@@ -101,6 +101,11 @@
 ## SavedVariablesPerCharacter: DungeonQuestAtlasCharDB
 ## OptionalDeps: TomTom, AtlasLoot, Questie, QuestieDB
 ## X-License: All Rights Reserved
+## X-Curse-Project-ID: 1713716
+## X-Copyright: Copyright (c) 2025-2026 Pirson
+## X-Website: https://github.com/Pirson-s-Addons/DungeonQuestAtlas
+## X-Localizations: enUS, esES, esMX, deDE, frFR, itIT, ptBR, ruRU, koKR, zhCN, zhTW, plPL, svSE, noNO, trTR, jaJP, arSA, hiIN, thTH, viVN, csCZ
+## X-Embeds: LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0
 
 # Solo WoW Forever: el sufijo _Camelot es el game type que busca ese cliente, y
 # sin un .toc generico ningun otro cliente lista el addon.
@@ -139,6 +144,7 @@ Data/MapQuests.lua
 Data/Raids.lua
 Data/Events.lua
 Data/Reputations.lua
+Data/TierSets.lua
 
 Core/Core.lua
 Core/QuestStatus.lua
@@ -172,6 +178,7 @@ UI/RollAdvisor.lua
 UI/RollHistory.lua
 UI/ItemSource.lua
 UI/LootSearch.lua
+UI/TierSets.lua
 UI/MainFrame.lua
 UI/Minimap.lua
 UI/Arrow.lua

@@ -27,7 +27,7 @@ ns.Maps = {
         { id = 223, tex = "interface\\worldmap\\blackfathomdeeps\\blackfathomdeeps3_%d", pins = { { 7, 0.606, 0.312 } } },
     },
     STOCKS = {
-        { id = 225, tex = "interface\\worldmap\\thestockade\\thestockade1_%d", pins = { { 1, 0.692, 0.309 }, { 2, 0.381, 0.24 }, { 3, 0.499, 0.242 }, { 4, 0.782, 0.456 }, { 5, 0.864, 0.52 } } },
+        { id = 225, tex = "interface\\worldmap\\thestockade\\thestockade1_%d", pins = { { 1, 0.692, 0.288 }, { 2, 0.291, 0.444 }, { 3, 0.44, 0.445 }, { 4, 0.78, 0.457 }, { 5, 0.864, 0.527 }, { 6, 0.215, 0.261 } } },
     },
     GNOMER = {
         { id = 226, tex = "interface\\worldmap\\gnomeregan\\gnomeregan1_%d", pins = { { 2, 0.819, 0.651 }, { 3, 0.576, 0.566 } } },

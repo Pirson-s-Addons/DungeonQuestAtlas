@@ -170,6 +170,11 @@ ns.Places = {
     ["npc:9021"] = { npcID = 9021, name = "Kharan Mighthammer", inside = true },
     ["npc:9023"] = { npcID = 9023, name = "Marshal Windsor", inside = true },
     ["npc:9077"] = { npcID = 9077, name = "Warlord Goretooth", mapID = 1418, x = 5.8, y = 47.6 },
+    ["npc:3009"] = { npcID = 3009, name = "Bena Winterhoof", mapID = 1456, x = 46.8, y = 33.4 },
+    ["npc:8479"] = { npcID = 8479, name = "Velarok Windblade", mapID = 1427, x = 39.0, y = 39.0 },
+    ["npc:8509"] = { npcID = 8509, name = "Squire Maltrake", mapID = 1427, x = 39.0, y = 39.0 },
+    ["npc:276110"] = { npcID = 276110, name = "Knight of Mourning", mapID = 1420, x = 17.6, y = 67.4 },
+    ["item:10569"] = { itemID = 10569 },
     ["npc:9078"] = { npcID = 9078, name = "Shadowmage Vivian Lagrave", mapID = 1418, x = 3, y = 47.6 },
     ["npc:9080"] = { npcID = 9080, name = "Lexlort", mapID = 1418, x = 5.8, y = 47.4 },
     ["npc:9081"] = { npcID = 9081, name = "Galamav the Marksman", mapID = 1418, x = 5.8, y = 47.4 },
@@ -403,6 +408,7 @@ ns.Places = {
     ["item:2874"] = { itemID = 2874 },
     ["item:5791"] = { itemID = 5791 },
     ["item:13920"] = { itemID = 13920 },
+    ["item:17008"] = { itemID = 17008 }, -- Small Scroll (Charlga Razorflank, Horado Rajacieno)
     ["item:18987"] = { itemID = 18987 },
     ["item:274268"] = { itemID = 274268 },
     -- Revision del 11-11-2026 (PNJ y sitios de las misiones nuevas; npcID comprobados en la API de tooltips de Wowhead Forever).

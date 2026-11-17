@@ -202,8 +202,21 @@ function ns.RefreshRollHistory()
     list:SetItems(rows)
 end
 
+-- Desde el boton de una tirada: abierta (sin cerrarla si ya lo estaba) y con ese objeto
+-- desplegado; la ventana se rellena sola mientras cada uno tira
+function ns.ShowRollHistory(rollID)
+    if not win then Create() end
+    for _, e in ipairs(ns.char and ns.char.rollHistory or {}) do
+        if rollID and e.rollID == rollID then expanded[e] = true end
+    end
+    if ns.SyncLootHistory then ns.SyncLootHistory() end
+    win:Show()
+    ns.RefreshRollHistory()
+end
+
 function ns.ToggleRollHistory()
     if not win then Create() end
+    if not win:IsShown() and ns.SyncLootHistory then ns.SyncLootHistory() end
     win:SetShown(not win:IsShown())
     ns.RefreshRollHistory()
 end

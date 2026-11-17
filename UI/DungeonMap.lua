@@ -123,6 +123,8 @@ local MARK_ICON = {
     note = { file = "Interface\\AddOns\\DungeonQuestAtlas\\Art\\UI\\ladder", size = 30 },
     -- Estatuas de serpiente del Templo Sumergido, con su numero de orden debajo
     statue = { file = "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", size = 22 },
+    -- Otro sitio donde puede estar un jefe que cambia de sala: su cara, atenuada
+    spawn = { size = 24 },
     -- Misiones (Data/MapQuests.lua): ! empieza, ? se entrega, la gema, hay que hacer algo ahi
     quest_start = { atlas = "QuestNormal", file = "Interface\\GossipFrame\\AvailableQuestIcon", size = 22 },
     quest_end = { atlas = "QuestTurnin", file = "Interface\\GossipFrame\\ActiveQuestIcon", size = 22 },
@@ -209,8 +211,12 @@ function ns.QuestSpotFloor(d, questID, act)
     end
 end
 
-local function SetMarkIcon(texture, kind, itemID)
+local function SetMarkIcon(texture, kind, itemID, boss)
     if kind == "item" then return texture:SetTexture(ns.ItemInfo(itemID).icon) end
+    if kind == "spawn" then
+        if boss then ns.SetBossPortrait(texture, boss) end
+        return
+    end
     local icon = MARK_ICON[kind]
     if icon.atlas and texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(icon.atlas) then
         texture:SetAtlas(icon.atlas)
@@ -244,7 +250,7 @@ local function CreateMark(canvas, plan)
     mark.focus:SetScript("OnHide", function() markPulse:Stop() end)
     mark:SetScript("OnClick", function(self)
         if self.kind == "entrance" then return ns.ShowEntranceOnWorldMap(plan.dungeon) end
-        if self.kind == "item" or self.kind == "note" or self.kind == "statue" then return end
+        if self.kind == "item" or self.kind == "note" or self.kind == "statue" or self.kind == "spawn" then return end
         if self.entries then
             ns.char.dungeon = plan.dungeon.key
             ns.ShowQuest(self.entries[1][1])
@@ -275,7 +281,7 @@ local function CreateMark(canvas, plan)
         if mark.kind == "statue" then
             return L.MAP_STATUE:format(mark.order, L[mark.hint]) .. "\n|cffffffff" .. L.MAP_STATUE_HINT .. "|r"
         end
-        if mark.kind == "note" then
+        if mark.kind == "note" or mark.kind == "spawn" then
             local boss = ns.Bosses[plan.dungeon.key] and ns.Bosses[plan.dungeon.key][mark.boss]
             return "|cff59ff59" .. L[mark.hint]:format(boss and ns.BossName(boss, plan.dungeon) or "?") .. "|r"
         end
@@ -495,7 +501,8 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
         for k, m in ipairs(floorMarks) do
             local mark = marks[k] or CreateMark(canvas, self)
             marks[k] = mark
-            local item, note, statue = m[1] == "item", m[1] == "note", m[1] == "statue"
+            local item, statue = m[1] == "item", m[1] == "statue"
+            local note = m[1] == "note" or m[1] == "spawn"
             mark.kind, mark.x, mark.y, mark.entries = m[1], m[2], m[3], nil
             mark.to = not (item or note or statue) and m[4] or nil
             mark.order = statue and m[4] or nil
@@ -506,8 +513,10 @@ local function CreatePlan(parent, onIdleDrag, onPinClick)
             for _, o in ipairs(floorMarks) do
                 if item and o[1] == "item" and o[4] == m[4] then mark.spots = mark.spots + 1 end
             end
-            SetMarkIcon(mark.icon, m[1], mark.itemID)
-            SetMarkIcon(mark.glow, m[1], mark.itemID)
+            local boss = m[1] == "spawn" and (ns.Bosses[self.dungeon.key] or {})[m[4]] or nil
+            SetMarkIcon(mark.icon, m[1], mark.itemID, boss)
+            SetMarkIcon(mark.glow, m[1], mark.itemID, boss)
+            mark.icon:SetAlpha(m[1] == "spawn" and 0.55 or 1)
             -- Entrada de una banda (tiene size): verde, como su portal en el mapa del mundo
             local raid = m[1] == "entrance" and self.dungeon.size ~= nil
             ns.TintPortal(mark.icon, raid)

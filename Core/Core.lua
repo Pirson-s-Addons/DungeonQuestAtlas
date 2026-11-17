@@ -53,6 +53,7 @@ local DEFAULTS = {
     rpgAccount = false,
     rpgShowQuests = false,
     onyxiaIcon = "auto",  -- icono de Onyxia en la portada: "auto" (al nivel de su cadena), "show" o "hide"
+    tierIcon = "auto",    -- icono de conjuntos de tier en la portada: "auto" (nivel 50), "show" o "hide"
     mapQuests = true,     -- ! ? y gemas de mision en los planos (UI/DungeonMap.lua)
     npcDisplays = {},     -- [npcID] = displayID de los PNJ de la flecha (su cara; UI/Arrow.lua)
     favorites = {},       -- objetos favoritos [itemID] = true (clic derecho; UI/LootSearch.lua)

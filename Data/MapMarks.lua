@@ -7,6 +7,7 @@ local _, ns = ...
 --   "up" / "down": escalera o rampa que sube o baja a otra planta;
 --   "floor": paso a otra planta sin saber si sube o baja;
 --   "item": sitio posible de un objeto { "item", x, y, itemID, clave de L con la pista };
+--   "spawn": otro sitio donde puede estar un jefe { "spawn", x, y, indice del jefe, clave de L con %s = su nombre }.
 --   "note": como llegar a un jefe { "note", x, y, indice del jefe, clave de L con %s = su nombre }.
 --   Horado Rajacieno: liana hasta Roogug (el salto por la pared ya no funciona, FDJ 2.0.5).
 --   "statue": estatua { "statue", x, y, orden, clave de L con su lado }. Templo Sumergido: las seis
@@ -53,7 +54,8 @@ ns.MapMarks = {
         { { "floor", 0.470, 0.700, 3 }, { "floor", 0.389, 0.276, 1 } },
         { { "floor", 0.407, 0.330, 2 } },
     },
-    STOCKS = { { { "entrance", 0.500, 0.815 } } },
+    STOCKS = { { { "entrance", 0.500, 0.815 }, { "spawn", 0.499, 0.205, 3, "MAP_NOTE_ALT_SPAWN" },
+        { "spawn", 0.335, 0.395, 3, "MAP_NOTE_ALT_SPAWN" }, { "spawn", 0.569, 0.544, 3, "MAP_NOTE_ALT_SPAWN" } } },
     GNOMER = {
         { { "entrance", 0.642, 0.278 }, { "down", 0.545, 0.409, 2 }, { "floor", 0.487, 0.877, 2 } },
         { { "floor", 0.245, 0.500, 3 }, { "floor", 0.747, 0.838, 1 } },

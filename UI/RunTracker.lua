@@ -198,7 +198,8 @@ end
 local function ShouldShow()
     local inside = ns.RunInside()
     if not inside then
-        dismissed, forced = false, false
+        -- Cerrada a mano: se olvida al salir vivo; de fantasma (vuelves corriendo) sigue cerrada
+        if not (UnitIsDeadOrGhost and UnitIsDeadOrGhost("player")) then dismissed, forced = false, false end
         return false
     end
     if not ns.CurrentDungeon() or dismissed then return false end

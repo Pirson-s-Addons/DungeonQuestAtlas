@@ -120,12 +120,14 @@ local MESSAGES = {
 
 -- Un mensaje del chat de botin (tambien para los tests). true si era de tiradas.
 function ns.RollHistoryMessage(message)
+    local raw = message
     message = ns.PlainText(message)
+    if raw ~= nil and message == nil then ns.Debug("botin: linea secreta, no se puede leer") end
     if type(message) ~= "string" or not ns.RollPattern then return end
     for _, def in ipairs(MESSAGES) do
         local pattern, order = ns.RollPattern(_G[def[1]])
-        local caps = pattern and { message:match(pattern) }
-        if caps and caps[1] then
+        local caps = pattern and ns.MatchLootLine(pattern, message)
+        if caps then
             local args = {}
             for k, v in ipairs(caps) do args[order[k]] = v end
             local link = args[def[4]]
@@ -150,6 +152,8 @@ function ns.RollHistoryMessage(message)
             return true
         end
     end
+    -- Con /dqa debug, la linea que no caso, con los codigos a la vista: su forma real en el juego
+    ns.Debug("botin sin casar: %s", (message:gsub("|", "||")))
 end
 
 -- Pidio con Necesidad algo que no le mejoraba mientras a otro si: devuelve "Nombre (+22%), ..." o nil
@@ -166,10 +170,89 @@ function ns.NeedWithoutUpgrade(up, who)
     return table.concat(others, ", ")
 end
 
+-- ------------------------------------------
+-- Historial de botin del juego (C_LootHistory)
+-- ------------------------------------------
+-- Dentro de las mazmorras el chat llega secreto a los addons: las lineas de tirada no se
+-- pueden leer. El historial de botin del juego (el de la etiqueta [Botin] del chat) da cada
+-- objeto con la tirada de cada jugador, y su evento no pasa por el chat. Es la fuente
+-- principal; el chat queda para cuando no este.
+
+local STATE = { [0] = "need", [1] = "need", [2] = "greed", [3] = "greed", [5] = "pass" } -- 4: aun no ha elegido
+
+function ns.RollHistoryDrop(encounterID, lootListKey)
+    local get = C_LootHistory and C_LootHistory.GetSortedInfoForDrop
+    if not get then return end
+    local ok, info = pcall(get, encounterID, lootListKey)
+    if not (ok and type(info) == "table") then return end
+    local link = ns.PlainText(info.itemHyperlink)
+    local id = ItemIDOf(link)
+    if not id then return end
+    local key = tostring(encounterID) .. ":" .. tostring(lootListKey)
+    local list, e = List(), nil
+    for _, entry in ipairs(list or {}) do
+        if entry.lootKey == key then e = entry break end
+    end
+    -- La entrada que abrio la tirada (START_LOOT_ROLL), sin otra copia ya enlazada, o una nueva
+    if not e then
+        for i = #(list or {}), 1, -1 do -- la mas vieja primero: las copias salen en orden
+            local entry = list[i]
+            if entry.id == id and not entry.lootKey and Now() - entry.at < KEEP_OPEN then e = entry break end
+        end
+    end
+    e = e or EntryFor(id, link)
+    if not e then return end
+    e.lootKey, e.link = key, e.link or link
+    local rolls, won = {}, {}
+    for _, r in ipairs(info.rollInfos or {}) do
+        local who = ns.PlainText(r.playerName)
+        local kind = STATE[ns.PlainText(r.state)]
+        if who and kind then
+            local row = { who = who, class = ns.PlainText(r.playerClass), kind = kind, roll = ns.PlainText(r.roll) }
+            if ns.PlainText(r.isWinner) then row.won, e.done, e.winner = true, true, who end
+            rolls[#rolls + 1] = row
+            if kind ~= "pass" and row.roll then won[#won + 1] = { who = who, roll = row.roll, kind = kind } end
+        end
+    end
+    if #rolls > 0 then e.rolls = rolls end
+    if ns.PlainText(info.allPassed) then e.done, e.allPassed = true, true end
+    -- Tambien en la partida (tooltip "Tiradas de todos:" del historial de partidas)
+    local run = ns.RunActive and ns.RunActive()
+    if run and #won > 0 then
+        run.rolls = run.rolls or {}
+        run.rolls[id] = won
+    end
+    Changed()
+    return e
+end
+
+local function OnEncounter(encounterID)
+    local get = C_LootHistory and C_LootHistory.GetSortedDropsForEncounter
+    local ok, drops = pcall(get or error, encounterID)
+    if not (ok and type(drops) == "table") then return end
+    for _, drop in ipairs(drops) do
+        local key = ns.PlainText(drop.lootListKey)
+        if key then ns.RollHistoryDrop(encounterID, key) end
+    end
+end
+
+-- Todo lo que el juego guarda de esta sesion (al abrir la ventana: rellena las ya tiradas)
+function ns.SyncLootHistory()
+    local all = C_LootHistory and C_LootHistory.GetAllEncounterInfos
+    local ok, infos = pcall(all or error)
+    if not (ok and type(infos) == "table") then return end
+    for _, info in ipairs(infos) do
+        local id = ns.PlainText(info.encounterID)
+        if id then OnEncounter(id) end
+    end
+end
+
 local frame = CreateFrame("Frame")
 local EVENTS = {
     START_LOOT_ROLL = OnStart,
     CHAT_MSG_LOOT = ns.RollHistoryMessage,
+    LOOT_HISTORY_UPDATE_DROP = ns.RollHistoryDrop,
+    LOOT_HISTORY_UPDATE_ENCOUNTER = OnEncounter,
 }
 frame:SetScript("OnEvent", function(_, event, ...) if ns.char then EVENTS[event](...) end end)
 for event in pairs(EVENTS) do pcall(frame.RegisterEvent, frame, event) end

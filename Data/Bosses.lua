@@ -31,9 +31,9 @@ ns.Bosses = {
         { name = "Overseer Wrex", npcID = 255391, level = 50, loot = { { 276733 }, { 276734 }, { 276732 } } },
         { name = "The Questioner", npcID = 256236, display = 140092, level = 51, loot = { { 276742 }, { 276743 }, { 276741 }, { 274029, quest = true } } },
         { name = "Tidemistress Ca'zass", npcID = 255997, display = 4973, level = 50, loot = { { 276735 }, { 276736 }, { 276737, probable = true }, { 273883, quest = true } } },
-        { name = "Katerina the Cleaner", npcID = 257016, display = 2317, level = 52, loot = { { 276739 }, { 276738, probable = true } } },
-        { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = { { 276890, quest = true }, { 276744 }, { 276745 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 276740, probable = true }, { 287019, probable = true }, { 287020, probable = true }, { 276746, probable = true }, { 287018 }, { 287017 }, { 287022 }, { 287023 }, { 287024 }, { 287025, mobs = "Strashaz Enchantress" } } },
+        { name = "Katerina the Cleaner", npcID = 257016, display = 2317, level = 52, loot = { { 276739 }, { 276738 }, { 276740 } } },
+        { name = "Blazeroar", npcID = 255702, display = 6374, level = 53, loot = { { 276890, quest = true }, { 276744 }, { 276745 }, { 276746 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287021 }, { 287019 }, { 287020 }, { 287018 }, { 287017 }, { 287022 }, { 287023 }, { 287024 }, { 287025, mobs = "Strashaz Enchantress" } } },
     },
     -- Abierta desde el 07-11-2026: jefes en el orden del juego. Botin de sus jefes visto sin ID publico aun: no se pone
     -- hasta tenerlo; el de los bichos, Satyr's Touch (Wowhead Forever).
@@ -44,7 +44,7 @@ ns.Bosses = {
         { name = "Gortek the Apprentice", npcID = 269111, display = 145808, level = 55, kind = "rare", loot = { { 280077 }, { 280078 } } },
         { name = "Tunnelweb Matriarch", npcID = 250034, level = 55, kind = "rare", loot = { { 280085 }, { 280086 } } },
         { name = "Withermaw", npcID = 247195, display = 140708, level = 58, loot = { { 280064 }, { 280062 }, { 280063 }, { 249697, quest = true } } },
-        { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, level = 59, loot = { { 280068 }, { 280069 }, { 280070 }, { 276893, quest = true } } },
+        { name = "Elder Shaman Bloodmane", npcID = 247209, display = 130440, level = 59, loot = { { 280068 }, { 280069 }, { 280070 }, { 276893, quest = true }, { 286415, quest = true } } },
         { name = "Blackmaw Behemoth", npcID = 247207, display = 130436, level = 59, loot = { { 280065 }, { 280066 }, { 280067 } } },
         { name = "Unbound Spirit", npcID = 247231, display = 131644, level = 59, loot = { { 280071 }, { 280073 }, { 280072 } } },
         { name = "Varrox Bleakhoof", npcID = 247234, display = 130447, level = 60, loot = { { 280074 }, { 280075 }, { 280076 } } },

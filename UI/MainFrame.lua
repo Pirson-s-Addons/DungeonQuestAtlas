@@ -32,6 +32,8 @@ function ns.FactionFilter()
     return filters.faction
 end
 
+function ns.GetFilter(key) return filters[key] end
+
 function ns.SetFilter(key, value)
     filters[key] = value
     if key == "faction" and ui then
@@ -222,18 +224,25 @@ function ns.RefreshUI()
         ui.pending:SetShown(not rpg)
         ui.journey:SetShown(rpg)
         ui.onyxia:Update()
+        ui.tier:Update()
+        ui.tier:ClearAllPoints() -- a la izquierda de Onyxia, o en su sitio si no sale
+        ui.tier:SetPoint("RIGHT", ui.lootButton, "LEFT", ui.onyxia:IsShown() and -74 or -40, 0)
         if rpg then ui.journey:Update() end
         -- Buscador de botin (UI/LootSearch.lua) en lugar de las tarjetas
-        local loot = filters.loot and true or false
+        -- Conjuntos de tier (UI/TierSets.lua): otra pagina en lugar de las tarjetas
+        local tiers = filters.tiers and ns.TierIconShown() and true or false
+        local loot = not tiers and filters.loot and true or false
         ui.lootButton:SetChecked(loot)
-        ui.gridArea:SetShown(not loot)
+        ui.gridArea:SetShown(not loot and not tiers)
         ui.lootSearch:SetShown(loot)
+        ui.tierPage:SetShown(tiers)
+        if tiers then ui.tierPage:Refresh() end
         -- Texto fijo: "Ocultas (3)", no el de las casillas marcadas
         ui.hiddenButton:OverrideText(L.HIDDEN_MENU:format(filters.hiddenCount or 0))
-        ui.hiddenButton:SetShown(not loot)
+        ui.hiddenButton:SetShown(not loot and not tiers)
         if loot then ui.lootSearch:Refresh() end
         ui.grid:Refresh(list)
-        ui.noResults:SetShown(not loot and #list == 0)
+        ui.noResults:SetShown(not loot and not tiers and #list == 0)
         UpdateNav(nil)
         return
     end
@@ -513,7 +522,10 @@ local function CreateHome(area)
     local lootButton = CreateFrame("CheckButton", nil, home, "UICheckButtonTemplate")
     lootButton:SetSize(26, 26)
     lootButton:SetPoint("RIGHT", range, "LEFT", -150, 0)
-    lootButton:SetScript("OnClick", function(self) ns.SetFilter("loot", self:GetChecked() and true or nil) end)
+    lootButton:SetScript("OnClick", function(self)
+        if self:GetChecked() then filters.tiers = nil end
+        ns.SetFilter("loot", self:GetChecked() and true or nil)
+    end)
     ns.AddTooltip(lootButton, L.LOOT_SEARCH_TOOLTIP)
     local lootLabel = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     lootLabel:SetPoint("LEFT", lootButton, "RIGHT", 0, 0)
@@ -522,6 +534,11 @@ local function CreateHome(area)
     ns.CreateRunHistoryButton(home):SetPoint("RIGHT", lootButton, "LEFT", -6, 0)
     ui.onyxia = ns.CreateOnyxiaButton(home) -- requisito de acceso de Onyxia (UI/Raids.lua)
     ui.onyxia:SetPoint("RIGHT", lootButton, "LEFT", -40, 0)
+    ui.tier = ns.CreateTierButton(home) -- conjuntos de tier (UI/TierSets.lua)
+    ui.tier:SetPoint("RIGHT", lootButton, "LEFT", -74, 0)
+    local tierArea = CreateFrame("Frame", nil, home)
+    tierArea:SetAllPoints(gridArea)
+    ui.tierPage = ns.CreateTierPage(tierArea)
     local hiddenButton = CreateFrame("DropdownButton", nil, home, "WowStyle1DropdownTemplate")
     hiddenButton:SetWidth(130)
     hiddenButton:SetPoint("TOPRIGHT", -18, -40)
