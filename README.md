@@ -20,20 +20,8 @@
 
 <table>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/287/screenshot_1-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Every dungeon, like the Adventure Guide</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/289/screenshot_3-png.png" alt="Quests, chains and rewards"><br><sub>Quests, chains and rewards</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/290/screenshot_4-png.png" alt="Bosses and loot"><br><sub>Bosses and loot</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/288/screenshot_2-png.png" alt="Entrance, map and route"><br><sub>Entrance, map and route</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/293/screenshot_6-png.png" alt="Dungeon map with M"><br><sub>Dungeon map with M</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/291/screenshot_5-png.png" alt="Maps of the new Forever dungeons"><br><sub>Maps of the new Forever dungeons</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/306/screenshot_8-jpg.jpg" alt="Map marker and guide arrow"><br><sub>Map marker and guide arrow</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/297/screenshot_7-png.png" alt="Language selector"><br><sub>Language selector</sub></td>
+<td align="center" width="50%"><img src=".github/screenshots/bosses.png" alt="Bosses and loot"><br><sub>Bosses and loot</sub></td>
+<td align="center" width="50%"><img src=".github/screenshots/dungeon.png" alt="Dungeon page"><br><sub>Dungeon page</sub></td>
 </tr>
 </table>
 

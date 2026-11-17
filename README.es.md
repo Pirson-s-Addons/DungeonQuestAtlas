@@ -20,20 +20,8 @@
 
 <table>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/287/screenshot_1-png.png" alt="Todas las mazmorras, como la Guía de aventuras"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/289/screenshot_3-png.png" alt="Misiones, cadenas y recompensas"><br><sub>Misiones, cadenas y recompensas</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/290/screenshot_4-png.png" alt="Jefes y botín"><br><sub>Jefes y botín</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/288/screenshot_2-png.png" alt="Entrada, mapa y ruta"><br><sub>Entrada, mapa y ruta</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/293/screenshot_6-png.png" alt="Mapa de la mazmorra con M"><br><sub>Mapa de la mazmorra con M</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/291/screenshot_5-png.png" alt="Mapas de las mazmorras nuevas de Forever"><br><sub>Mapas de las mazmorras nuevas de Forever</sub></td>
-</tr>
-<tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/306/screenshot_8-jpg.jpg" alt="Marcador en el mapa y flecha de guía"><br><sub>Marcador en el mapa y flecha de guía</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/297/screenshot_7-png.png" alt="Selector de idioma"><br><sub>Selector de idioma</sub></td>
+<td align="center" width="50%"><img src=".github/screenshots/bosses.png" alt="Jefes y botín"><br><sub>Jefes y botín</sub></td>
+<td align="center" width="50%"><img src=".github/screenshots/dungeon.png" alt="Página de la mazmorra"><br><sub>Página de la mazmorra</sub></td>
 </tr>
 </table>
 
