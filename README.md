@@ -157,7 +157,7 @@ Yes. It doesn't touch any protected frame.
 
 ## Compatibility
 
-- **WoW Forever** 1.60.1 (beta). It only loads on WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` is Forever's game type) and `DungeonQuestAtlas.toc`, an identical copy the CurseForge app needs to detect the addon.
+- **WoW Forever** 1.60.1. It only loads on WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` is Forever's game type) and `DungeonQuestAtlas.toc`, an identical copy the CurseForge app needs to detect the addon.
 - Optional: TomTom, AtlasLoot, Questie.
 
 ## For addon authors
@@ -190,7 +190,7 @@ end
 <details>
 <summary><b>Where the data comes from</b></summary>
 
-Levels, factions, rewards, XP, bosses and loot come from the WoW Forever beta client (build 1.60.1, via [ForeverChanges](https://foreverchanges.pro/dungeons)); quest chains and the NPCs that start and end each quest, with their coordinates, from [Wowhead Forever](https://www.wowhead.com/forever). Dungeon entrances, quest titles, objectives and item names come from your own game, in your language. Quests the Forever client doesn't list show a small "not verified" icon. Forever is in beta: drops and rewards can still change. Raids come from Blizzard's roadmap and the BlizzCon demo; world event quests and the new reputations, from Wowhead Forever; the Onyxia attunement, from Wowhead Classic and Wowhead Forever.
+Levels, factions, rewards, XP, bosses and loot come from the WoW Forever client (build 1.60.1, via [ForeverChanges](https://foreverchanges.pro/dungeons)); quest chains and the NPCs that start and end each quest, with their coordinates, from [Wowhead Forever](https://www.wowhead.com/forever). Dungeon entrances, quest titles, objectives and item names come from your own game, in your language. Quests the Forever client doesn't list show a small "not verified" icon. Drops and rewards can still change with game patches. Raids come from Blizzard's roadmap and the BlizzCon demo; world event quests and the new reputations, from Wowhead Forever; the Onyxia attunement, from Wowhead Classic and Wowhead Forever.
 
 Quest descriptions are collected in the game: `/dqa collect on`, open the quests and turn them in, then `/dqa export` gives them as a Lua table. Pull requests welcome!
 </details>

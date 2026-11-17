@@ -157,7 +157,7 @@ Sí. No toca ningún marco protegido.
 
 ## Compatibilidad
 
-- **WoW Forever** 1.60.1 (beta). Solo se carga en WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever) y `DungeonQuestAtlas.toc`, una copia idéntica que la app de CurseForge necesita para detectar el addon.
+- **WoW Forever** 1.60.1. Solo se carga en WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever) y `DungeonQuestAtlas.toc`, una copia idéntica que la app de CurseForge necesita para detectar el addon.
 - Opcionales: TomTom, AtlasLoot, Questie.
 
 ## Para autores de addons
@@ -190,7 +190,7 @@ end
 <details>
 <summary><b>De dónde salen los datos</b></summary>
 
-Niveles, facciones, recompensas, experiencia, jefes y botín salen del cliente de la beta de WoW Forever (build 1.60.1, vía [ForeverChanges](https://foreverchanges.pro/dungeons)); las cadenas y los PNJ de inicio y final, con sus coordenadas, de [Wowhead Forever](https://www.wowhead.com/forever). Las entradas, los títulos, los objetivos y los nombres de los objetos los da tu propio juego, en tu idioma. Las misiones que el cliente de Forever no tiene llevan un pequeño icono de "sin verificar". Forever está en beta: el botín y las recompensas aún pueden cambiar. Las bandas salen de la hoja de ruta de Blizzard y de la demo de la BlizzCon; las misiones de eventos y las reputaciones nuevas, de Wowhead Forever; el requisito de acceso de Onyxia, de Wowhead Classic y Wowhead Forever.
+Niveles, facciones, recompensas, experiencia, jefes y botín salen del cliente de WoW Forever (build 1.60.1, vía [ForeverChanges](https://foreverchanges.pro/dungeons)); las cadenas y los PNJ de inicio y final, con sus coordenadas, de [Wowhead Forever](https://www.wowhead.com/forever). Las entradas, los títulos, los objetivos y los nombres de los objetos los da tu propio juego, en tu idioma. Las misiones que el cliente de Forever no tiene llevan un pequeño icono de "sin verificar". El botín y las recompensas pueden cambiar con los parches del juego. Las bandas salen de la hoja de ruta de Blizzard y de la demo de la BlizzCon; las misiones de eventos y las reputaciones nuevas, de Wowhead Forever; el requisito de acceso de Onyxia, de Wowhead Classic y Wowhead Forever.
 
 Las descripciones de las misiones se recogen en el juego: `/dqa collect on`, abre las misiones y entrégalas, y `/dqa export` las da como tabla Lua. ¡Se aceptan pull requests!
 </details>
