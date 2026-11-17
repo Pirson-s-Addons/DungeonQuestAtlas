@@ -20,8 +20,20 @@
 
 <table>
 <tr>
-<td align="center" width="50%"><img src=".github/screenshots/bosses.png" alt="Jefes y botín"><br><sub>Jefes y botín</sub></td>
-<td align="center" width="50%"><img src=".github/screenshots/dungeon.png" alt="Página de la mazmorra"><br><sub>Página de la mazmorra</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/113/screenshot_4-png.png" alt="Todas las mazmorras, como la Guía de aventuras"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/110/screenshot_7-png.png" alt="Misiones, cadenas y recompensas"><br><sub>Misiones, cadenas y recompensas</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/112/screenshot_5-png.png" alt="Jefes, mapa, entrada y ruta"><br><sub>Jefes, mapa, entrada y ruta</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/111/screenshot_6-png.png" alt="Botín de cada mazmorra y jefe"><br><sub>Botín de cada mazmorra y jefe</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/109/screenshot_8-png.png" alt="Mapas de mazmorra con cada planta"><br><sub>Mapas de mazmorra con cada planta</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/104/screenshot_13-png.png" alt="Pulsa M dentro de una mazmorra"><br><sub>Pulsa M dentro de una mazmorra</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/105/screenshot_12-png.png" alt="Portales de mazmorra en el mapa del mundo"><br><sub>Portales de mazmorra en el mapa del mundo</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/108/screenshot_9-png.png" alt="Bandas con su cuenta atrás"><br><sub>Bandas con su cuenta atrás</sub></td>
 </tr>
 </table>
 

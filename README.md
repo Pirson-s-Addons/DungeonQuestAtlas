@@ -20,8 +20,20 @@
 
 <table>
 <tr>
-<td align="center" width="50%"><img src=".github/screenshots/bosses.png" alt="Bosses and loot"><br><sub>Bosses and loot</sub></td>
-<td align="center" width="50%"><img src=".github/screenshots/dungeon.png" alt="Dungeon page"><br><sub>Dungeon page</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/113/screenshot_4-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Every dungeon, like the Adventure Guide</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/110/screenshot_7-png.png" alt="Quests, chains and rewards"><br><sub>Quests, chains and rewards</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/112/screenshot_5-png.png" alt="Bosses, map, entrance and route"><br><sub>Bosses, map, entrance and route</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/111/screenshot_6-png.png" alt="Loot of every dungeon and boss"><br><sub>Loot of every dungeon and boss</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/109/screenshot_8-png.png" alt="Dungeon maps with every floor"><br><sub>Dungeon maps with every floor</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/104/screenshot_13-png.png" alt="Press M inside a dungeon"><br><sub>Press M inside a dungeon</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/105/screenshot_12-png.png" alt="Dungeon portals on the world map"><br><sub>Dungeon portals on the world map</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/108/screenshot_9-png.png" alt="Raids with their countdown"><br><sub>Raids with their countdown</sub></td>
 </tr>
 </table>
 
