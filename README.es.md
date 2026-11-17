@@ -1,95 +1,89 @@
-<h1 align="center">Dungeon Quest Atlas Forever</h1>
+<p align="center"><a href="https://www.curseforge.com/wow/addons/dungeon-quest-atlas"><img src="https://raw.githubusercontent.com/Pirson-s-Addons/.github/main/profile/assets/readme-dq-es.svg" width="100%" alt="Dungeon Quest Atlas: todas las misiones, jefes y botín de las mazmorras de WoW Forever en un diario, con cadenas de misiones y pines en el mapa."/></a></p>
+
+<p align="center"><a href="README.md">English</a> · <b>Español</b></p>
 
 <p align="center">
-  <b>Todas las misiones, jefes y botín de las mazmorras de WoW Forever en una ventana: cadenas de misiones, recompensas, PNJ, marcadores en el mapa y entradas</b>
+<a href="https://www.curseforge.com/wow/addons/dungeon-quest-atlas"><b>CurseForge</b></a> ·
+<a href="https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest"><b>Descargar</b></a> ·
+<a href="https://www.youtube.com/watch?v=AYYhYFyfzfY"><b>Vídeo guía</b></a>
 </p>
 
-<p align="center">
-<a href="https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest">
-<img src="https://img.shields.io/github/v/release/Pirson-s-Addons/DungeonQuestAtlas?style=for-the-badge&color=A78BFA">
-</a>
-<img src="https://img.shields.io/badge/WoW_Forever-1.60.1-C4B5FD?style=for-the-badge">
-<a href="LICENSE">
-<img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-E9D5FF?style=for-the-badge">
-</a>
-</p>
+> [!TIP]
+> **Inicio rápido:** escribe `/dqa` en el chat, elige una mazmorra a la izquierda y haz clic en una de sus misiones. **Marcar inicio** pone al PNJ que la da en tu mapa y la flecha te lleva hasta él.
+
+## Capturas
 
 <p align="center">
-<a href="README.md">🇬🇧 English</a>
-</p>
-
----
-
-## 📸 Capturas
-
-<p align="center">
-<a href="https://www.youtube.com/watch?v=AYYhYFyfzfY"><img src="https://img.youtube.com/vi/AYYhYFyfzfY/maxresdefault.jpg" width="640" alt="Cómo se usa Dungeon Quest Atlas"></a><br>
-<sub>▶️ Cómo se usa Dungeon Quest Atlas</sub>
+<a href="https://www.youtube.com/watch?v=AYYhYFyfzfY"><img src="https://img.youtube.com/vi/AYYhYFyfzfY/maxresdefault.jpg" width="640" alt="Cómo usar Dungeon Quest Atlas"></a><br>
+<sub>▶ Cómo usar Dungeon Quest Atlas</sub>
 </p>
 
 <table>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/287/screenshot_1-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/289/screenshot_3-png.png" alt="Quests, chains and rewards"><br><sub>Misiones, cadenas y recompensas</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/287/screenshot_1-png.png" alt="Todas las mazmorras, como la Guía de aventuras"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/289/screenshot_3-png.png" alt="Misiones, cadenas y recompensas"><br><sub>Misiones, cadenas y recompensas</sub></td>
 </tr>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/290/screenshot_4-png.png" alt="Bosses and loot"><br><sub>Jefes y botín</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/288/screenshot_2-png.png" alt="Entrance, map and route"><br><sub>Entrada, mapa y ruta</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/290/screenshot_4-png.png" alt="Jefes y botín"><br><sub>Jefes y botín</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/288/screenshot_2-png.png" alt="Entrada, mapa y ruta"><br><sub>Entrada, mapa y ruta</sub></td>
 </tr>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/293/screenshot_6-png.png" alt="Dungeon map with M"><br><sub>Mapa de la mazmorra con M</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/291/screenshot_5-png.png" alt="Maps of the new Forever dungeons"><br><sub>Mapas de las mazmorras nuevas</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/293/screenshot_6-png.png" alt="Mapa de la mazmorra con M"><br><sub>Mapa de la mazmorra con M</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/291/screenshot_5-png.png" alt="Mapas de las mazmorras nuevas de Forever"><br><sub>Mapas de las mazmorras nuevas de Forever</sub></td>
 </tr>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/306/screenshot_8-jpg.jpg" alt="Map marker and guide arrow"><br><sub>Marcador y flecha de guía</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/297/screenshot_7-png.png" alt="Language selector"><br><sub>Selector de idioma</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/306/screenshot_8-jpg.jpg" alt="Marcador en el mapa y flecha de guía"><br><sub>Marcador en el mapa y flecha de guía</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2015/297/screenshot_7-png.png" alt="Selector de idioma"><br><sub>Selector de idioma</sub></td>
 </tr>
 </table>
 
----
-
 ## Qué hace
 
-**Dungeon Quest Atlas Forever** reúne todas las **misiones de mazmorra** de **WoW Forever** en una ventana con el estilo del propio **Diario de mazmorras** del juego, junto con todos los **jefes y su botín**. Eliges una mazmorra a la izquierda y ves todas sus misiones: nivel, facción, si ya la completaste, la **cadena entera**, los objetivos, las **recompensas** (con su tooltip y la experiencia), el **PNJ que la da** y dónde encontrarlo. Con un clic pones un pin en el mapa, en el PNJ o en la **entrada de la instancia**, con su propia flecha de guía o con **TomTom**.
+Dungeon Quest Atlas reúne todas las **misiones de mazmorra** de **WoW Forever** en una ventana con el estilo del propio **Diario de mazmorras** del juego, junto con todos los **jefes y su botín**. Eliges una mazmorra y ves cada misión: nivel, facción, si ya la completaste, la **cadena entera**, los objetivos, las **recompensas**, el **PNJ que la da** y dónde encontrarlo. Con un clic pones un pin en el mapa, en el PNJ o en la **entrada de la instancia**, con su propia flecha de guía.
 
 ## Funciones
 
-- **Todas las mazmorras** de WoW Forever, las clásicas y las nuevas, ordenadas por nivel y coloreadas según la dificultad para tu personaje.
-- **Más de 300 misiones de mazmorra** con nivel, facción y estado, con los iconos de misión del propio juego: **Disponible** (!), **En curso** (…), **Lista para entregar** (?), **Completada** (✓) o **Bloqueada** (candado, por nivel o misión previa). Leyenda bajo la lista y tooltip en cada misión. Contador "3/7 completadas" por mazmorra.
-- **Aviso de misiones que faltan**: al llegar a la zona de una mazmorra de tu nivel, el chat te dice qué misiones suyas aún puedes coger (con enlaces), antes de entrar. Dentro, te recuerda las que llevas. Una vez por mazmorra y sesión; se puede quitar en las opciones.
-- **Cadenas de misiones**: todos los pasos de la cadena con su estado y un "(2/5)" en la lista. Clic en cualquier paso, también los de fuera de la mazmorra, para abrir su hoja y marcar dónde empieza. Al entregar un paso, la flecha te lleva al siguiente (opción).
-- **Misiones de clase** (brujo, paladín, mago...) con el icono de su clase, bloqueadas para las demás clases y sin contar en el total "x/y". Opción para ocultarlas.
-- **Tu progreso** en las misiones que llevas ("Cabeza de Arugal: 0/1") y botón **Compartir** para pasársela al grupo.
-- **Objetivos y recompensas**: objetivos en el idioma de tu juego, tarjetas de recompensa con icono, color de calidad y el tooltip del propio juego (Mayús para comparar), las que se eligen y las que se reciben siempre, experiencia y dinero. Incluye las recompensas nuevas de Forever.
-- **Jefes y botín** de todas las mazmorras: el modelo 3D del jefe (arrástralo para girarlo, rueda o + / - para el zoom), nivel, raros y cada objeto con su probabilidad. Mayús+clic enlaza el objeto y Ctrl+clic abre el probador. **Ver en el mapa** te lleva al jefe en el mapa de la mazmorra.
-- **Consejo en las tiradas de botín**: junto a cada tirada, si el objeto te mejora (con el % y las estadísticas que cambian), a quién más del grupo le mejora, si una misión de la mazmorra te da algo mejor para ese hueco y dónde más sale. Lee el equipo del grupo al entrar (fuera de combate) y lo comparte entre quienes llevan el addon. **Historial de tiradas** (`/dqa rolls`): lo que eligió y sacó cada uno y quién lo ganó, con un aviso privado cuando alguien pide Necesidad sin que le mejore.
-- **Recetas y patrones**: las recetas nuevas de Forever de cada mazmorra, con los jefes que las sueltan y su probabilidad (de Wowhead Forever).
-- **Aspecto de la Guía de aventuras** de Retail: pestañas abajo (Viajes, Registro de viajero, Mazmorras, Bandas, Tutoriales), migas con desplegables para saltar a cualquier mazmorra o jefe y el libro del propio Diario. En la página de una mazmorra, los jefes siempre a la izquierda y las pestañas laterales cambian la derecha: **Resumen** (arte, mapa, entrada, ruta e historia), **Botín** (el de toda la mazmorra con "Jefe: X", o el de un jefe, con filtro por tipo), **Modelo** (modelo 3D grande) y **Misiones**.
-- **Bandas**: las bandas anunciadas de WoW Forever (The Barrow Deeps, Cumbre de Hyjal, Guarida de Onyxia) con su tamaño y la cuenta atrás hasta que abren, sus jefes (nombres de la demo de la BlizzCon, pueden cambiar) y las de 2027. La Guarida de Onyxia trae su **requisito de acceso** por facción, paso a paso, con la misma hoja de misión que las mazmorras.
-- **Registro de viajero**: las **misiones de los eventos de mundo** (Halloween, Fiesta del Invierno, Festival Lunar, Feria de la Luna Negra, Solsticio...), una tarjeta por evento con sus fechas y "acaba dentro de" del calendario del juego, y dentro, cada misión con su hoja completa.
-- **Viajes** enseña **tu viaje**: misiones listas para entregar, mazmorras para tu nivel, el siguiente paso de tus cadenas, novedades, tus **reputaciones en curso** y **Próximamente**, cada una con su noticia.
-- **Tutoriales**: una guía corta del addon, página a página, con un botón que lleva a cada parte.
-- Monasterio Escarlata, La Masacre y Stratholme separados por alas.
-- **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona, coordenadas y botones **Marcar inicio** / **Marcar final**, que además abren el mapa del mundo en el pin. Si el PNJ está dentro de la mazmorra, se marca la entrada.
-- **Entrada exacta de cada mazmorra** (el portal real, o la boca de la cueva cuando el portal está bajo tierra), con botón **Marcar entrada en el mapa** (también el icono de portal junto a cada mazmorra) y botón **Ruta**, que te lleva al maestro de vuelo de tu facción más cercano y luego a la entrada.
-- **Flecha de guía propia**, sin necesidad de TomTom: una flecha en pantalla que gira mientras te mueves, con la distancia, marcadores en el mapa del mundo y en el minimapa, y que se quita sola al llegar. Con clic izquierdo **selecciona al PNJ y le pone una estrella**. Los PNJ bajo tierra (cuevas, sótanos) conservan su marcador hasta que hablas con ellos. También puedes usar el pin del mapa del juego o **TomTom**.
-- **Enlace de Wowhead** de cada misión, en el idioma de la ventana, listo para copiar con Ctrl+C.
-- **Mapas de mazmorra** (WoW Forever no tiene): botón **Ver mapa** con los mapas de Blizzard de WoW Classic para las clásicas, y mapas dibujados para este addon para Salas de los Thanes, Ruinas de Lordaeron, Excavación: Los Humedales y Ciudad de Dalaran. Cada planta con su botón, cada jefe marcado con su retrato (clic para ir a su botín), la entrada y las escaleras entre plantas (clic en una escalera para cambiar de planta), zoom con la rueda y arrastrar para moverte.
-- **Entradas de mazmorra en el mapa del mundo**: el portal de cada mazmorra en el mapa de su zona y en el del continente, con sus niveles y tu progreso de misiones. Clic para ver el mapa de la mazmorra sobre el propio mapa del mundo, o clic derecho para abrirla en el addon. Un botón redondo del mapa del mundo lleva todos los ajustes (zonas, continentes, tamaño del icono).
-- **AtlasLoot**: botón "Ver botín" si está cargado. **Questie**: se usa de respaldo para los PNJ que el addon aún no conoce.
-- Filtros: mi nivel, clásicas / nuevas de Forever, **botones de facción** (ambas, Alianza, Horda) en todas las pestañas que dependen de tu facción y buscador (mazmorra, jefe, banda o misión).
-- Botón de minimapa (LibDBIcon, compatible con recolectores de botones), escala de la ventana, Esc para cerrar.
-- Traducido a 20 idiomas, con **selector de idioma** en la ventana: se puede ver en cualquiera sin cambiar el idioma del juego. Los nombres de misiones, PNJ, zonas y objetos los da el propio juego, en su idioma.
+### Misiones
 
-## De dónde salen los datos
+- **Más de 300 misiones de mazmorra** con nivel, facción y estado, con los iconos del propio juego: **Disponible** (!), **En curso** (…), **Lista para entregar** (?), **Completada** (✓) o **Bloqueada** (por nivel o misión previa). Contador "3/7 completadas" por mazmorra.
+- **Cadenas de misiones**: todos los pasos con su estado y un "(2/5)" en la lista. Clic en cualquier paso, también los de fuera de la mazmorra, para abrirlo. Al entregar un paso, la flecha puede llevarte al siguiente.
+- **Aviso de misiones que faltan**: al llegar a la zona de una mazmorra de tu nivel, el chat te dice qué misiones suyas aún puedes coger, con enlaces. Una vez por mazmorra y sesión; se puede quitar.
+- **Objetivos y recompensas** en el idioma de tu juego, con el tooltip del propio juego (Mayús para comparar), las que se eligen y las fijas, experiencia y dinero, incluidas las recompensas nuevas de Forever.
+- **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona y coordenadas, y botones **Marcar inicio** / **Marcar final**.
+- **Misiones de clase** con el icono de su clase, bloqueadas para las demás clases y que se pueden ocultar.
+- **Tu progreso** en las misiones que llevas, botón **Compartir** para el grupo y **enlace de Wowhead** listo para copiar con Ctrl+C.
 
-Niveles, facciones, recompensas, experiencia, jefes y botín salen del cliente de la beta de WoW Forever (build 1.60.1, vía [ForeverChanges](https://foreverchanges.pro/dungeons)); las cadenas y los PNJ de inicio y final, con sus coordenadas, de [Wowhead Forever](https://www.wowhead.com/forever). Las entradas, los títulos, los objetivos y los nombres de los objetos los da tu propio juego, en tu idioma. Las misiones que el cliente de Forever no tiene llevan un pequeño icono de "sin verificar". Forever está en beta: el botín y las recompensas aún pueden cambiar. Las bandas salen de la hoja de ruta de Blizzard y de la demo de la BlizzCon; las misiones de eventos y las reputaciones nuevas, de Wowhead Forever; el requisito de acceso de Onyxia, de Wowhead Classic y Wowhead Forever.
+### Mazmorras y jefes
 
-Las descripciones de las misiones se **recogen en el juego**:
+- **Todas las mazmorras** de WoW Forever, las clásicas y las nuevas (Salas de los Thanes, Ruinas de Lordaeron, Excavación: Los Humedales, Ciudad de Dalaran y más), ordenadas por nivel y coloreadas por dificultad. Monasterio Escarlata, La Masacre y Stratholme separados por alas.
+- **Jefes**: modelo 3D (arrastra para girarlo, rueda para el zoom), nivel, raros y cada objeto con su probabilidad. Mayús+clic enlaza el objeto y Ctrl+clic abre el probador. **Ver en el mapa** te lleva al jefe.
+- **Mapas de mazmorra**, que WoW Forever no tiene: los mapas de Blizzard de WoW Classic para las clásicas y mapas dibujados para este addon para las nuevas. Cada planta, cada jefe marcado, la entrada y las escaleras, con zoom y arrastre.
 
-1. `/dqa collect on`
-2. Abre las misiones (habla con el PNJ) y entrégalas.
-3. Lo que recoges aparece al momento en la ventana. `/dqa export` lo da como tabla Lua para añadirlo al addon para todos. ¡Se aceptan pull requests!
+### Botín
+
+- **Consejo en las tiradas**: junto a cada tirada, si el objeto te mejora (con el % y las estadísticas), a quién más del grupo le mejora, si una misión te da algo mejor y dónde más sale.
+- **Historial de tiradas** (`/dqa rolls`): lo que eligió y sacó cada uno y quién lo ganó, con un aviso privado cuando alguien pide Necesidad sin que le mejore.
+- **Recetas y patrones**: las recetas nuevas de Forever de cada mazmorra, con los jefes que las sueltan y su probabilidad.
+
+### Mapas y navegación
+
+- **Entrada exacta de cada mazmorra**, con **Marcar entrada en el mapa** y un botón **Ruta** que te lleva al maestro de vuelo de tu facción más cercano y luego a la entrada.
+- **Flecha de guía propia**, sin TomTom: gira mientras te mueves, muestra la distancia, añade marcadores al mapa del mundo y al minimapa y se quita sola al llegar. Con clic izquierdo selecciona al PNJ y le pone una estrella.
+- **Entradas de mazmorra en el mapa del mundo**, con sus niveles y tu progreso de misiones. Clic para ver ahí mismo el mapa de la mazmorra, o clic derecho para abrirla en el addon.
+
+### Bandas, eventos y tu viaje
+
+- **Bandas**: las bandas anunciadas de WoW Forever con su tamaño, sus jefes y la cuenta atrás hasta que abren. La Guarida de Onyxia trae su **requisito de acceso** por facción.
+- **Registro de viajero**: las **misiones de los eventos de mundo** (Halloween, Fiesta del Invierno, Festival Lunar, Feria de la Luna Negra, Solsticio...), con sus fechas del calendario del juego.
+- **Viajes**: misiones listas para entregar, mazmorras para tu nivel, el siguiente paso de tus cadenas, tus reputaciones en curso y lo que viene.
+- **Tutoriales**: una guía corta del addon, página a página.
+
+### Ventana e idiomas
+
+- **Aspecto de la Guía de aventuras** de Retail: pestañas abajo, migas para saltar a cualquier mazmorra o jefe y páginas **Resumen**, **Botín**, **Modelo** y **Misiones** en cada mazmorra.
+- **Filtros** (mi nivel, clásicas / nuevas, facción) y buscador de mazmorras, jefes, bandas y misiones.
+- **20 idiomas** con selector de idioma en la ventana, sin cambiar el idioma del juego.
+- Botón de minimapa (compatible con recolectores de botones), escala de la ventana y Esc para cerrar. Compatible de forma opcional con **AtlasLoot** y **Questie**.
 
 ## Comandos
 
@@ -101,15 +95,75 @@ Las descripciones de las misiones se **recogen en el juego**:
 | `/dqa runs` | Abre la lista de tus partidas de mazmorra |
 | `/dqa rolls` | Abre el historial de tiradas de botín |
 | `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |
-| `/dqa collect on\|off` | Modo recolector |
-| `/dqa export` | Muestra lo recogido, listo para copiar |
-| `/dqa entrance <clave>` | Guarda tu posición como entrada de esa mazmorra (`RFC`, `DM`, `WC`...) |
-| `/dqa route <clave> [clear]` | Guarda tu posición como siguiente parada de la ruta a esa mazmorra; el botón **Ruta** te guía parada a parada |
 | `/dqa clear` | Quita todos los marcadores |
-| `/dqa debug` | Mensajes de depuración en el chat |
 | `/dqa bug` | Muestra la dirección para informar de un fallo |
 
-## API para autores de addons
+<details>
+<summary><b>Comandos avanzados</b></summary>
+
+| Comando | Qué hace |
+|---|---|
+| `/dqa collect on\|off` | Modo recolector (guarda los textos de las misiones al leerlas) |
+| `/dqa export` | Muestra lo recogido, listo para copiar |
+| `/dqa entrance <clave>` | Guarda tu posición como entrada de esa mazmorra (`RFC`, `DM`, `WC`...) |
+| `/dqa route <clave> [clear]` | Guarda tu posición como siguiente parada de la ruta a esa mazmorra |
+| `/dqa debug` | Mensajes de depuración en el chat |
+
+</details>
+
+## Instalación
+
+1. Consíguelo en [CurseForge](https://www.curseforge.com/wow/addons/dungeon-quest-atlas) o descarga el zip de la [última release](https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest).
+2. Extrae la carpeta `DungeonQuestAtlas` en `World of Warcraft/_classic_beta_/Interface/AddOns/`.
+3. Reinicia el juego y activa el addon.
+
+## Preguntas frecuentes
+
+<details>
+<summary><b>¿Necesito TomTom, AtlasLoot o Questie?</b></summary>
+
+No. El addon tiene su propia flecha, sus marcadores y sus tablas de botín. Los demás son opcionales.
+</details>
+
+<details>
+<summary><b>¿Cómo se usa la flecha?</b></summary>
+
+Arrástrala para moverla. Clic izquierdo selecciona al PNJ y le pone una estrella (fuera de combate). Clic derecho quita el marcador al que apunta. En el mapa del mundo, clic izquierdo en un marcador para que te guíe a él y clic derecho para quitarlo.
+</details>
+
+<details>
+<summary><b>¿Por qué algunas misiones no tienen texto?</b></summary>
+
+La descripción aún no está en el addon. Activa el recolector (`/dqa collect on`) y abre la misión en el juego: el texto se guarda y se ve al momento.
+</details>
+
+<details>
+<summary><b>¿Por qué algunas misiones empiezan con un objeto?</b></summary>
+
+Ese objeto se consigue dentro de la mazmorra (lo suelta un enemigo o está en el suelo). "Marcar inicio" marca la entrada.
+</details>
+
+<details>
+<summary><b>¿Por qué el addon no abre Wowhead?</b></summary>
+
+WoW no deja a los addons abrir el navegador ni escribir en el portapapeles. El enlace aparece seleccionado: pulsa Ctrl+C.
+</details>
+
+<details>
+<summary><b>¿Funciona en combate?</b></summary>
+
+Sí. No toca ningún marco protegido.
+</details>
+
+## Compatibilidad
+
+- **WoW Forever** 1.60.1 (beta). Solo se carga en WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever) y `DungeonQuestAtlas.toc`, una copia idéntica que la app de CurseForge necesita para detectar el addon.
+- Opcionales: TomTom, AtlasLoot, Questie.
+
+## Para autores de addons
+
+<details>
+<summary><b>API pública</b></summary>
 
 De solo lectura, con versión y siempre devuelve copias, con los nombres en el idioma del cliente. Añade `## OptionalDeps: DungeonQuestAtlas` a tu TOC.
 
@@ -126,38 +180,21 @@ if api and api.version == 1 then
     api.GetQuest(166)                 -- { title, status, reason, level, xp, dungeonKey, rewards, choice, chain, step }
     api.GetItemSources(itemID)        -- { { who, where, chance } | { quest, where }, ... } quién lo suelta
     api.GetQuestPlaces(questID, "starts") -- { { name, mapID, x, y }, ... } quién da la misión ("ends": dónde se entrega)
+    api.GetRuns()                     -- { { key, name, started, duration, finished, deaths, bosses, loot, needs, party }, ... } tus partidas, la más reciente primero
 end
 ```
 
 `status` es uno de `api.STATUS`: `AVAILABLE`, `IN_LOG`, `READY`, `COMPLETED`, `BLOCKED`. El global `DungeonQuestAtlas` es el namespace interno del addon: no es estable, usa la API.
+</details>
 
-## Instalación
+<details>
+<summary><b>De dónde salen los datos</b></summary>
 
-1. Descarga el zip de la [última release](https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest) o de CurseForge / Wago.
-2. Extrae la carpeta `DungeonQuestAtlas` en `World of Warcraft/_classic_beta_/Interface/AddOns/`.
-3. Reinicia el juego y activa el addon.
+Niveles, facciones, recompensas, experiencia, jefes y botín salen del cliente de la beta de WoW Forever (build 1.60.1, vía [ForeverChanges](https://foreverchanges.pro/dungeons)); las cadenas y los PNJ de inicio y final, con sus coordenadas, de [Wowhead Forever](https://www.wowhead.com/forever). Las entradas, los títulos, los objetivos y los nombres de los objetos los da tu propio juego, en tu idioma. Las misiones que el cliente de Forever no tiene llevan un pequeño icono de "sin verificar". Forever está en beta: el botín y las recompensas aún pueden cambiar. Las bandas salen de la hoja de ruta de Blizzard y de la demo de la BlizzCon; las misiones de eventos y las reputaciones nuevas, de Wowhead Forever; el requisito de acceso de Onyxia, de Wowhead Classic y Wowhead Forever.
 
-## Preguntas frecuentes
+Las descripciones de las misiones se recogen en el juego: `/dqa collect on`, abre las misiones y entrégalas, y `/dqa export` las da como tabla Lua. ¡Se aceptan pull requests!
+</details>
 
-**¿Por qué algunas misiones no tienen texto?** La descripción aún no está en el addon. Activa el recolector y abre la misión en el juego: el texto se guarda y se ve al momento. Los objetivos los da el juego en cuanto conoce la misión.
+<br/>
 
-**¿Necesito AtlasLoot para ver el botín?** No. La pestaña Jefes tiene todos los jefes y lo que sueltan. El botón de AtlasLoot es solo un atajo si lo tienes.
-
-**¿Por qué algunas misiones empiezan con un objeto?** Ese objeto se consigue dentro de la mazmorra (lo suelta un enemigo o está en el suelo). "Marcar inicio" marca la entrada.
-
-**¿Por qué el addon no abre Wowhead?** WoW no deja a los addons abrir el navegador ni escribir en el portapapeles. El enlace aparece seleccionado: pulsa Ctrl+C.
-
-**¿Funciona en combate?** Sí. No toca ningún marco protegido.
-
-**¿Necesito TomTom, AtlasLoot o Questie?** No. El addon tiene su propia flecha y sus marcadores; los demás son opcionales.
-
-**¿Cómo se usa la flecha?** Arrástrala para moverla. Clic izquierdo selecciona al PNJ y le pone una estrella (fuera de combate). Clic derecho quita el marcador al que apunta. En el mapa del mundo, clic izquierdo en un marcador para que te guíe a él y clic derecho para quitarlo.
-
-## Compatibilidad
-
-- **WoW Forever (Classic+)**: 1.60.1 (beta). Solo se carga en WoW Forever: `DungeonQuestAtlas_Camelot.toc` (`Camelot` es el game type de Forever) y `DungeonQuestAtlas.toc`, una copia idéntica que la app de CurseForge necesita para detectar el addon.
-- Opcionales: TomTom, AtlasLoot, Questie.
-
----
-
-**Autor**: Pirson · [GitHub](https://github.com/Pirson-s-Addons) · [CurseForge](https://www.curseforge.com/members/pirson/projects) · Todos los derechos reservados
+<p align="center"><a href="https://github.com/Pirson-s-Addons"><img src="https://raw.githubusercontent.com/Pirson-s-Addons/.github/main/profile/assets/readme-footer-es.svg" width="100%" alt="Parte de Pirson's Addons. Ver todos los addons."/></a></p>
