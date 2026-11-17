@@ -19,6 +19,7 @@ local function CurrentDungeon(needMap)
 end
 
 local function OpenWorldMap()
+    if ns.GamepadUI() then return end -- con mando no se puede abrir el mapa (ns.GamepadUI)
     if DungeonQuestAtlasFrame then DungeonQuestAtlasFrame:Hide() end -- si no, tapa el mapa
     local id = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
     if id then ns.OpenMapAt(id) elseif ToggleWorldMap then pcall(ToggleWorldMap) end

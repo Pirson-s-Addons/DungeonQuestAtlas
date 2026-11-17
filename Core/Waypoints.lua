@@ -119,11 +119,29 @@ function ns.SetWaypoint(point, title, kind, questID)
     return "own"
 end
 
--- Abre el mapa del mundo en ese mapa, para ver el pin recien puesto.
+-- Interfaz de mando del juego activa (Opciones > Mando). Con ella, abrir o cerrar un panel
+-- del juego desde un addon es una accion bloqueada (el juego llama a la protegida
+-- SetPreferredGamepadInteractTarget): el error de "interfaz" con mando. Visto en Azeroth Maps GPS.
+function ns.GamepadUI()
+    local T = Enum and Enum.InputDeviceInterfaceType
+    if not (C_InputInterfaceStyle and C_InputInterfaceStyle.GetCurrentStyle and T and T.Gamepad) then return false end
+    local ok, style = pcall(C_InputInterfaceStyle.GetCurrentStyle)
+    return ok and style == T.Gamepad
+end
+
+-- Cierra el mapa del mundo para que se vea la ventana de DQA (no en combate ni con mando).
+function ns.HideWorldMap()
+    if WorldMapFrame and not InCombatLockdown() and not ns.GamepadUI() then HideUIPanel(WorldMapFrame) end
+end
+
+-- Abre el mapa del mundo en ese mapa, para ver el pin recien puesto. Con mando no lo abre
+-- (ver ns.GamepadUI), pero si ya esta abierto lo lleva a ese mapa.
 -- C_Map.OpenWorldMap tiene restricciones (en combate puede no abrir): con pcall.
 function ns.OpenMapAt(mapID)
     if not (mapID and WorldMapFrame) then return end
-    if C_Map.OpenWorldMap then
+    if ns.GamepadUI() then
+        -- no se abre: solo se cambia el mapa si ya esta a la vista (abajo)
+    elseif C_Map.OpenWorldMap then
         pcall(C_Map.OpenWorldMap, mapID)
     elseif ShowUIPanel then
         pcall(ShowUIPanel, WorldMapFrame)

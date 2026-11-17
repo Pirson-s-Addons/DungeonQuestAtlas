@@ -644,7 +644,7 @@ local function CreateOverlay()
     bg:SetAllPoints()
     bg:SetColorTexture(0.03, 0.025, 0.02, 1)
     local plan = CreatePlan(overlay, nil, function()
-        if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end -- que se vea el libro
+        ns.HideWorldMap() -- que se vea el libro
     end)
     overlay.plan = plan
     plan.viewport:SetAllPoints()

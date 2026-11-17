@@ -242,14 +242,14 @@ local function CreateEntrancePinMixin()
     function mixin:OnMouseClickAction(button)
         local d = self.dungeon
         if self.isRaid and not (button == "LeftButton" and ns.DungeonMaps(d)) then
-            if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end
+            ns.HideWorldMap()
             return ns.OpenRaid(d)
         end
         if button == "LeftButton" and ns.DungeonMaps(d) then -- mazmorras y bandas con plano
             ns.ShowDungeonOnWorldMap(d)
             return
         end
-        if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end -- que se vea la ventana
+        ns.HideWorldMap() -- que se vea la ventana
         ns.OpenDungeon(d)
     end
 end
@@ -339,11 +339,11 @@ local function SetupMenu(button)
         end)
         root:CreateDivider()
         root:CreateButton(L.MAP_MENU_OPEN, function()
-            if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end
+            ns.HideWorldMap()
             ns.ToggleMainFrame()
         end)
         root:CreateButton(L.MAP_MENU_OPTIONS, function()
-            if not InCombatLockdown() then HideUIPanel(WorldMapFrame) end
+            ns.HideWorldMap()
             ns.OpenOptions()
         end)
     end)
