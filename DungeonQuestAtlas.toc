@@ -149,6 +149,8 @@ Core/Collector.lua
 Core/Integrations.lua
 Core/BossKills.lua
 Core/RunLog.lua
+Core/Upgrades.lua
+Core/RollHistory.lua
 Core/QuestAlert.lua
 Core/VersionCheck.lua
 
@@ -166,6 +168,8 @@ UI/Tutorials.lua
 UI/JournalMode.lua
 UI/RunTracker.lua
 UI/RunHistory.lua
+UI/RollAdvisor.lua
+UI/RollHistory.lua
 UI/ItemSource.lua
 UI/LootSearch.lua
 UI/MainFrame.lua

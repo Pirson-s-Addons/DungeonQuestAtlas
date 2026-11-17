@@ -7,4 +7,7 @@
     <Binding name="DUNGEONQUESTATLAS_ITEM" category="ADDONS">
         DungeonQuestAtlas.OpenHoveredItem()
     </Binding>
+    <Binding name="DUNGEONQUESTATLAS_ROLLS" category="ADDONS">
+        DungeonQuestAtlas.ToggleRollHistory()
+    </Binding>
 </Bindings>

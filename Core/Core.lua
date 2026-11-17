@@ -42,6 +42,7 @@ local DEFAULTS = {
     rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     questAlert = true,    -- avisar en el chat de las misiones que faltan (Core/QuestAlert.lua)
+    rollAdvisor = true,   -- a quien mejora cada tirada de botin (Core/Upgrades.lua, UI/RollAdvisor.lua)
     trackerPos = {},
     pickupGlow = true,    -- brillo dorado en las misiones listas para coger (UI/QuestPanel.lua)
     autoCompare = false,  -- comparar con lo equipado sin pulsar Mayus (UI/Items.lua)
@@ -67,6 +68,7 @@ local DEFAULTS = {
 }
 local CHAR_DEFAULTS = { dungeon = nil, view = "home", tab = "quests", markers = {}, target = nil,
     runLog = {}, -- partidas guardadas (Core/RunLog.lua), la mas nueva la primera
+    rollHistory = {}, -- tiradas de botin (Core/RollHistory.lua), la mas nueva la primera
     kills = {}, runs = {}, left = {}, done = {}, -- jefes muertos (Core/BossKills.lua): por mazmorra,
     -- copia de la instancia, cuando saliste de ella y cuando murio el ultimo jefe
     unlocked = {}, hiddenDungeons = {} } -- y las mazmorras ocultas a mano (clic derecho en su tarjeta) -- jefes finales muertos (UI/JournalMode.lua); journalMode: nil hasta elegirlo
@@ -531,6 +533,7 @@ function ns.CommandList()
         { "/dqa config", L.CMD_CONFIG },
         { "/dqa mode", L.CMD_MODE },
         { "/dqa runs", L.CMD_RUNS },
+        { "/dqa rolls", L.CMD_ROLLS },
         { "/dqa tracker", L.CMD_TRACKER },
         { "/dqa rfk", L.CMD_ALIAS },
         { "/dqa bug", L.CMD_BUG },
@@ -574,6 +577,8 @@ function ns.HandleCommand(msg)
         ns.Print(ns.db.debug and L.DEBUG_ON or L.DEBUG_OFF)
     elseif cmd == "runs" then
         ns.ToggleRunHistory()
+    elseif cmd == "rolls" then
+        ns.ToggleRollHistory()
     elseif cmd == "tracker" then
         ns.ShowRunTracker()
     elseif cmd == "bug" then

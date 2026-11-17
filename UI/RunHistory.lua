@@ -75,7 +75,7 @@ local function DetailRows(run)
         for _, need in ipairs(run.needs) do
             rows[#rows + 1] = { left = Plain(need.link), link = need.link, itemID = need.id,
                 right = need.won and L.RUN_WON or L.RUN_NOT_WON, dim = not need.won,
-                rolls = run.rolls and run.rolls[need.id] }
+                rolls = run.rolls and run.rolls[need.id], up = run.upgrades and run.upgrades[need.id] }
         end
     end
 
@@ -118,6 +118,9 @@ local function DetailTooltip(self)
             for _, r in ipairs(list) do
                 GameTooltip:AddDoubleLine(r.who, (r.kind == "need" and L.RUN_ROLL_NEED or L.RUN_ROLL_GREED):format(r.roll),
                     1, 1, 1, 0.8, 0.8, 0.8)
+                -- Necesidad sin que le mejorase, mientras a otro si (Core/RollHistory.lua)
+                local others = r.kind == "need" and ns.NeedWithoutUpgrade(item.up, r.who)
+                if others then GameTooltip:AddLine("   " .. L.UP_NEED_NOT_UPGRADE:format(others), 1, 0.5, 0.25, true) end
             end
         end
         GameTooltip:Show()

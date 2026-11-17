@@ -424,8 +424,8 @@ ns.RollPattern = RollPattern
 
 -- Formato del juego -> tipo de tirada y posicion de { tirada, objeto, jugador } en sus argumentos
 local ROLLS = {
+    { "LOOT_ROLL_ROLLED_NEED_ROLE_BONUS", "need", 1, 3, 4 }, -- antes: el general se comeria el bonus en el nombre
     { "LOOT_ROLL_ROLLED_NEED", "need", 1, 2, 3 },
-    { "LOOT_ROLL_ROLLED_NEED_ROLE_BONUS", "need", 1, 3, 4 },
     { "LOOT_ROLL_ROLLED_GREED", "greed", 1, 2, 3 },
     { "LOOT_ROLL_ROLLED_DE", "greed", 1, 2, 3 },
 }

@@ -66,6 +66,7 @@
 - **Your progress** on the quests you carry ("Head of Arugal: 0/1") and a **Share** button to push the quest to your group.
 - **Objectives and rewards**: objectives in your game's language, reward cards with icon, quality color and the game's own tooltip (hold Shift to compare), the choice rewards and the ones you always get, XP and money. The new Forever rewards are included.
 - **Bosses and loot** of every dungeon: the boss's 3D model (drag to rotate, wheel or + / - to zoom), level, rare spawns and each drop with its chance. Shift+click links the item, Ctrl+click opens the dressing room. **Show on map** takes you to the boss on the dungeon map.
+- **Loot roll advisor**: next to each roll, whether the item is an upgrade for you (with the % and the stats it changes), who else in the group it helps, whether a quest in the dungeon gives you something better for that slot and where else it drops. It reads your group's gear when you go in (out of combat) and shares it between players with the addon. **Loot roll history** (`/dqa rolls`): what everyone chose and rolled and who won, with a private warning when someone Needs an item that is not an upgrade for them.
 - **Recipes & Patterns**: the new Forever recipes of each dungeon, with the bosses that drop them and their chance (from Wowhead Forever).
 - **Adventure Guide look**, like Retail's: tabs at the bottom (Journeys, Traveler's Log, Dungeons, Raids, Tutorials), breadcrumbs with drop-downs to jump to any dungeon or boss, and the game's own journal book. On a dungeon page the bosses are always on the left and the side tabs switch the right page: **Overview** (artwork, map, entrance, route and lore), **Loot** (the whole dungeon's loot with "Boss: X", or one boss's, with a type filter), **Model** (big 3D model) and **Quests**.
 - **Raids**: the announced WoW Forever raids (The Barrow Deeps, Hyjal Summit, Onyxia's Lair) with their size and a countdown to their opening, bosses (names from the BlizzCon demo, may change) and the upcoming 2027 ones. Onyxia's Lair has its **attunement** chain for each faction, step by step, with the same quest page as the dungeons.
@@ -102,6 +103,7 @@ Quest descriptions are **collected in the game**:
 | `/dqa config` | Opens the options |
 | `/dqa mode` | Choose Full Atlas or Adventure Mode |
 | `/dqa runs` | Opens the list of your dungeon runs |
+| `/dqa rolls` | Opens the loot roll history |
 | `/dqa rfk` | Opens a dungeon by its shortcut (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Collector mode |
 | `/dqa export` | Shows the collected data, ready to copy |

@@ -62,6 +62,7 @@
 - **Tu progreso** en las misiones que llevas ("Cabeza de Arugal: 0/1") y botón **Compartir** para pasársela al grupo.
 - **Objetivos y recompensas**: objetivos en el idioma de tu juego, tarjetas de recompensa con icono, color de calidad y el tooltip del propio juego (Mayús para comparar), las que se eligen y las que se reciben siempre, experiencia y dinero. Incluye las recompensas nuevas de Forever.
 - **Jefes y botín** de todas las mazmorras: el modelo 3D del jefe (arrástralo para girarlo, rueda o + / - para el zoom), nivel, raros y cada objeto con su probabilidad. Mayús+clic enlaza el objeto y Ctrl+clic abre el probador. **Ver en el mapa** te lleva al jefe en el mapa de la mazmorra.
+- **Consejo en las tiradas de botín**: junto a cada tirada, si el objeto te mejora (con el % y las estadísticas que cambian), a quién más del grupo le mejora, si una misión de la mazmorra te da algo mejor para ese hueco y dónde más sale. Lee el equipo del grupo al entrar (fuera de combate) y lo comparte entre quienes llevan el addon. **Historial de tiradas** (`/dqa rolls`): lo que eligió y sacó cada uno y quién lo ganó, con un aviso privado cuando alguien pide Necesidad sin que le mejore.
 - **Recetas y patrones**: las recetas nuevas de Forever de cada mazmorra, con los jefes que las sueltan y su probabilidad (de Wowhead Forever).
 - **Aspecto de la Guía de aventuras** de Retail: pestañas abajo (Viajes, Registro de viajero, Mazmorras, Bandas, Tutoriales), migas con desplegables para saltar a cualquier mazmorra o jefe y el libro del propio Diario. En la página de una mazmorra, los jefes siempre a la izquierda y las pestañas laterales cambian la derecha: **Resumen** (arte, mapa, entrada, ruta e historia), **Botín** (el de toda la mazmorra con "Jefe: X", o el de un jefe, con filtro por tipo), **Modelo** (modelo 3D grande) y **Misiones**.
 - **Bandas**: las bandas anunciadas de WoW Forever (The Barrow Deeps, Cumbre de Hyjal, Guarida de Onyxia) con su tamaño y la cuenta atrás hasta que abren, sus jefes (nombres de la demo de la BlizzCon, pueden cambiar) y las de 2027. La Guarida de Onyxia trae su **requisito de acceso** por facción, paso a paso, con la misma hoja de misión que las mazmorras.
@@ -98,6 +99,7 @@ Las descripciones de las misiones se **recogen en el juego**:
 | `/dqa config` | Abre las opciones |
 | `/dqa mode` | Elige Atlas completo o Modo aventura |
 | `/dqa runs` | Abre la lista de tus partidas de mazmorra |
+| `/dqa rolls` | Abre el historial de tiradas de botín |
 | `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |
 | `/dqa collect on\|off` | Modo recolector |
 | `/dqa export` | Muestra lo recogido, listo para copiar |
