@@ -114,7 +114,7 @@ Dungeon Quest Atlas lists every **dungeon quest** of **WoW Forever** in a window
 ## Installation
 
 1. Get it from [CurseForge](https://www.curseforge.com/wow/addons/dungeon-quest-atlas) or download the zip from the [latest release](https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest).
-2. Extract the `DungeonQuestAtlas` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
+2. Extract the `DungeonQuestAtlas` folder into `World of Warcraft/_forever_/Interface/AddOns/`.
 3. Restart WoW and enable the addon.
 
 ## FAQ

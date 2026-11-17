@@ -114,7 +114,7 @@ Dungeon Quest Atlas reúne todas las **misiones de mazmorra** de **WoW Forever**
 ## Instalación
 
 1. Consíguelo en [CurseForge](https://www.curseforge.com/wow/addons/dungeon-quest-atlas) o descarga el zip de la [última release](https://github.com/Pirson-s-Addons/DungeonQuestAtlas/releases/latest).
-2. Extrae la carpeta `DungeonQuestAtlas` en `World of Warcraft/_classic_beta_/Interface/AddOns/`.
+2. Extrae la carpeta `DungeonQuestAtlas` en `World of Warcraft/_forever_/Interface/AddOns/`.
 3. Reinicia el juego y activa el addon.
 
 ## Preguntas frecuentes
