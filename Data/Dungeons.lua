@@ -38,7 +38,7 @@ ns.Dungeons = {
         quests = { 92343, 92344, 97173, 97198, 92069, 92070, 92066, 92067, 92065, 97327, 99187 } },
     { key = "BRD", name = "Blackrock Depths", instanceID = 230, minLevel = 52, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
-        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848, 4295, 97197 },
+        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848, 4295, 97197, 82062 },
         -- Llave Sombraforja: abre la puerta del fondo (basta con que la lleve uno)
         attunement = { item = 11000, itemName = "Shadowforge Key", Both = { 3801, 3802 } } },
     { key = "DALARAN", name = "City of Dalaran", instanceID = 2959, minLevel = 28, maxLevel = 35, isForever = true, faction = "Both",
@@ -146,5 +146,5 @@ ns.Dungeons = {
         quests = { 914, 1486, 1491, 962, 959, 1487, 6981 } },
     { key = "ZF", name = "Zul'Farrak", instanceID = 209, minLevel = 44, maxLevel = 54, isForever = false, faction = "Both",
         entrance = { mapID = 1446, x = 38.7, y = 19.5 },
-        quests = { 2865, 3042, 2846, 2768, 2991, 3527, 2770, 2936, 96770, 96775 } },
+        quests = { 2865, 3042, 2846, 2768, 2991, 3527, 2770, 2936, 96770, 96775, 82084 } },
 }

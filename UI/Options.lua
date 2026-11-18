@@ -531,7 +531,7 @@ end
 function ns.CreateOptions()
     local root = ns.CreateAbout({
         name = "Dungeon Quest Atlas Forever",
-        listName = "Dungeon Quest Atlas",
+        listName = "Dungeon Quest", -- "Dungeon Quest Atlas" no cabe en la lista de Opciones: se partia en dos lineas
         logo = ns.LOGO,
         github = "https://github.com/Pirson-s-Addons/DungeonQuestAtlas",
         issues = ns.ISSUES_URL,

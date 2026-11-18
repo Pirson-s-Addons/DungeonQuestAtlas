@@ -333,7 +333,8 @@ function ns.QuestPlaces(id, which)
     if mine then return { mine }, true end
     local list = {}
     for _, key in ipairs((ns.Quests[id] or {})[which] or {}) do
-        if ns.Places[key] then list[#list + 1] = ns.Places[key] end
+        local place = ns.Places[key] -- faction: el PNJ de la otra facción no cuenta (A Lesson in Literacy)
+        if place and (not place.faction or place.faction == UnitFactionGroup("player")) then list[#list + 1] = place end
     end
     if #list > 0 then return list, false end
     local questie = ns.QuestiePlace and ns.QuestiePlace(id, which)

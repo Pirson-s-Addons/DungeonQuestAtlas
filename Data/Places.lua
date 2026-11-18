@@ -435,6 +435,9 @@ ns.Places = {
     ["name:Rau Cliffrunner"] = { name = "Rau Cliffrunner", mapID = 1441, x = 46.0, y = 51.6 },
     ["name:Prate Cloudseer"] = { name = "Prate Cloudseer", mapID = 1441, x = 53.0, y = 42.0 },
     ["name:Tran'gul"] = { name = "Tran'gul", mapID = 2548, x = 59.4, y = 44.0 },
+    ["name:Rugged Traveler"] = { name = "Rugged Traveler", inside = true },
+    ["name:Garion Wendell"] = { name = "Garion Wendell", mapID = 1453, x = 48.8, y = 86.6, faction = "Alliance" },
+    ["name:Owen Thadd"] = { name = "Owen Thadd", mapID = 1458, x = 73.6, y = 33.0, faction = "Horde" },
     ["name:Da'grosh"] = { name = "Da'grosh", mapID = 2548, x = 33.4, y = 38.0 },
     ["name:Clubtoe"] = { name = "Clubtoe", mapID = 2548, x = 50.0, y = 47.0, under = true }, -- cueva bajo Sunnyglade (FDJ 2.0.8)
     ["name:Twilight Brute"] = { name = "Twilight Brute", mapID = 2548, x = 49.2, y = 46.7, under = true },
