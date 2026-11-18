@@ -120,6 +120,8 @@ function ns.RollAdviceRows(link)
     local me, you = advice.me, Colored(L.UP_YOU, GOLD_TEXT)
     if me and me.blocked then
         Add({ left = you, right = Colored(type(me.blocked) == "number" and L.UP_LEVEL:format(me.blocked) or L.UP_CANT_USE, RED) })
+    elseif me and me.lowerArmor then
+        Add({ left = you .. "  " .. Colored(L.UP_LOWER_ARMOR, GREY), right = "" })
     elseif ns.IsUpgrade(me) then
         Add({ left = Arrow() .. " " .. you, right = Colored(me.empty and L.UP_EMPTY or ("+" .. Pct(me) .. "%"), GREEN) })
         local stats = StatsText(me.stats)
@@ -128,6 +130,7 @@ function ns.RollAdviceRows(link)
         Add({ left = you .. "  " .. Colored(L.UP_NOT_FOR_YOU, GREY),
             right = me.pct < 0 and Colored(Pct(me) .. "%", RED) or "" })
     end
+    if me and advice.custom then Add({ note = Colored(L.UP_CUSTOM, GREY) }) end
 
     -- El grupo: a quien mas le mejora, arriba
     local group = {}

@@ -104,6 +104,13 @@ local SPECS = {
         W("Restoration", "HEALER", { heal = 1, sp = 0.9, int = 0.6, spi = 0.63, mp5 = 1.2, scrit = 6, sta = 0.3, armor = 0.002 }) },
 }
 ns.UPGRADE_SPECS = SPECS
+-- Clave de cada perfil para los puntos de mejora del jugador (db.upgradePoints): "PALADIN/3", "DRUID/2t"
+for class, specs in pairs(SPECS) do
+    for i, s in ipairs(specs) do
+        s.key = class .. "/" .. i
+        if s.tank then s.tank.key = s.key .. "t" end
+    end
+end
 
 -- Raza (UnitRace, en ingles): multiplicadores de una estadistica y % de critico con un tipo de arma
 -- (warcraftforever.games/es/races). Humano: +5 % espiritu, +2 % critico con espadas. Enano: +1 %
@@ -133,13 +140,28 @@ end
 -- Pesos de un jugador: su especializacion si se sabe (y su rol, para el druida feral); si no, la
 -- primera de su clase con su rol ("TANK", "HEALER", "DAMAGER") y, sin rol, la de daño mas comun
 -- subiendo de nivel. Con la raza, la copia con sus bonus.
+-- mine: con los puntos de mejora que el jugador haya cambiado (Ajustes > Puntos de mejora); solo
+-- para el, los demas del grupo van con la tabla.
+local function Custom(base)
+    local over = ns.db and ns.db.upgradePoints and ns.db.upgradePoints[base.key]
+    if not (over and next(over)) then return base end
+    local w = {}
+    for k, v in pairs(base) do w[k] = v end
+    for k, v in pairs(over) do
+        if type(base[k]) == "number" and type(v) == "number" then w[k] = v end
+    end
+    w.custom = true
+    return w
+end
+
 local profiles = {}
-function ns.UpgradeProfile(class, role, spec, race)
+function ns.UpgradeProfile(class, role, spec, race, mine)
     local base = Pick(class, role, spec)
+    if mine then base = Custom(base) end
     local bonus = race and RACES[race]
     if not bonus then return base end
     local key = base.name .. base.role .. tostring(class) .. race
-    if profiles[key] then return profiles[key] end
+    if profiles[key] and not base.custom then return profiles[key] end
     local w = {}
     for k, v in pairs(base) do w[k] = v end
     for k, v in pairs(bonus) do
@@ -150,7 +172,7 @@ function ns.UpgradeProfile(class, role, spec, race)
         for sub, pct in pairs(base.weaponCrit or {}) do w.weaponCrit[sub] = pct end
         for sub, pct in pairs(bonus.weaponCrit) do w.weaponCrit[sub] = (w.weaponCrit[sub] or 0) + pct end
     end
-    profiles[key] = w
+    if not base.custom then profiles[key] = w end
     return w
 end
 
@@ -271,6 +293,12 @@ function ns.EvaluateItem(link, who)
     if not (itemLink and slots) then return end
     local ok, why = ns.CanEquip(who.class, who.level, equipLoc, minLevel, classID, subclassID)
     if not ok then return { blocked = why } end
+    -- Como Pawn: desde el 40, armadura de un tipo inferior al suyo no es para el (el cuero, al picaro)
+    local armor = ARMOR[who.class]
+    if armor and classID == 4 and equipLoc ~= "INVTYPE_CLOAK" and subclassID and subclassID >= 1
+        and subclassID < armor[2] and (who.level or 60) >= 40 then
+        return { pct = 0, gain = 0, stats = {}, against = {}, lowerArmor = true }
+    end
     if equipLoc == "INVTYPE_WEAPON" and not DUAL_WIELD[who.class] then slots = { 16 } end
     local gear, profile = who.gear, who.profile
     local main = gear[16] and select(2, ItemInfo(gear[16]))
@@ -380,18 +408,19 @@ local function UnitInfo(unit)
     return entry
 end
 
-local function Profiled(info)
-    info.profile = ns.UpgradeProfile(info.class, info.role, info.spec, info.race)
+local function Profiled(info, mine)
+    info.profile = ns.UpgradeProfile(info.class, info.role, info.spec, info.race, mine)
     return info
 end
 
-function ns.MyUpgradeInfo() return Profiled(SelfInfo()) end
+function ns.MyUpgradeInfo() return Profiled(SelfInfo(), true) end
 
 -- Lo que un objeto hace a ti y a cada uno del grupo: { me = resultado, members = { { name, class,
 -- result, src } }, unknown = { nombres sin datos } }
 function ns.UpgradeAdvice(link)
     local advice = { members = {}, unknown = {} }
-    advice.me = ns.EvaluateItem(link, ns.MyUpgradeInfo())
+    local mine = ns.MyUpgradeInfo()
+    advice.me, advice.custom = ns.EvaluateItem(link, mine), mine.profile.custom
     for _, unit in ipairs(GroupUnits()) do
         local info = UnitInfo(unit)
         if info then

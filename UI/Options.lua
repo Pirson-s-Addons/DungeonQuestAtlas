@@ -377,6 +377,157 @@ local function CreateAdventurePanel()
     return panel
 end
 
+-- Subcategoria "Puntos de mejora" (Core/Upgrades.lua): cuanto vale cada estadistica en cada
+-- especializacion de tu clase. Lo cambiado va a db.upgradePoints y solo cuenta para tus consejos.
+-- Nombre de cada estadistica: el del juego (las claves de GetItemStats son cadenas globales)
+local STATS = { { "str", "STRENGTH" }, { "agi", "AGILITY" }, { "sta", "STAMINA" }, { "int", "INTELLECT" },
+    { "spi", "SPIRIT" }, { "ap", "ATTACK_POWER" }, { "rap", "RANGED_ATTACK_POWER" },
+    { "fap", "FERAL_ATTACK_POWER" }, { "sp", "SPELL_DAMAGE_DONE" }, { "heal", "SPELL_HEALING_DONE" },
+    { "crit", "CRIT_MELEE_RATING" }, { "scrit", "CRIT_SPELL_RATING" }, { "hit", "HIT_MELEE_RATING" },
+    { "shit", "HIT_SPELL_RATING" }, { "def", "DEFENSE_SKILL_RATING" }, { "dodge", "DODGE_RATING" },
+    { "parry", "PARRY_RATING" }, { "block", "BLOCK_RATING" }, { "blockv", "BLOCK_VALUE" },
+    { "mp5", "MANA_REGENERATION" }, { "hp5", "HEALTH_REGEN" }, { "dps", "DAMAGE_PER_SECOND" },
+    { "armor", "RESISTANCE0_NAME" } }
+local function StatLabel(id, gameKey)
+    local text = _G["ITEM_MOD_" .. gameKey .. "_SHORT"] or _G[gameKey]
+    return (type(text) == "string" and text ~= "" and not text:find("%%")) and text or id
+end
+local function Num(v) return ("%g"):format(v) end
+
+local function CreatePointsPanel()
+    local db = ns.db
+    local panel = CreateFrame("Frame")
+    panel:Hide()
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", X, -16)
+    title:SetText(L.OPT_POINTS)
+    local logo = panel:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(110, 110)
+    logo:SetPoint("TOPRIGHT", -38, -5)
+    logo:SetTexture(ns.LOGO)
+    local version = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    version:SetPoint("TOP", logo, "BOTTOM", 0, -2)
+    version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
+
+    local help = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    help:SetPoint("TOPLEFT", X, -44)
+    help:SetWidth(440)
+    help:SetJustifyH("LEFT")
+    help:SetText(L.OPT_POINTS_HELP)
+
+    -- Especializaciones de tu clase (el druida feral, gato y oso por separado)
+    local choices, selected
+    local function Choices()
+        if choices then return choices end
+        choices = {}
+        local _, class, classID = UnitClass("player")
+        for i, s in ipairs(ns.UPGRADE_SPECS[class] or {}) do
+            local name = s.name
+            if GetSpecializationInfoForClassID then
+                local ok, _, specName = pcall(GetSpecializationInfoForClassID, classID, i)
+                if ok and type(specName) == "string" then name = specName end
+            end
+            if s.tank then
+                choices[#choices + 1] = { profile = s, text = name .. " - " .. (_G[s.role] or s.role) }
+                choices[#choices + 1] = { profile = s.tank, text = name .. " - " .. (_G.TANK or "TANK") }
+            else
+                choices[#choices + 1] = { profile = s, text = name }
+            end
+        end
+        return choices
+    end
+
+    local rows, Refresh = {}, nil
+    local function Over(create)
+        local key = selected.profile.key
+        if create and not db.upgradePoints[key] then db.upgradePoints[key] = {} end
+        return db.upgradePoints[key] or {}
+    end
+    local function Commit(row, box)
+        local value = tonumber((box:GetText():gsub(",", ".")))
+        if not box.cancel and value and value >= 0 and value <= 100 then
+            local over = Over(true)
+            over[row.id] = value ~= selected.profile[row.id] and value or nil
+            if not next(over) then db.upgradePoints[selected.profile.key] = nil end
+        end
+        box.cancel = nil
+        Refresh()
+    end
+    for _, stat in ipairs(STATS) do
+        local row = { id = stat[1] }
+        row.label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        row.label:SetText(StatLabel(stat[1], stat[2]))
+        row.box = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+        row.box:SetSize(56, 20)
+        row.box:SetAutoFocus(false)
+        row.box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+        row.box:SetScript("OnEscapePressed", function(self) self.cancel = true; self:ClearFocus() end)
+        row.box:SetScript("OnEditFocusLost", function(self) Commit(row, self) end)
+        ns.AddTooltip(row.box, function() return L.OPT_POINTS_DEFAULT:format(Num(selected.profile[row.id])) end)
+        row.default = panel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+        row.default:SetPoint("LEFT", row.box, "RIGHT", 6, 0)
+        rows[#rows + 1] = row
+    end
+
+    local dd = CreateFrame("Frame", "DungeonQuestAtlas_PointsSpec", panel, "UIDropDownMenuTemplate")
+    dd:SetPoint("TOPLEFT", X - 16, -96)
+    UIDropDownMenu_SetWidth(dd, 220)
+    UIDropDownMenu_Initialize(dd, function()
+        for _, c in ipairs(Choices()) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = c.text
+            info.checked = c == selected
+            info.func = function()
+                selected = c
+                Refresh()
+            end
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+
+    -- Las estadisticas que usa la especializacion, en dos columnas
+    Refresh = function()
+        if not selected then
+            local mine = ns.MyUpgradeInfo().profile.key
+            for _, c in ipairs(Choices()) do if c.profile.key == mine then selected = c end end
+            selected = selected or Choices()[1]
+        end
+        if not selected then return end
+        UIDropDownMenu_SetText(dd, selected.text)
+        local over, n = Over(), 0
+        for _, row in ipairs(rows) do
+            local def = selected.profile[row.id]
+            local shown = type(def) == "number"
+            row.label:SetShown(shown)
+            row.box:SetShown(shown)
+            row.default:SetShown(shown)
+            if shown then
+                local x, y = X + 4 + (n % 2) * 290, -140 - math.floor(n / 2) * 28
+                row.label:SetPoint("TOPLEFT", x, y)
+                row.box:SetPoint("TOPLEFT", x + 170, y + 3)
+                local changed = over[row.id] ~= nil
+                row.box:SetText(Num(over[row.id] or def))
+                row.box:SetCursorPosition(0)
+                row.label:SetTextColor(1, changed and 0.82 or 1, changed and 0 or 1)
+                row.default:SetText(changed and "(" .. Num(def) .. ")" or "")
+                n = n + 1
+            end
+        end
+    end
+    panel:SetScript("OnShow", Refresh)
+
+    local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reset:SetSize(180, 26)
+    reset:SetPoint("TOPLEFT", X, -350)
+    reset:SetText(L.DEFAULTS)
+    ns.AddTooltip(reset, L.OPT_POINTS_RESET_TOOLTIP)
+    reset:SetScript("OnClick", function()
+        if selected then db.upgradePoints[selected.profile.key] = nil end
+        Refresh()
+    end)
+    return panel
+end
+
 function ns.CreateOptions()
     local root = ns.CreateAbout({
         name = "Dungeon Quest Atlas Forever",
@@ -390,6 +541,7 @@ function ns.CreateOptions()
     general = Settings.RegisterCanvasLayoutSubcategory(root, CreateGeneral(), L.GENERAL)
     tracker = Settings.RegisterCanvasLayoutSubcategory(root, CreateTrackerPanel(), L.OPT_TRACKER)
     adventure = Settings.RegisterCanvasLayoutSubcategory(root, CreateAdventurePanel(), L.MODE_RPG)
+    Settings.RegisterCanvasLayoutSubcategory(root, CreatePointsPanel(), L.OPT_POINTS)
 end
 
 function ns.OpenTrackerOptions()

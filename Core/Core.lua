@@ -43,6 +43,7 @@ local DEFAULTS = {
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     questAlert = true,    -- avisar en el chat de las misiones que faltan (Core/QuestAlert.lua)
     rollAdvisor = true,   -- a quien mejora cada tirada de botin (Core/Upgrades.lua, UI/RollAdvisor.lua)
+    upgradePoints = {},   -- puntos de mejora cambiados por el jugador: ["PALADIN/3"] = { int = 0.5 } (UI/Options.lua)
     trackerPos = {},
     pickupGlow = true,    -- brillo dorado en las misiones listas para coger (UI/QuestPanel.lua)
     autoCompare = false,  -- comparar con lo equipado sin pulsar Mayus (UI/Items.lua)
