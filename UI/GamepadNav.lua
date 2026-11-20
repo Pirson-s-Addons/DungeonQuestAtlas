@@ -3,19 +3,29 @@ local ADDON_NAME, ns = ...
 -- ==========================================
 -- NAVEGACION CON MANDO
 -- ==========================================
--- Mientras haya una ventana de DQA abierta, los botones del mando son de la ventana y no del
+-- Fichero comun a los addons de Pirson con ventanas: el mismo en todos (se copia tal cual).
+-- Cada ventana se apunta con ns.GamepadNavFor(frame).
+-- Necesita en ns.L las claves PAD_MOVE, PAD_SELECT, PAD_TOGGLE, PAD_CLOSE, PAD_BACK,
+-- PAD_CLOSE_MENU y PAD_SCROLL. En clientes sin mando, ns.GamepadNavFor no hace nada.
+-- Mientras haya una ventana del addon abierta, los botones del mando son de la ventana y no del
 -- juego: atajos prioritarios propios (SetOverrideBindingClick, como hace el modo mando del
 -- juego sobre UIParent, pero con nuestro marco de dueno). La navegacion del juego
 -- (SmartNavigation) no vale: solo recorre ventanas que registra su codigo seguro, y
 -- registrarlas desde un addon acaba en SetPreferredGamepadInteractTarget bloqueado.
 --   Cruceta / stick izquierdo: al boton mas cercano en esa direccion
 --   A / X de PlayStation: clic   X / cuadrado: clic derecho
+--   Deslizador elegido: izquierda / derecha cambian su valor
+--   Boton seguro elegido (lanzar un hechizo...): A va directo a el, como un atajo
 --   B / circulo: atras (padGoBack de la ventana: sus migas) y, en su primera pagina, cerrar
 --   Stick derecho y LB/RB: desplazar la lista que hay bajo la seleccion
 -- Debajo de la ventana (y de sus pestanas), una barra dice que hay elegido y que hace cada
 -- boton ahi: solo los que sirven. Los elementos con clic derecho lo dicen con
 -- `padAlt` (clave de L); `padMain` cambia el texto del clic.
 -- En combate el juego no deja cambiar atajos: se sueltan al entrar y vuelven al salir.
+
+if not ns then return end -- clientes < 3.0: no pasan la tabla del addon (ni tienen mando)
+ns.GamepadNavFor = function() end -- (devuelve nil: sin mando no vigila nada)
+if not (C_GamePad and C_Timer and C_Timer.After and SetOverrideBindingClick) then return end
 
 local L = ns.L
 
@@ -40,7 +50,7 @@ local current        -- elemento elegido
 local bound = false
 
 local owner = CreateFrame("Frame")
-local nav = CreateFrame("Button", "DungeonQuestAtlasPadNav", UIParent)
+local nav = CreateFrame("Button", (ADDON_NAME:gsub("%W", "")) .. "PadNav", UIParent)
 nav:Hide()
 
 -- Marco dorado sobre lo elegido: cuatro lineas de 2 px por fuera
@@ -69,11 +79,16 @@ local function Window()
     end
 end
 
--- El menu desplegable del juego abierto (filtros, desplegables), si lo hay
+-- El menu desplegable del juego abierto (filtros, desplegables), si lo hay: el nuevo (Menu) o
+-- el clasico (UIDropDownMenu, su nivel mas alto abierto)
 local function OpenMenu()
     local manager = Menu and Menu.GetManager and Menu.GetManager()
     local menu = manager and manager.GetOpenMenu and manager:GetOpenMenu()
-    return menu and menu:IsVisible() and menu or nil
+    if menu and menu:IsVisible() then return menu end
+    for level = (UIDROPDOWNMENU_MAXLEVELS or 3), 1, -1 do
+        local list = _G["DropDownList" .. level]
+        if list and list:IsVisible() then return list end
+    end
 end
 
 local function Scope() return OpenMenu() or Window() end
@@ -82,6 +97,7 @@ local function Clickable(o)
     if not (o.IsVisible and o:IsVisible()) or o == mark then return false end
     if o:IsObjectType("EditBox") then return false end
     if o:IsObjectType("Button") then return o:IsEnabled() end
+    if o:IsObjectType("Slider") then return not o.IsEnabled or o:IsEnabled() end
     return o:IsMouseEnabled() and (o:GetScript("OnMouseDown") or o:GetScript("OnMouseUp")) and true or false
 end
 
@@ -199,8 +215,12 @@ local function UpdateBar()
     local parts = { Glyph("PADLSTICKUP") .. " " .. L.PAD_MOVE }
     local o = Valid(current) and current
     if o then
-        local main = o.padMain and L[o.padMain] or (o:IsObjectType("CheckButton") and L.PAD_TOGGLE) or L.PAD_SELECT
-        parts[#parts + 1] = Glyph(CONFIRM) .. " " .. main
+        if o:IsObjectType("Slider") then
+            parts[#parts + 1] = Glyph("PADDLEFT") .. Glyph("PADDRIGHT") .. " " .. (o:GetValue() or "")
+        else
+            local main = o.padMain and L[o.padMain] or (o:IsObjectType("CheckButton") and L.PAD_TOGGLE) or L.PAD_SELECT
+            parts[#parts + 1] = Glyph(CONFIRM) .. " " .. main
+        end
         if o.padAlt and L[o.padAlt] then parts[#parts + 1] = Glyph(ALT) .. " " .. L[o.padAlt] end
     end
     if (o and WheelOwner(o)) or BiggestWheel(win) then parts[#parts + 1] = Glyph("PADRSTICKUP") .. " " .. L.PAD_SCROLL end
@@ -237,9 +257,19 @@ local function Leave(o)
     if o and GameTooltip and GameTooltip.IsOwned and GameTooltip:IsOwned(o) then GameTooltip:Hide() end
 end
 
+-- A / X de PlayStation: a nuestro boton o, sobre un boton seguro (lanzar un hechizo, usar un
+-- objeto), directo a el. Pulsarlo desde nuestro codigo lo bloquearia el juego.
+local function BindConfirm(o)
+    if not bound or InCombatLockdown() then return end
+    local secure = o and o.IsProtected and o:IsProtected() and o:GetName()
+    if secure then SetOverrideBindingClick(owner, true, CONFIRM, secure, "LeftButton")
+    else SetOverrideBindingClick(owner, true, CONFIRM, nav:GetName(), "CLICK") end
+end
+
 local function Select(o)
     if current and current ~= o then Leave(current) end
     current = o
+    BindConfirm(o)
     if o then
         mark:ClearAllPoints()
         mark:SetPoint("TOPLEFT", o, "TOPLEFT")
@@ -310,6 +340,14 @@ local function Move(dirName)
     if not scope then return end
     local list = Collect(scope, scope, {})
     if not Valid(current) then return Select(First(list, scope)) end
+    if current:IsObjectType("Slider") and (dirName == "LEFT" or dirName == "RIGHT") then
+        local lo, hi = current:GetMinMaxValues()
+        local step = current.GetValueStep and current:GetValueStep() or 0
+        if step <= 0 then step = (hi - lo) / 20 end
+        local v = current:GetValue() + (dirName == "RIGHT" and step or -step)
+        current:SetValue(math.max(lo, math.min(hi, v)))
+        return UpdateBar()
+    end
     local x, y = Center(current)
     local nextOne = ns.PadBest(x, y, DIRS[dirName], list, current)
     if nextOne then return Select(nextOne) end
@@ -343,7 +381,11 @@ nav:SetScript("OnClick", function(_, action)
     elseif action == "RCLICK" then Press("RightButton")
     elseif action == "BACK" then
         local menu = OpenMenu()
-        if menu and menu.Close then menu:Close() C_Timer.After(0.05, UpdateBar) return end
+        if menu then
+            if menu.Close then menu:Close() elseif CloseDropDownMenus then CloseDropDownMenus() else menu:Hide() end
+            C_Timer.After(0.05, UpdateBar)
+            return
+        end
         -- Atras por las paginas de la ventana (sus migas) y, ya en la primera, cerrar
         local win = Window()
         if win and win.padGoBack and win.padGoBack() then
@@ -367,7 +409,7 @@ local sticks = { Movement = { 0, 0 }, Camera = { 0, 0 } }
 local moveDir, moveWait, scrollWait = nil, 0, 0
 local stickFrame = CreateFrame("Frame")
 stickFrame:Hide()
-stickFrame:SetScript("OnGamePadStick", function(_, stick, x, y)
+if stickFrame.EnableGamePadStick then stickFrame:SetScript("OnGamePadStick", function(_, stick, x, y)
     if stick ~= "Movement" and stick ~= "Camera" then return true end
     sticks[stick][1], sticks[stick][2] = x or 0, y or 0
     if stick == "Movement" then
@@ -381,7 +423,7 @@ stickFrame:SetScript("OnGamePadStick", function(_, stick, x, y)
         end
     end
     return false -- es nuestro: ni el personaje ni la camara se mueven
-end)
+end) end
 stickFrame:SetScript("OnUpdate", function(_, elapsed)
     if moveDir then
         moveWait = moveWait - elapsed
@@ -403,6 +445,7 @@ local function Bind()
     if bound or InCombatLockdown() then return end
     for key, action in pairs(KEYS) do SetOverrideBindingClick(owner, true, key, nav:GetName(), action) end
     bound = true
+    BindConfirm(current)
     if stickFrame.EnableGamePadStick then stickFrame:EnableGamePadStick(true) end
     stickFrame:Show()
 end
@@ -426,14 +469,24 @@ owner:SetScript("OnEvent", function(_, event)
     elseif Window() then Bind() UpdateBar() end
 end)
 
+-- Vigila la ventana con un hijo invisible: recibe OnShow/OnHide con ella y ningun SetScript
+-- posterior de la ventana lo pisa (un HookScript si). Devuelve ese hijo.
 function ns.GamepadNavFor(frame)
-    frame:HookScript("OnShow", function(self)
-        for i = #windows, 1, -1 do if windows[i] == self then table.remove(windows, i) end end
-        windows[#windows + 1] = self
+    local watch = CreateFrame("Frame", nil, frame)
+    watch:SetScript("OnShow", function()
+        for i = #windows, 1, -1 do if windows[i] == frame then table.remove(windows, i) end end
+        windows[#windows + 1] = frame
         Bind()
         Select(nil)
     end)
-    frame:HookScript("OnHide", function()
+    watch:SetScript("OnHide", function()
         if not Window() then Release() elseif not Valid(current) then Select(nil) else UpdateBar() end
     end)
+    -- Ventana creada ya visible (se crea al abrirla la primera vez): su OnShow no llega nunca.
+    -- Se toma el mando ya y la barra se recoloca cuando esten sus pestanas.
+    if frame:IsVisible() == true then
+        watch:GetScript("OnShow")()
+        C_Timer.After(0, UpdateBar)
+    end
+    return watch
 end
