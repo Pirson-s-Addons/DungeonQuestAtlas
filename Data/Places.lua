@@ -413,7 +413,7 @@ ns.Places = {
     ["item:274268"] = { itemID = 274268 },
     -- Revision del 11-11-2026 (PNJ y sitios de las misiones nuevas; npcID comprobados en la API de tooltips de Wowhead Forever).
     ["npc:3144"] = { npcID = 3144, name = "Eitrigg", mapID = 1454, x = 34.4, y = 38.6 },
-    ["npc:4791"] = { npcID = 4791, name = "Nazeer Bloodpike", mapID = 1445, x = 36.0, y = 31.0 },
+    ["npc:4791"] = { npcID = 4791, name = "Nazeer Bloodpike", mapID = 1445, x = 35.2, y = 30.7 },
     ["name:Sergeant Ulka"] = { name = "Sergeant Ulka", mapID = 1445, x = 70.2, y = 18.8 },
     ["name:Commander Folkar"] = { name = "Commander Folkar", inside = true },
     ["name:Perfumed Note"] = { name = "Perfumed Note", inside = true },
@@ -429,13 +429,26 @@ ns.Places = {
     ["name:Mordent Evenshade"] = { name = "Mordent Evenshade", mapID = 2652, x = 35.0, y = 46.4 },
     ["name:Magister Kirandis"] = { name = "Magister Kirandis", mapID = 2652, x = 47.2, y = 75.8 },
     ["name:Mithera"] = { name = "Mithera", mapID = 2652, x = 52.8, y = 76.0 },
-    ["name:Woodwyrd"] = { name = "Woodwyrd", mapID = 2652, x = 53.5, y = 76.0 },
+    ["name:Woodwyrd"] = { name = "Woodwyrd", mapID = 2652, x = 69.9, y = 72.1 }, -- Jardines Desolados (FDJ 2.1.0)
     ["name:Kog'thug the Brave"] = { name = "Kog'thug the Brave", mapID = 2652, x = 72.6, y = 31.4 },
     ["name:Veyric Thunderhame"] = { name = "Veyric Thunderhame", mapID = 1417, x = 59.6, y = 27.6 },
     ["name:Rau Cliffrunner"] = { name = "Rau Cliffrunner", mapID = 1441, x = 46.0, y = 51.6 },
     ["name:Prate Cloudseer"] = { name = "Prate Cloudseer", mapID = 1441, x = 53.0, y = 42.0 },
     ["name:Tran'gul"] = { name = "Tran'gul", mapID = 2548, x = 59.4, y = 44.0 },
     ["name:Rugged Traveler"] = { name = "Rugged Traveler", inside = true },
+    -- FDJ 2.1.0 (sitios de FDJ)
+    ["npc:6707"] = { npcID = 6707, name = "Fahrad", mapID = 1416, x = 84.5, y = 80.3 }, -- Mansion Ravenholdt
+    ["item:17126"] = { itemID = 17126 }, -- Elegant Letter: Horda, un instructor de picaros; Alianza, Mathias Shaw
+    ["item:219929"] = { itemID = 219929 }, -- Bloody Missive: en el cuerpo del "paladin" de Theramore
+    ["npc:221636"] = { npcID = 221636, name = "Gregory", mapID = 1448, x = 44.6, y = 52.0 },
+    ["npc:221587"] = { npcID = 221587, name = "Aeonas the Vindicated", mapID = 1448, x = 45.0, y = 52.0 }, -- Frondavil
+    ["name:Elrick"] = { name = "Elrick", mapID = 1445, x = 66.4, y = 45.4 }, -- posada de Theramore
+    ["npc:6272"] = { npcID = 6272, name = "Innkeeper Janene", mapID = 1445, x = 66.6, y = 45.2 },
+    ["name:Jennea Cannon"] = { name = "Jennea Cannon", faction = "Alliance" }, -- instructores de mago (Journey to the Marsh)
+    ["name:Bink"] = { name = "Bink", faction = "Alliance" },
+    ["name:Deino"] = { name = "Deino", faction = "Horde" },
+    ["name:Ursyn Ghull"] = { name = "Ursyn Ghull", faction = "Horde" },
+    ["name:Anastasia Hartwell"] = { name = "Anastasia Hartwell", faction = "Horde" },
     ["name:Garion Wendell"] = { name = "Garion Wendell", mapID = 1453, x = 48.8, y = 86.6, faction = "Alliance" },
     ["name:Owen Thadd"] = { name = "Owen Thadd", mapID = 1458, x = 73.6, y = 33.0, faction = "Horde" },
     ["name:Da'grosh"] = { name = "Da'grosh", mapID = 2548, x = 33.4, y = 38.0 },
@@ -470,5 +483,7 @@ ns.ItemPlaces = {
     [3256] = { mapID = 1421, x = 72.0, y = 35.5 },   -- Lake Skulker Moss: Islas del Alba
     [3257] = { mapID = 1421, x = 77.0, y = 25.0 },   -- Lake Creeper Moss: Islas del Alba
     [3258] = { mapID = 1421, x = 78.5, y = 31.5 },   -- Hardened Tumor: murlocs del lago Lordamere
+    [220166] = { mapID = 1448, x = 43.0, y = 40.5 }, -- Fiery Infernal Core: infernales de Shatter Scar Vale (FDJ 2.1.0)
+    [220169] = { mapID = 1424, x = 67.4, y = 14.8 }, -- Symbol of Faith: Brave Stonetorch (A Newly Discovered Purpose...)
     [286326] = { mapID = 1420, x = 83.9, y = 44.0 }, -- Riptear's Heart: Riptear, nordeste de Tirisfal
 }

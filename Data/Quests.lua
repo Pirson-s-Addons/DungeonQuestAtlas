@@ -18,6 +18,10 @@ local _, ns = ...
 -- (serie, inicio y final). Las de fuentes anteriores siguen aqui.
 -- verified = true: el cliente de Forever tiene la mision (foreverchanges).
 
+-- Cadenas largas que comparten varias misiones (FDJ 2.1.0)
+local ROGUE_TALISMAN = { 6681, 78261, 78307, 78676, 78699, 80526, 80411 }
+local PALADIN_AEONAS = { 79946, 79963, 79970, 81762, 81764, 81765, 81766, 96476, 81790 }
+
 ns.Quests = {
     [17] = { level = 42, minLevel = 38, faction = "Alliance", chain = true, rewards = { 250947 }, counts = { [250947] = 5 }, need = { { 8047, 12 } }, xp = 3450, money = 5500, starts = { "npc:1470" }, ends = { "npc:1470" }, verified = true },
     [166] = { level = 22, minLevel = 14, faction = "Alliance", chain = { 155, 166 }, choice = { 6087, 2041, 2042 }, need = { { 3637, 1 } }, xp = 6200, starts = { "npc:234" }, ends = { "npc:234" }, verified = true },
@@ -74,7 +78,7 @@ ns.Quests = {
     [1701] = { level = 28, minLevel = 20, faction = "Alliance", classes = { "WARRIOR" }, chain = { 1702, 1701, 1782 }, starts = { "npc:5413" }, ends = { "npc:5413" }, verified = false },
     [1740] = { level = 25, minLevel = 20, faction = "Both", classes = { "WARLOCK" }, choice = { 6898, 15109 }, xp = 5100, starts = { "npc:6247" }, ends = { "npc:6247" }, verified = false },
     [1838] = { level = 30, minLevel = 20, faction = "Horde", classes = { "WARRIOR" }, chain = { 1823, 1824, 1825, 1838, 1848 }, starts = { "npc:5878" }, ends = { "npc:5878" }, verified = false },
-    [1951] = { level = 40, minLevel = 30, faction = "Both", classes = { "MAGE" }, chain = { 1949, 1950, 1951 }, choice = { 7514, 11263, 7513 }, starts = { "npc:6548" }, ends = { "npc:6546" }, verified = false },
+    [1951] = { level = 40, minLevel = 30, faction = "Both", classes = { "MAGE" }, chain = { 1947, 1949, 1950, 1951 }, choice = { 7514, 11263, 7513 }, starts = { "npc:6548" }, ends = { "npc:6546" }, verified = false },
     [1956] = { level = 40, minLevel = 35, faction = "Both", classes = { "MAGE" }, chain = { 1953, 1954, 1955, 1956, 1957 }, starts = { "npc:6546" }, ends = { "npc:6546" }, verified = false },
     [2040] = { level = 20, minLevel = 15, faction = "Alliance", chain = { 2041, 2040 }, choice = { 7606, 7607, 270015, 270016 }, need = { { 7365, 1 } }, xp = 3700, starts = { "npc:6579" }, ends = { "npc:6579" }, verified = true },
     [2198] = { level = 41, minLevel = 37, faction = "Alliance", chain = { 2198, 2199, 2200, 2201, 2204 }, need = { { 7666, 1 } }, xp = 3300, starts = { "name:Shattered Necklace" }, ends = { "npc:6826" }, verified = true },
@@ -270,7 +274,7 @@ ns.Quests = {
     [7504] = { level = 60, minLevel = 54, faction = "Both", rewards = { 18469 }, need = { { 18362, 1 } }, xp = 15700, starts = { "name:Holy Bologna: What the Light Won't Tell You" }, ends = { "npc:14381" }, verified = true },
     [7505] = { level = 60, minLevel = 54, faction = "Both", rewards = { 18471 }, need = { { 18363, 1 } }, xp = 15700, starts = { "name:Frost Shock and You" }, ends = { "npc:14381" }, verified = true },
     [7506] = { level = 60, minLevel = 54, faction = "Both", rewards = { 18470 }, need = { { 18364, 1 } }, xp = 15700, starts = { "name:The Emerald Dream" }, ends = { "npc:14381" }, verified = true },
-    [7507] = { level = 60, minLevel = 60, faction = "Both", need = { { 18401, 1 } }, xp = 19900, starts = { "name:Foror's Compendium of Dragon Slaying" }, ends = { "npc:14368" }, verified = true },
+    [7507] = { level = 60, minLevel = 60, faction = "Both", classes = { "WARRIOR", "PALADIN" }, need = { { 18401, 1 } }, xp = 19900, starts = { "name:Foror's Compendium of Dragon Slaying" }, ends = { "npc:14368" }, verified = true },
     [7508] = { level = 60, minLevel = 60, faction = "Both", chain = { 7508, 7509 }, need = { { 18513, 1 } }, xp = 7050, starts = { "name:A Dull and Flat Elven Blade" }, ends = { "npc:14368" }, verified = true },
     [7581] = { level = 60, minLevel = 60, faction = "Both", starts = { "npc:14463" }, ends = { "npc:14463" }, verified = false },
     [7604] = { level = 60, minLevel = 60, faction = "Both", profession = "BLACKSMITHING", rewards = { 18592 }, need = { { 18628, 1 }, { 17203, 1 } }, xp = 6600, starts = { "name:Thorium Brotherhood Contract" }, ends = { "npc:12944" }, verified = true },
@@ -382,8 +386,10 @@ ns.Quests = {
     [1823] = { level = 20, minLevel = 20, faction = "Horde", chain = { 1823, 1824, 1825, 1838, 1848 }, starts = { "npc:3041" }, ends = { "npc:6394" } },
     [1824] = { level = 20, minLevel = 20, faction = "Horde", chain = { 1823, 1824, 1825, 1838, 1848 }, starts = { "npc:6394" }, ends = { "npc:6394" } },
     [1825] = { level = 20, minLevel = 20, faction = "Horde", chain = { 1823, 1824, 1825, 1838, 1848 }, starts = { "npc:6394" }, ends = { "npc:5878" } },
-    [1949] = { level = 38, minLevel = 30, faction = "Both", chain = { 1949, 1950, 1951 }, starts = { "npc:6546" }, ends = { "npc:6548" } },
-    [1950] = { level = 30, minLevel = 30, faction = "Both", chain = { 1949, 1950, 1951 }, starts = { "npc:6548" }, ends = { "npc:6548" } },
+    [1947] = { name = "Journey to the Marsh", level = 38, minLevel = 30, faction = "Both", classes = { "MAGE" }, chain = { 1947, 1949, 1950, 1951 },
+        starts = { "name:Jennea Cannon", "name:Bink", "name:Deino", "name:Ursyn Ghull", "name:Anastasia Hartwell" }, ends = { "npc:6546" } },
+    [1949] = { level = 38, minLevel = 30, faction = "Both", chain = { 1947, 1949, 1950, 1951 }, starts = { "npc:6546" }, ends = { "npc:6548" } },
+    [1950] = { level = 30, minLevel = 30, faction = "Both", chain = { 1947, 1949, 1950, 1951 }, starts = { "npc:6548" }, ends = { "npc:6548" } },
     [1953] = { level = 40, minLevel = 35, faction = "Both", chain = { 1953, 1954, 1955, 1956, 1957 }, ends = { "npc:6546" } },
     [1954] = { level = 40, minLevel = 35, faction = "Both", chain = { 1953, 1954, 1955, 1956, 1957 }, starts = { "npc:6546" }, ends = { "npc:6546" } },
     [1955] = { level = 40, minLevel = 35, faction = "Both", chain = { 1953, 1954, 1955, 1956, 1957 }, starts = { "npc:6546" }, ends = { "npc:6546" } },
@@ -545,10 +551,10 @@ ns.Quests = {
         chain = { 78261, 78307 }, need = { { 210186, 1 }, { 210209, 1 }, { 210183, 1 } }, xp = 1850,
         starts = { "name:Dead Drop" }, ends = { "name:Dead Drop" } },
     [78699] = { name = "The Eye of Bhossca", level = 35, minLevel = 25, faction = "Both", classes = { "ROGUE" },
-        chain = { 78261, 78307, 78676, 78699 }, rewards = { 277246 }, xp = 6900, money = 7500,
+        chain = ROGUE_TALISMAN, rewards = { 277246 }, xp = 6900, money = 7500,
         starts = { "name:Dead Drop" }, ends = { "name:Dead Drop" } },
     [78676] = { name = "The Eye of Bhossca", level = 35, minLevel = 25, faction = "Both", classes = { "ROGUE" },
-        chain = { 78261, 78307, 78676, 78699 }, need = { { 210955, 1 }, { 210963, 1 }, { 210967, 1 }, { 210968, 1 }, { 210953, 1 } },
+        chain = ROGUE_TALISMAN, need = { { 210955, 1 }, { 210963, 1 }, { 210967, 1 }, { 210968, 1 }, { 210953, 1 } },
         xp = 3450, starts = { "name:Dead Drop" }, ends = { "name:Dead Drop" } },
     -- The New Plague (95216) pide antes toda A Recipe For Death; The Wrath of Rath'mael (92422),
     -- Rear Guard Patrol (como en el juego desde noviembre de 2026)
@@ -598,7 +604,7 @@ ns.Quests = {
     [5246] = { name = "Fragments of the Past", level = 56, minLevel = 53, faction = "Alliance", chain = { 5245, 5246, 5247 }, need = { { 13313, 1 } }, xp = 5800, starts = { "npc:10304" }, ends = { "npc:10304" }, verified = true },
     [5247] = { name = "Fragments of the Past", level = 57, minLevel = 53, faction = "Alliance", chain = { 5245, 5246, 5247 }, need = { { 12655, 1 }, { 11562, 5 }, { 16973, 1 } }, xp = 6000, starts = { "npc:10304" }, ends = { "npc:10304" }, verified = true },
     [96800] = { name = "Past Due", level = 38, minLevel = 30, faction = "Alliance", choice = { 276898, 276899 }, need = { { 273169, 1 } }, xp = 6750, starts = { "npc:264265" }, ends = { "npc:264265" }, verified = true },
-    [5122] = { name = "The Medallion of Faith", level = 60, minLevel = 55, faction = "Both", chain = { 5122, 5125 }, need = { { 12845, 1 } }, starts = { "npc:10917" }, ends = { "npc:10917" }, verified = true },
+    [5122] = { name = "The Medallion of Faith", level = 60, minLevel = 55, faction = "Both", repeatable = true, alt = { 5125 }, chain = { 5122, 5125 }, need = { { 12845, 1 } }, starts = { "npc:10917" }, ends = { "npc:10917" }, verified = true },
     [5961] = { name = "The Champion of the Banshee Queen", level = 56, minLevel = 54, faction = "Horde", xp = 1450, starts = { "npc:10181" }, ends = { "npc:11878" }, verified = true },
     [92748] = { name = "Explosive Consultation", level = 16, minLevel = 9, faction = "Alliance", chain = { 92748, 92752, 92753 }, xp = 575, starts = { "npc:253092" }, ends = { "npc:11026" }, verified = true },
     [92752] = { name = "Explosive Consultation", level = 16, minLevel = 9, faction = "Alliance", chain = { 92748, 92752, 92753 }, need = { { 254553, 1 } }, xp = 575, starts = { "npc:11026" }, ends = { "npc:253092" }, verified = true },
@@ -636,7 +642,7 @@ ns.Quests = {
     [96078] = { name = "A Tale Spun Around the Fire", level = 40, minLevel = 30, faction = "Horde", chain = { 629, 95748, 95770, 95775, 96078 }, choice = { 279885, 279886, 279887 }, rewards = { 270312, 270313 }, xp = 2350, money = 3500, starts = { "npc:2519" }, ends = { "npc:3188" }, verified = false },
     [96770] = { name = "The Witch Doctor's Head", level = 46, minLevel = 39, faction = "Alliance", need = { { 277112, 1 } }, xp = 10100, money = 13000, starts = { "npc:20735" }, ends = { "npc:20735" }, verified = false },
     [96775] = { name = "Zum'rah's Head", level = 46, minLevel = 42, faction = "Horde", need = { { 277112, 1 } }, xp = 10100, money = 6500, starts = { "npc:264074" }, ends = { "npc:264074" }, verified = false },
-    [97196] = { name = "The Coldbringer's Eye", level = 41, minLevel = 34, faction = "Horde", need = { { 276916, 1 } }, xp = 8600, money = 5500, starts = { "name:Sutara Plainstalker" }, ends = { "name:Sutara Plainstalker" }, verified = false },
+    [97196] = { name = "The Coldbringer's Eye", level = 41, minLevel = 34, faction = "Horde", warn = "QUEST_WARN_COLDBRINGER", need = { { 276916, 1 } }, xp = 8600, money = 5500, starts = { "name:Sutara Plainstalker" }, ends = { "name:Sutara Plainstalker" }, verified = false },
     [94980] = { name = "Krol'dok Moulding", level = 41, minLevel = 38, faction = "Alliance", chain = { 94980, 94981 }, xp = 3300, money = 5500, starts = { "item:267138" }, ends = { "name:Alphonse Dumas" }, verified = false },
     [94973] = { name = "Krol'dok Moulding", level = 41, minLevel = 38, faction = "Horde", chain = { 94973, 94974 }, xp = 3300, money = 5500, starts = { "item:267137" }, ends = { "name:Kreza Darkthorn" }, verified = false },
     [94981] = { name = "Key Ingredients", level = 41, minLevel = 38, faction = "Alliance", chain = { 94980, 94981 }, rewards = { 267089 }, need = { { 4304, 4 }, { 3575, 12 } }, xp = 3300, money = 5500, starts = { "name:Alphonse Dumas" }, ends = { "name:Alphonse Dumas" }, verified = false },
@@ -667,15 +673,15 @@ ns.Quests = {
     [96335] = { name = "The Man in the Iron Chains", level = 53, minLevel = 48, faction = "Both", chain = { 96335, 96337 }, xp = 2850, starts = { "name:Mason Connery" }, ends = { "name:Mason Connery" }, verified = false },
     [96337] = { name = "More Valuable Than Gold", level = 53, minLevel = 48, faction = "Both", chain = { 96335, 96337 }, warn = "QUEST_WARN_QUESTIONER", rewards = { 274041 }, provided = { 274077 }, xp = 11550, starts = { "name:Mason Connery" }, ends = { "name:Loose Floorboard" }, verified = false },
     -- Bastion Fauce Negra. Blackmaw Pouches repetible (96246, sin XP): fuera.
-    [92070] = { name = "A Lost Memento", level = 55, minLevel = 47, faction = "Both", rewards = { 279893 }, xp = 11300, starts = { "item:249698" }, ends = { "npc:249855" }, verified = false },
-    [92066] = { name = "The Twin Bears", level = 55, minLevel = 47, faction = "Both", choice = { 279891, 279892 }, xp = 11300, starts = { "npc:249853" }, ends = { "npc:249853" }, verified = false },
+    [92070] = { name = "A Lost Memento", level = 55, minLevel = 47, faction = "Both", rep = { 576, 4 }, rewards = { 279893 }, xp = 11300, starts = { "item:249698" }, ends = { "npc:249855" }, verified = false },
+    [92066] = { name = "The Twin Bears", level = 55, minLevel = 47, faction = "Both", rep = { 576, 4 }, choice = { 279891, 279892 }, xp = 11300, starts = { "npc:249853" }, ends = { "npc:249853" }, verified = false },
     [92067] = { name = "Feeding Time!", level = 55, minLevel = 45, faction = "Both", repeatable = true, rewards = { 249900 }, verified = false },
-    [92065] = { name = "Blackmaw Reclamation", level = 60, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, choice = { 260216, 260217, 260218, 260219 }, xp = 13200, starts = { "npc:236573" }, ends = { "npc:236573" }, verified = false },
+    [92065] = { name = "Blackmaw Reclamation", level = 60, minLevel = 47, faction = "Both", rep = { 576, 4 }, chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, choice = { 260216, 260217, 260218, 260219 }, xp = 13200, starts = { "npc:236573" }, ends = { "npc:236573" }, verified = false },
     [97327] = { name = "Blackmaw Pouches", level = 60, minLevel = 55, faction = "Both", need = { { 273050, 5 } }, xp = 1450, starts = { "npc:235903" }, ends = { "npc:235903" }, verified = false },
     -- Profundidades, Maraudon y Rajacieno
     [97197] = { name = "Fragment of the Firelands", level = 55, minLevel = 49, faction = "Horde", need = { { 277129, 1 } }, xp = 14800, money = 8500, starts = { "name:Alaana Stormwalker" }, ends = { "name:Alaana Stormwalker" }, verified = false },
     [96776] = { name = "An'she's Radiance", level = 51, minLevel = 43, faction = "Horde", xp = 11900, starts = { "name:Olana Brighthoof" }, ends = { "name:Olana Brighthoof" }, verified = false },
-    [96773] = { name = "The Coldbringer's Eye", level = 41, minLevel = 34, faction = "Alliance", need = { { 276916, 1 } }, xp = 8600, starts = { "npc:20735" }, ends = { "npc:20735" }, verified = false },
+    [96773] = { name = "The Coldbringer's Eye", level = 41, minLevel = 34, faction = "Alliance", warn = "QUEST_WARN_COLDBRINGER", need = { { 276916, 1 } }, xp = 8600, starts = { "npc:20735" }, ends = { "npc:20735" }, verified = false },
     -- Shen'dralas: la cadena de los pilones pasa por Maraudon (93404) y Horado Rajacieno (93604).
     [92914] = { name = "Strange Pylons", level = 43, minLevel = 35, faction = "Both", chain = { 92914, 96010, 96018, 93016, 93394, 93341, 93594, 93404, 93601, 93604 }, xp = 3600, starts = { "name:Shen'dralar Pylon" }, ends = { "name:Mordent Evenshade" }, verified = false },
     [96010] = { name = "Fragments of the Pylons", level = 41, minLevel = 35, faction = "Both", chain = { 92914, 96010, 96018, 93016, 93394, 93341, 93594, 93404, 93601, 93604 }, xp = 2450, starts = { "name:Mordent Evenshade" }, ends = { "name:Mordent Evenshade" }, verified = false },
@@ -745,9 +751,9 @@ ns.Quests = {
     [95278] = { name = "It Is Time, Brother...", level = 45, minLevel = 38, faction = "Horde", chain = { 93786, 93787, 94483, 94672, 94680, 94727, 95417, 95601, 95602, 95427, 95418, 95420, 95424, 95425, 95428, 94744, 94748, 94745, 95431, 95432, 94768, 95278, 94968 }, starts = { "name:Da'grosh" }, ends = { "npc:256418" } },
     -- Paladin de la Alianza (FDJ 2.0.8, ID comprobados en Wowhead Forever): Aeonas, en la sala del fondo de la Catedral.
     -- Los pasos de antes (el Orbe extrano de Costa Oscura) son de jugadores: fuera.
-    [79946] = { name = "A Brother In Need", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = { 79946, 79963, 79970 }, starts = { "name:Katherine the Pure" }, ends = { "name:Aeonas" } },
-    [79963] = { name = "By The Light's Grace", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = { 79946, 79963, 79970 }, starts = { "name:Aeonas" }, ends = { "name:Aeonas" } },
-    [79970] = { name = "Aeonas the Vindicated", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = { 79946, 79963, 79970 }, rewards = { 277236 }, starts = { "name:Aeonas" }, ends = { "name:Aeonas the Vindicated" } },
+    [79946] = { name = "A Brother In Need", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, starts = { "name:Katherine the Pure" }, ends = { "name:Aeonas" } },
+    [79963] = { name = "By The Light's Grace", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, starts = { "name:Aeonas" }, ends = { "name:Aeonas" } },
+    [79970] = { name = "Aeonas the Vindicated", level = 40, minLevel = 35, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, rewards = { 277236 }, starts = { "name:Aeonas" }, ends = { "name:Aeonas the Vindicated" } },
     -- Chaman de la Horda (FDJ 2.0.8): Darkreaver, en el sotano del Gran Osario de Scholomance.
     [7668] = { name = "The Darkreaver Menace", level = 60, minLevel = 58, faction = "Horde", classes = { "SHAMAN" }, rewards = { 18807 }, xp = 19900, starts = { "npc:13417" }, ends = { "npc:13417" } },
     [2440] = { level = 47, minLevel = 40, faction = "Horde", chain = { 2280, 2440 }, provided = { 8070 }, choice = { 3928, 6149 }, rewards = { 9587 }, counts = { [3928] = 5, [6149] = 5 }, xp = 420, starts = { "npc:3978" }, ends = { "npc:3009" } },
@@ -760,6 +766,19 @@ ns.Quests = {
     [82062] = { name = "Ever After", level = 56, minLevel = 48, faction = "Both", warn = "QUEST_WARN_EVERAFTER", rewards = { 221316, 216619, 221315 }, counts = { [216619] = 3 }, xp = 8400, money = 8500, starts = { "name:Rugged Traveler" }, ends = { "name:Rugged Traveler" }, verified = false },
     -- FDJ (Wowhead Forever: quest 82084, objetos 221344, 221359-221361): mago, un PNJ por facción
     [82084] = { name = "A Lesson in Literacy", level = 45, minLevel = 42, faction = "Both", classes = { "MAGE" }, rewards = { 221344 }, need = { { 221359, 1 }, { 221361, 5 }, { 221360, 8 } }, xp = 3900, starts = { "name:Garion Wendell", "name:Owen Thadd" }, ends = { "name:Garion Wendell", "name:Owen Thadd" }, verified = false },
+    -- FDJ 2.1.0 (Wowhead Forever: misiones, objetos y PNJ comprobados el 20-11)
+    -- Picaro, Zul'Farrak: tras los trabajos de C, la carta de Fahrad en el buzon de una capital al 45. Solo.
+    [6681] = { name = "The Manor, Ravenholdt", level = 24, minLevel = 24, faction = "Both", classes = { "ROGUE" }, chain = ROGUE_TALISMAN, xp = 1950, starts = { "item:17126" }, ends = { "npc:6707" } },
+    [80526] = { name = "Fool Me Twice", level = 50, minLevel = 45, faction = "Both", classes = { "ROGUE" }, chain = ROGUE_TALISMAN, xp = 470, starts = { "npc:6707" }, ends = { "npc:6707" } },
+    [80411] = { name = "The Talisman of Kazdor", level = 50, minLevel = 45, faction = "Both", classes = { "ROGUE" }, warn = "QUEST_WARN_SOLO", chain = ROGUE_TALISMAN, need = { { 217609, 1 } }, xp = 4700, money = 10412, starts = { "npc:6707" }, ends = { "npc:6707" }, verified = false },
+    -- Paladin de la Alianza: Materials of Significance (Maraudon y Profundidades), al final de la historia de Aeonas
+    [81762] = { name = "Some Good News", level = 50, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, xp = 2350, starts = { "name:Aeonas the Vindicated" }, ends = { "name:Katherine the Pure" } },
+    [81764] = { name = "The Mysterious Merchant", level = 50, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, xp = 4700, money = 8225, starts = { "name:Katherine the Pure" }, ends = { "name:Elrick" } },
+    [81765] = { name = "Elrick, Paladin of the Silver Hand", level = 50, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, xp = 5900, money = 10325, starts = { "name:Elrick" }, ends = { "npc:6272" } },
+    [81766] = { name = "The Bloody Missive", level = 50, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, xp = 5900, money = 10412, starts = { "item:219929" }, ends = { "name:Katherine the Pure" } },
+    [96476] = { name = "In Search of Aeonas", level = 53, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, xp = 2650, starts = { "name:Katherine the Pure" }, ends = { "npc:221587" } },
+    [81790] = { name = "Materials of Significance", level = 53, minLevel = 45, faction = "Alliance", classes = { "PALADIN" }, chain = PALADIN_AEONAS, provided = { 220170 },
+        need = { { 220166, 3 }, { 220167, 1 }, { 220168, 1 }, { 220169, 1 } }, xp = 12750, money = 16752, starts = { "npc:221636" }, ends = { "npc:221636" }, verified = false },
 }
 
 -- Si una mision se puede compartir con el grupo, aunque no la lleves (comprobado en el
@@ -792,6 +811,7 @@ ns.QuestShare = {
     [5846] = true, [5848] = true, [6163] = true, [6402] = true, [6502] = true, [6561] = true, [6562] = true, [6563] = true, [6565] = true, [6566] = true, [6567] = true, [6569] = true,
     [6585] = true, [6602] = true, [6921] = true, [7028] = true, [7044] = true, [7064] = true, [7065] = true, [7068] = true, [7070] = true, [7201] = true, [7441] = true, [7461] = true,
     [7463] = true, [7481] = true, [7482] = true, [7483] = true, [7484] = true, [7485] = true, [7488] = true, [7489] = true, [7492] = true, [7494] = true, [8234] = true, [8254] = true,
+    [6681] = false, [80526] = false, [80411] = false, [81762] = false, [81765] = false, [81766] = false, [96476] = false, [81790] = false, -- FDJ 2.1.0
     [8255] = true, [8418] = true, [8945] = true, [92401] = true, [92421] = true, [92422] = true, [92432] = true, [92457] = true, [93604] = true, [93680] = true, [95189] = true, [95195] = true,
     [95204] = true, [95216] = true, [95250] = true, [96393] = true, [96394] = true, [96395] = true, [96403] = true, [96771] = true, [96773] = true, [97196] = true, [97288] = true, [99156] = true,
 }

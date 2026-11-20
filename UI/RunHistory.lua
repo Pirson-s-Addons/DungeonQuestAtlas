@@ -275,6 +275,7 @@ local function CreateHistory()
     win:SetScript("OnDragStart", win.StartMoving)
     win:SetScript("OnDragStop", win.StopMovingOrSizing)
     tinsert(UISpecialFrames, "DungeonQuestAtlasRunHistory")
+    ns.GamepadNavFor(DungeonQuestAtlasRunHistory) -- con mando, sus botones son de la ventana
     if win.SetTitle then win:SetTitle("|cffd597ff" .. L.RUN_HISTORY .. "|r") end
     if win.SetPortraitToAsset then win:SetPortraitToAsset(ns.LOGO) end
 

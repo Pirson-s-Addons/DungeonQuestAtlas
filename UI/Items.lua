@@ -143,6 +143,7 @@ function ns.SetupItemButton(button)
     button:SetScript("OnLeave", function() GameTooltip:Hide() end)
     button:SetScript("OnClick", OnClick)
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button.padAlt = "PAD_FAVORITE" -- con mando (UI/GamepadNav.lua)
     -- GameTooltip llama a UpdateTooltip mientras se ve: pulsar Shift compara al momento
     button.UpdateTooltip = ShowTooltip
     button.star = ns.CreateFavoriteStar(button, button.icon)
@@ -209,6 +210,7 @@ function ns.CreateRewardCard(parent)
     card:SetScript("OnLeave", function() GameTooltip:Hide() end)
     card:SetScript("OnClick", OnClick)
     card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    card.padAlt = "PAD_FAVORITE" -- con mando (UI/GamepadNav.lua)
     card.UpdateTooltip = ShowTooltip
     card.star = ns.CreateFavoriteStar(card, card.icon)
     return card

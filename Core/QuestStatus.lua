@@ -44,6 +44,18 @@ function ns.ClassNames(q, color)
     return #names > 0 and table.concat(names, ", ") or nil
 end
 
+-- q.rep = { factionID, nivel (1 Odiado ... 4 Neutral ... 8 Exaltado) }: "Requiere Madera
+-- Muerta - Neutral" con los textos del juego, en verde si lo tienes y en rojo si no.
+function ns.RepRequirement(q)
+    local rep = q.rep
+    if not (rep and ITEM_REQ_REPUTATION and C_Reputation and C_Reputation.GetFactionDataByID) then return nil end
+    local data = C_Reputation.GetFactionDataByID(rep[1])
+    local label = _G["FACTION_STANDING_LABEL" .. rep[2]]
+    if not (data and data.name and label) then return nil end
+    local ok = (data.reaction or 0) >= rep[2]
+    return (ok and "|cff1a6b1a" or "|cff8c1a0d") .. ITEM_REQ_REPUTATION:format(data.name, label) .. "|r"
+end
+
 function ns.IsMyClass(q)
     if not q.classes then return true end
     local _, mine = UnitClass("player")

@@ -231,7 +231,7 @@ local function CreateTrackerPanel()
     version:SetPoint("TOP", logo, "BOTTOM", 0, -2)
     version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
 
-    local boxes = {}
+    local boxes, pickers = {}, {}
     local function Refresh()
         for _, cb in ipairs(boxes) do
             cb:SetChecked(db[cb.key])
@@ -240,10 +240,17 @@ local function CreateTrackerPanel()
                 cb:SetAlpha(db.trackerNever and 0.5 or 1)
             end
         end
+        -- Sitio del % y de la lista: atenuados con su casilla apagada
+        for _, p in ipairs(pickers) do
+            p:Refresh()
+            p:SetActive(db[p.toggle])
+            p.label:SetAlpha(db[p.toggle] and 1 or 0.5)
+        end
+        if panel.listSize then panel.listSize:Refresh() end
     end
-    local function Box(key, label, tooltip, y, dependent)
+    local function Box(key, label, tooltip, y, dependent, x)
         local cb = CreateFrame("CheckButton", "DungeonQuestAtlas_" .. key, panel, "InterfaceOptionsCheckButtonTemplate")
-        cb:SetPoint("TOPLEFT", X + (dependent and 20 or 0), y)
+        cb:SetPoint("TOPLEFT", X + (x or 0) + (dependent and 20 or 0), y)
         _G[cb:GetName() .. "Text"]:SetText(label)
         cb.key, cb.dependent = key, dependent
         cb:SetScript("OnClick", function(self)
@@ -251,6 +258,7 @@ local function CreateTrackerPanel()
             Refresh()
             ns.RefreshRunTracker()
             if ns.UpdateRunHistoryButton then ns.UpdateRunHistoryButton() end
+            if ns.UpdateThreat then ns.UpdateThreat() end
         end)
         ns.AddTooltip(cb, tooltip)
         boxes[#boxes + 1] = cb
@@ -261,9 +269,13 @@ local function CreateTrackerPanel()
     Box("trackerSolo", L.OPT_TRACKER_SOLO, L.OPT_TRACKER_SOLO_TOOLTIP, -104, true)
     Box("rareChime", L.OPT_RARE_SOUND, L.OPT_RARE_SOUND_TOOLTIP, -130)
     Box("rareGlow", L.OPT_RARE_GLOW, L.OPT_RARE_GLOW_TOOLTIP, -156)
+    Box("rareToast", L.OPT_RARE_TOAST, L.OPT_RARE_TOAST_TOOLTIP, -130, nil, 340)
     Box("runHistoryButton", L.OPT_HISTORY_BUTTON, L.OPT_HISTORY_BUTTON_TOOLTIP, -182)
     Box("questAlert", L.OPT_QUEST_ALERT, L.OPT_QUEST_ALERT_TOOLTIP, -208)
     Box("rollAdvisor", L.OPT_ROLL_ADVISOR, L.OPT_ROLL_ADVISOR_TOOLTIP, -234)
+    -- Amenaza de cada enemigo (UI/Threat.lua), en la columna derecha
+    Box("threatPlates", L.OPT_THREAT_PLATES, L.OPT_THREAT_PLATES_TOOLTIP, -156, nil, 340)
+    Box("threatList", L.OPT_THREAT_LIST, L.OPT_THREAT_LIST_TOOLTIP, -182, nil, 340)
     -- Las tiradas del juego, donde quieras (UI/RollAdvisor.lua)
     local moveRolls = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     moveRolls:SetSize(170, 22)
@@ -277,16 +289,58 @@ local function CreateTrackerPanel()
     Box("trackerHideXP", L.OPT_HIDE_XP, L.OPT_HIDE_TOOLTIP, -331, true)
     Box("trackerHideGold", L.OPT_HIDE_GOLD, L.OPT_HIDE_TOOLTIP, -357, true)
     Box("trackerHideBosses", L.OPT_HIDE_BOSSES, L.OPT_HIDE_TOOLTIP, -383, true)
-    Separator(panel, -417)
+    -- Donde van el % y la lista (UI/Threat.lua): muestra con un punto en cada esquina y lado,
+    -- como en DR Tracker Forever; en la columna derecha, bajo "Mover tiradas de botin"
+    local function Picker(kind, toggle, label, y, height, gap)
+        local text = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        text:SetPoint("TOPLEFT", X + 344, y)
+        text:SetText(label)
+        local picker = ns.CreateThreatPicker(panel, kind, 140, height)
+        picker:SetPoint("TOPLEFT", X + 380, y - gap) -- hueco para la muestra si va encima
+        picker.toggle, picker.label = toggle, text
+        pickers[#pickers + 1] = picker
+    end
+    Picker("plate", "threatPlates", L.THREAT_POS_PLATE, -263, 14, 35)
+    Picker("list", "threatList", L.THREAT_POS_LIST, -338, 26, 28)
+    -- Tamano de la lista de amenaza (toda: barras, letras y titulo; el ancho sigue a la ventana)
+    local size = CreateFrame("Slider", "DungeonQuestAtlas_threatListScale", panel, "OptionsSliderTemplate")
+    size:SetPoint("TOPLEFT", X + 10, -444)
+    size:SetWidth(270)
+    size:SetMinMaxValues(0.7, 1.6)
+    size:SetValueStep(0.05)
+    size:SetObeyStepOnDrag(true)
+    local function Pct(v) return ("%d%%"):format(math.floor(v * 100 + 0.5)) end
+    _G[size:GetName() .. "Low"]:SetText(Pct(0.7))
+    _G[size:GetName() .. "High"]:SetText(Pct(1.6))
+    local function SizeLabel() _G[size:GetName() .. "Text"]:SetText(L.THREAT_LIST_SIZE .. ": " .. Pct(db.threatListScale)) end
+    size:SetScript("OnValueChanged", function(_, value)
+        value = math.floor(value / 0.05 + 0.5) * 0.05
+        if value == db.threatListScale then return end
+        db.threatListScale = value
+        SizeLabel()
+        if ns.UpdateThreat then ns.UpdateThreat() end
+    end)
+    ns.AddTooltip(size, L.THREAT_LIST_SIZE_TOOLTIP)
+    function size:Refresh()
+        self:SetValue(db.threatListScale)
+        SizeLabel()
+        self:SetEnabled(db.threatList) -- atenuado con la lista apagada
+        self:SetAlpha(db.threatList and 1 or 0.5)
+    end
+    panel.listSize = size
+    Separator(panel, -484)
 
     panel:SetScript("OnShow", Refresh)
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -430)
+    reset:SetPoint("TOPLEFT", X, -497)
     reset:SetText(L.DEFAULTS)
     reset:SetScript("OnClick", function()
         for _, cb in ipairs(boxes) do db[cb.key] = ns.DEFAULTS[cb.key] end
+        db.threatPlateAt, db.threatListAt = ns.DEFAULTS.threatPlateAt, ns.DEFAULTS.threatListAt
+        db.threatListScale = ns.DEFAULTS.threatListScale
         Refresh()
+        if ns.UpdateThreat then ns.UpdateThreat() end
         ns.RefreshRunTracker()
         if ns.UpdateRunHistoryButton then ns.UpdateRunHistoryButton() end
     end)
@@ -410,34 +464,112 @@ local function CreatePointsPanel()
     version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
 
     local help = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    help:SetPoint("TOPLEFT", X, -44)
+    help:SetPoint("TOPLEFT", X, -40)
     help:SetWidth(440)
     help:SetJustifyH("LEFT")
     help:SetText(L.OPT_POINTS_HELP)
 
-    -- Especializaciones de tu clase (el druida feral, gato y oso por separado)
+    -- Tu clase: su icono y su nombre en el color de la clase
+    local className, class, classID
+    if UnitClass then className, class, classID = UnitClass("player") end
+    class = type(class) == "string" and class or ""
+    local classIcon = panel:CreateTexture(nil, "ARTWORK")
+    classIcon:SetSize(36, 36)
+    classIcon:SetPoint("TOPLEFT", X, -94)
+    if not (GetClassAtlas and class ~= "" and pcall(classIcon.SetAtlas, classIcon, GetClassAtlas(class:lower()))) then
+        classIcon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
+        if CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[class] then classIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class])) end
+    end
+    local classText = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    classText:SetPoint("LEFT", classIcon, "RIGHT", 12, 0)
+    local color = (C_ClassColor and C_ClassColor.GetClassColor and C_ClassColor.GetClassColor(class))
+        or (RAID_CLASS_COLORS and RAID_CLASS_COLORS[class])
+    classText:SetText(className or class)
+    if color then classText:SetTextColor(color.r, color.g, color.b) end
+
+    -- Especializaciones de tu clase (el druida feral, gato y oso por separado), en botones con
+    -- su icono; el de tanque lleva el icono de su rol
+    -- Nombre e icono de cada arbol: los de la ventana de talentos de Forever (los grupos del arbol
+    -- de la clase, C_Traits, en su orden: Sagrado, Proteccion, Reprension). La API de
+    -- especializaciones de Retail no los da aqui (salia "Paladin" e interrogaciones).
+    local function TalentTrees()
+        local trees = {}
+        if not (C_ClassTalents and C_ClassTalents.GetActiveConfigID and C_Traits and C_Traits.GetConfigInfo
+            and C_Traits.GetGroupDisplayInfoByTreeID) then return trees end
+        local ok, configID = pcall(C_ClassTalents.GetActiveConfigID)
+        local info = ok and configID and select(2, pcall(C_Traits.GetConfigInfo, configID))
+        local treeID = type(info) == "table" and info.treeIDs and info.treeIDs[1]
+        local groups = treeID and select(2, pcall(C_Traits.GetGroupDisplayInfoByTreeID, treeID))
+        if type(groups) ~= "table" then return trees end
+        for _, g in ipairs(groups) do trees[#trees + 1] = g end
+        table.sort(trees, function(a, b) return (a.orderIndex or 0) < (b.orderIndex or 0) end)
+        return trees
+    end
     local choices, selected
     local function Choices()
         if choices then return choices end
         choices = {}
-        local _, class, classID = UnitClass("player")
+        local trees = TalentTrees()
         for i, s in ipairs(ns.UPGRADE_SPECS[class] or {}) do
-            local name = s.name
-            if GetSpecializationInfoForClassID then
-                local ok, _, specName = pcall(GetSpecializationInfoForClassID, classID, i)
-                if ok and type(specName) == "string" then name = specName end
+            local name, icon = s.name, nil
+            local tree = trees[i]
+            if tree and type(tree.displayName) == "string" and tree.displayName ~= "" then
+                name, icon = tree.displayName, tree.icon
             end
             if s.tank then
-                choices[#choices + 1] = { profile = s, text = name .. " - " .. (_G[s.role] or s.role) }
-                choices[#choices + 1] = { profile = s.tank, text = name .. " - " .. (_G.TANK or "TANK") }
+                choices[#choices + 1] = { profile = s, text = name, sub = _G[s.role] or s.role, icon = icon }
+                choices[#choices + 1] = { profile = s.tank, text = name, sub = _G.TANK or "TANK", icon = icon, tank = true }
             else
-                choices[#choices + 1] = { profile = s, text = name }
+                choices[#choices + 1] = { profile = s, text = name, icon = icon }
             end
         end
         return choices
     end
 
-    local rows, Refresh = {}, nil
+    local Refresh
+    local specButtons = {}
+    local SPEC_W, SPEC_H = 136, 40
+    local function SpecButton(i)
+        local b = CreateFrame("Button", nil, panel, "BackdropTemplate")
+        b:SetSize(SPEC_W, SPEC_H)
+        b:SetPoint("TOPLEFT", X + (i - 1) * (SPEC_W + 6), -142)
+        b:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize = 12, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetSize(28, 28)
+        b.icon:SetPoint("LEFT", 7, 0)
+        b.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        b.role = b:CreateTexture(nil, "OVERLAY")
+        b.role:SetSize(14, 14)
+        b.role:SetPoint("BOTTOMRIGHT", b.icon, "BOTTOMRIGHT", 4, -4)
+        b.name = b:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        b.name:SetPoint("TOPLEFT", b.icon, "TOPRIGHT", 7, -1)
+        b.name:SetPoint("RIGHT", -6, 0)
+        b.name:SetJustifyH("LEFT")
+        b.name:SetWordWrap(false)
+        b.sub = b:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+        b.sub:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -2)
+        local hl = b:CreateTexture(nil, "HIGHLIGHT")
+        hl:SetPoint("TOPLEFT", 3, -3)
+        hl:SetPoint("BOTTOMRIGHT", -3, 3)
+        hl:SetColorTexture(1, 1, 1, 0.08)
+        b:SetScript("OnClick", function(self)
+            selected = self.choice
+            PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or 856)
+            Refresh()
+        end)
+        return b
+    end
+
+    -- Estadisticas en secciones (cabecera morada); a la izquierda atributos y cuerpo a cuerpo,
+    -- a la derecha hechizos y defensa. Nombre del juego con mayuscula inicial.
+    local GROUPS = {
+        { name = _G.STAT_CATEGORY_ATTRIBUTES or "Attributes", col = 1, stats = { str = 1, agi = 1, sta = 1, int = 1, spi = 1 } },
+        { name = _G.MELEE or "Melee", col = 1, stats = { ap = 1, rap = 1, fap = 1, crit = 1, hit = 1, dps = 1 } },
+        { name = _G.SPELLS or "Spells", col = 2, stats = { sp = 1, heal = 1, scrit = 1, shit = 1, mp5 = 1 } },
+        { name = _G.DEFENSE or "Defense", col = 2, stats = { def = 1, dodge = 1, parry = 1, block = 1, blockv = 1, armor = 1, hp5 = 1 } },
+    }
+    local COL_W, ROW_H, TOP = 284, 24, -198
     local function Over(create)
         local key = selected.profile.key
         if create and not db.upgradePoints[key] then db.upgradePoints[key] = {} end
@@ -453,39 +585,64 @@ local function CreatePointsPanel()
         box.cancel = nil
         Refresh()
     end
+    local function Capital(text) return (text:gsub("^%l", string.upper)) end
+    local rows = {}
     for _, stat in ipairs(STATS) do
-        local row = { id = stat[1] }
-        row.label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        row.label:SetText(StatLabel(stat[1], stat[2]))
-        row.box = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
-        row.box:SetSize(56, 20)
+        local row = CreateFrame("Frame", nil, panel)
+        row:SetSize(COL_W - 12, ROW_H - 2)
+        row.id = stat[1]
+        row.band = row:CreateTexture(nil, "BACKGROUND")
+        row.band:SetAllPoints()
+        row.label = row:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        row.label:SetPoint("LEFT", 8, 0)
+        row.label:SetPoint("RIGHT", -118, 0)
+        row.label:SetJustifyH("LEFT")
+        row.label:SetWordWrap(false)
+        row.label:SetText(Capital(StatLabel(stat[1], stat[2])))
+        row.box = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+        row.box:SetSize(52, 18)
+        row.box:SetPoint("RIGHT", -58, 0)
+        row.box:SetJustifyH("CENTER")
         row.box:SetAutoFocus(false)
         row.box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
         row.box:SetScript("OnEscapePressed", function(self) self.cancel = true; self:ClearFocus() end)
         row.box:SetScript("OnEditFocusLost", function(self) Commit(row, self) end)
         ns.AddTooltip(row.box, function() return L.OPT_POINTS_DEFAULT:format(Num(selected.profile[row.id])) end)
-        row.default = panel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+        -- Cambiado: el de serie en gris y un boton para volver a el
+        row.default = row:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
         row.default:SetPoint("LEFT", row.box, "RIGHT", 6, 0)
+        row.undo = CreateFrame("Button", nil, row)
+        row.undo:SetSize(16, 16)
+        row.undo:SetPoint("RIGHT", -2, 0)
+        row.undo:SetNormalTexture("Interface\\Buttons\\UI-RefreshButton")
+        row.undo:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        row.undo:SetScript("OnClick", function()
+            local over = Over()
+            over[row.id] = nil
+            if not next(over) then db.upgradePoints[selected.profile.key] = nil end
+            Refresh()
+        end)
+        ns.AddTooltip(row.undo, function() return L.OPT_POINTS_DEFAULT:format(Num(selected.profile[row.id])) end)
+        for _, g in ipairs(GROUPS) do if g.stats[row.id] then row.group = g end end
         rows[#rows + 1] = row
     end
-
-    local dd = CreateFrame("Frame", "DungeonQuestAtlas_PointsSpec", panel, "UIDropDownMenuTemplate")
-    dd:SetPoint("TOPLEFT", X - 16, -96)
-    UIDropDownMenu_SetWidth(dd, 220)
-    UIDropDownMenu_Initialize(dd, function()
-        for _, c in ipairs(Choices()) do
-            local info = UIDropDownMenu_CreateInfo()
-            info.text = c.text
-            info.checked = c == selected
-            info.func = function()
-                selected = c
-                Refresh()
-            end
-            UIDropDownMenu_AddButton(info)
-        end
+    local headers = {}
+    for i, g in ipairs(GROUPS) do
+        headers[i] = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        headers[i]:SetText(HEADER .. g.name .. "|r")
+    end
+    local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    reset:SetSize(180, 26)
+    reset:SetText(L.DEFAULTS)
+    ns.AddTooltip(reset, L.OPT_POINTS_RESET_TOOLTIP)
+    reset:SetScript("OnClick", function()
+        if selected then db.upgradePoints[selected.profile.key] = nil end
+        Refresh()
     end)
+    local separator = panel:CreateTexture(nil, "ARTWORK")
+    separator:SetColorTexture(1, 1, 1, 0.1)
+    separator:SetSize(580, 1)
 
-    -- Las estadisticas que usa la especializacion, en dos columnas
     Refresh = function()
         if not selected then
             local mine = ns.MyUpgradeInfo().profile.key
@@ -493,36 +650,212 @@ local function CreatePointsPanel()
             selected = selected or Choices()[1]
         end
         if not selected then return end
-        UIDropDownMenu_SetText(dd, selected.text)
-        local over, n = Over(), 0
-        for _, row in ipairs(rows) do
-            local def = selected.profile[row.id]
-            local shown = type(def) == "number"
-            row.label:SetShown(shown)
-            row.box:SetShown(shown)
-            row.default:SetShown(shown)
-            if shown then
-                local x, y = X + 4 + (n % 2) * 290, -140 - math.floor(n / 2) * 28
-                row.label:SetPoint("TOPLEFT", x, y)
-                row.box:SetPoint("TOPLEFT", x + 170, y + 3)
-                local changed = over[row.id] ~= nil
-                row.box:SetText(Num(over[row.id] or def))
-                row.box:SetCursorPosition(0)
-                row.label:SetTextColor(1, changed and 0.82 or 1, changed and 0 or 1)
-                row.default:SetText(changed and "(" .. Num(def) .. ")" or "")
-                n = n + 1
+        -- Botones de especializacion: el elegido con borde dorado y fondo claro
+        for i, c in ipairs(Choices()) do
+            local b = specButtons[i] or SpecButton(i)
+            specButtons[i] = b
+            b.choice = c
+            b.icon:SetTexture(c.icon or "Interface\\Icons\\INV_Misc_QuestionMark")
+            b.name:SetText(c.text)
+            b.sub:SetText(c.sub or "")
+            b.role:SetShown(c.tank == true)
+            if c.tank then
+                if not pcall(b.role.SetAtlas, b.role, "roleicon-tiny-tank") then
+                    b.role:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-ROLES")
+                    if GetTexCoordsForRoleSmallCircle then b.role:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK")) end
+                end
+            end
+            local on = c == selected
+            b:SetBackdropColor(on and 0.22 or 0.05, on and 0.17 or 0.04, on and 0.08 or 0.03, 0.92)
+            b:SetBackdropBorderColor(on and 1 or 0.45, on and 0.82 or 0.36, on and 0.35 or 0.2)
+            b.name:SetTextColor(on and 1 or 0.85, on and 0.82 or 0.85, on and 0 or 0.85)
+            b.icon:SetDesaturated(not on)
+            b:Show()
+        end
+        for i = #Choices() + 1, #specButtons do specButtons[i]:Hide() end
+        -- Secciones con las estadisticas que usa la especializacion
+        local over, y = Over(), { TOP, TOP }
+        for i, g in ipairs(GROUPS) do
+            local n = 0
+            for _, row in ipairs(rows) do
+                if row.group == g and type(selected.profile[row.id]) == "number" then n = n + 1 end
+            end
+            headers[i]:SetShown(n > 0)
+            if n > 0 then
+                local x = X + (g.col - 1) * (COL_W + 12)
+                headers[i]:ClearAllPoints()
+                headers[i]:SetPoint("TOPLEFT", x, y[g.col])
+                y[g.col] = y[g.col] - 20
+                local k = 0
+                for _, row in ipairs(rows) do
+                    local def = selected.profile[row.id]
+                    if row.group == g and type(def) == "number" then
+                        row:ClearAllPoints()
+                        row:SetPoint("TOPLEFT", x + 6, y[g.col])
+                        local changed = over[row.id] ~= nil
+                        row.band:SetColorTexture(1, 1, 1, k % 2 == 0 and 0.05 or 0.02)
+                        row.box:SetText(Num(over[row.id] or def))
+                        row.box:SetCursorPosition(0)
+                        row.label:SetTextColor(1, changed and 0.82 or 1, changed and 0 or 1)
+                        row.default:SetText(changed and Num(def) or "")
+                        row.undo:SetShown(changed)
+                        row:Show()
+                        y[g.col] = y[g.col] - ROW_H
+                        k = k + 1
+                    end
+                end
+                y[g.col] = y[g.col] - 10
             end
         end
+        for _, row in ipairs(rows) do
+            if row.group == nil or type(selected.profile[row.id]) ~= "number" then row:Hide() end
+        end
+        local bottom = math.min(y[1], y[2])
+        separator:ClearAllPoints()
+        separator:SetPoint("TOPLEFT", X, bottom)
+        reset:ClearAllPoints()
+        reset:SetPoint("TOPLEFT", X, bottom - 13)
     end
     panel:SetScript("OnShow", Refresh)
+    return panel
+end
 
+-- Subcategoria "Teclas y mando": los atajos de Bindings.xml con dos huecos cada uno, como
+-- Opciones > Atajos de teclado del juego. Se guardan como atajos normales (SetBinding), asi
+-- que tambien salen alli. Con mando vale cualquier boton y sus combinaciones (los botones
+-- que el juego usa como Mayus/Ctrl/Alt: cvars GamePadEmulate*).
+local BINDINGS = { "DUNGEONQUESTATLAS_TOGGLE", "DUNGEONQUESTATLAS_ITEM", "DUNGEONQUESTATLAS_ROLLS" }
+local KEY_MODIFIERS = { LSHIFT = true, RSHIFT = true, LCTRL = true, RCTRL = true, LALT = true, RALT = true, UNKNOWN = true }
+local MOUSE_KEYS = { MiddleButton = "BUTTON3", Button4 = "BUTTON4", Button5 = "BUTTON5" }
+
+local function IsPadModifier(button)
+    for _, cvar in ipairs({ "GamePadEmulateShift", "GamePadEmulateCtrl", "GamePadEmulateAlt" }) do
+        if GetCVar(cvar) == button then return true end
+    end
+end
+
+-- Orden de modificadores que espera el juego: ALT-CTRL-SHIFT-
+function ns.KeyCombo(key)
+    return (IsAltKeyDown() and "ALT-" or "") .. (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "") .. key
+end
+
+local capture
+local function Capture(binding, slot, onDone)
+    if InCombatLockdown() then ns.Print(L.ROLL_MOVE_COMBAT) return end
+    if not capture then
+        capture = CreateFrame("Frame", nil, UIParent, "TooltipBackdropTemplate")
+        capture:SetSize(420, 84)
+        capture:SetPoint("CENTER", 0, 150)
+        capture:SetFrameStrata("FULLSCREEN_DIALOG")
+        capture:EnableKeyboard(true)
+        capture:SetPropagateKeyboardInput(false)
+        capture:EnableMouse(true)
+        capture:Hide()
+        capture.text = capture:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        capture.text:SetPoint("TOPLEFT", 14, -12)
+        capture.text:SetPoint("BOTTOMRIGHT", -14, 12)
+        local function Bind(key)
+            capture:Hide()
+            if key == "ESCAPE" or InCombatLockdown() then return end
+            local combo = ns.KeyCombo(key)
+            local previous = GetBindingAction(combo)
+            local old = select(capture.slot, GetBindingKey(capture.binding))
+            if old then SetBinding(old) end
+            SetBinding(combo, capture.binding)
+            SaveBindings(GetCurrentBindingSet())
+            if previous ~= "" and previous ~= capture.binding then
+                ns.Print(L.KEY_REPLACED:format(GetBindingText(combo), _G["BINDING_NAME_" .. previous] or previous))
+            end
+            if capture.onDone then capture.onDone() end
+        end
+        capture:SetScript("OnKeyDown", function(_, key) if not KEY_MODIFIERS[key] then Bind(key) end end)
+        capture:SetScript("OnMouseDown", function(_, button)
+            if MOUSE_KEYS[button] then Bind(MOUSE_KEYS[button]) else capture:Hide() end
+        end)
+        if capture.EnableGamePadButton then
+            capture:EnableGamePadButton(true)
+            capture:SetScript("OnGamePadButtonDown", function(_, button)
+                if button == "PAD2" then return capture:Hide() end -- B cancela, como en el juego
+                if not IsPadModifier(button) then Bind(button) end
+            end)
+        end
+    end
+    capture.binding, capture.slot, capture.onDone = binding, slot, onDone
+    capture.text:SetText(L.KEY_CAPTURE:format(_G["BINDING_NAME_" .. binding] or binding))
+    capture:Show()
+end
+
+local function CreateKeysPanel()
+    local panel = CreateFrame("Frame")
+    panel:Hide()
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", X, -16)
+    title:SetText(L.OPT_KEYS)
+    local logo = panel:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(110, 110)
+    logo:SetPoint("TOPRIGHT", -38, -5)
+    logo:SetTexture(ns.LOGO)
+    local version = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    version:SetPoint("TOP", logo, "BOTTOM", 0, -2)
+    version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
+    local hint = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    hint:SetPoint("TOPLEFT", X, -44)
+    hint:SetWidth(440)
+    hint:SetJustifyH("LEFT")
+    hint:SetText(L.KEYS_HINT)
+
+    Header(panel, -128, L.OPT_KEYS)
+    local slots = {}
+    local function Refresh()
+        for _, b in ipairs(slots) do
+            local key = select(b.slot, GetBindingKey(b.binding))
+            b:SetText(key and GetBindingText(key) or ("|cff808080" .. (NOT_BOUND or "-") .. "|r"))
+        end
+    end
+    for i, binding in ipairs(BINDINGS) do
+        local y = -150 - (i - 1) * 32
+        local label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+        label:SetPoint("TOPLEFT", X, y - 6)
+        label:SetWidth(200)
+        label:SetJustifyH("LEFT")
+        label:SetText(_G["BINDING_NAME_" .. binding] or binding)
+        for slot = 1, 2 do
+            local b = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+            b:SetSize(170, 26)
+            b:SetPoint("TOPLEFT", X + 210 + (slot - 1) * 180, y)
+            b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+            b.binding, b.slot = binding, slot
+            b:SetScript("OnClick", function(self, button)
+                if button == "RightButton" then
+                    if InCombatLockdown() then ns.Print(L.ROLL_MOVE_COMBAT) return end
+                    local key = select(self.slot, GetBindingKey(self.binding))
+                    if key then SetBinding(key); SaveBindings(GetCurrentBindingSet()) end
+                    Refresh()
+                else
+                    Capture(self.binding, self.slot, Refresh)
+                end
+            end)
+            ns.AddTooltip(b, L.KEY_SLOT_TOOLTIP)
+            slots[#slots + 1] = b
+        end
+    end
+    local bottom = -150 - #BINDINGS * 32 - 6
+    Separator(panel, bottom)
+
+    panel:SetScript("OnShow", Refresh)
+    panel:RegisterEvent("UPDATE_BINDINGS") -- cambiadas en la ventana del juego
+    panel:SetScript("OnEvent", function() if panel:IsShown() then Refresh() end end)
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -350)
-    reset:SetText(L.DEFAULTS)
-    ns.AddTooltip(reset, L.OPT_POINTS_RESET_TOOLTIP)
+    reset:SetPoint("TOPLEFT", X, bottom - 13)
+    reset:SetText(L.KEYS_CLEAR)
+    ns.AddTooltip(reset, L.KEYS_CLEAR_TOOLTIP)
     reset:SetScript("OnClick", function()
-        if selected then db.upgradePoints[selected.profile.key] = nil end
+        if InCombatLockdown() then ns.Print(L.ROLL_MOVE_COMBAT) return end
+        for _, binding in ipairs(BINDINGS) do
+            for _, key in ipairs({ GetBindingKey(binding) }) do SetBinding(key) end
+        end
+        SaveBindings(GetCurrentBindingSet())
         Refresh()
     end)
     return panel
@@ -542,6 +875,7 @@ function ns.CreateOptions()
     tracker = Settings.RegisterCanvasLayoutSubcategory(root, CreateTrackerPanel(), L.OPT_TRACKER)
     adventure = Settings.RegisterCanvasLayoutSubcategory(root, CreateAdventurePanel(), L.MODE_RPG)
     Settings.RegisterCanvasLayoutSubcategory(root, CreatePointsPanel(), L.OPT_POINTS)
+    Settings.RegisterCanvasLayoutSubcategory(root, CreateKeysPanel(), L.OPT_KEYS)
 end
 
 function ns.OpenTrackerOptions()

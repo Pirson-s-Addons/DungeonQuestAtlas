@@ -191,6 +191,7 @@ function ns.CreateBossList(parent, onSelect)
         row.slain:SetPoint("BOTTOM", row, "BOTTOMLEFT", ns.JOURNAL_HOLE_X, 1)
         DecoratePortrait(row)
         row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+        row.padAlt = "PAD_KILLED" -- con mando (UI/GamepadNav.lua): que hace el clic derecho
         row:SetScript("OnClick", function(self, button)
             if button == "RightButton" then
                 if self.kind == "recipes" then return end

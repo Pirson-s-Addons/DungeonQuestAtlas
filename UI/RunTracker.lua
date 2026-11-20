@@ -151,9 +151,19 @@ local function CreateTracker()
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart", function() if not InCombatLockdown() then f:StartMoving() end end)
+    -- Protegida (sus caras seleccionan en combate): soltarla en combate da ADDON_ACTION_BLOCKED.
+    -- Si empieza un combate a mitad de arrastre, se suelta al entrar (PLAYER_REGEN_DISABLED aun
+    -- lo deja); si aun asi se suelta en combate, se termina al acabar.
+    f:SetScript("OnDragStart", function()
+        if not InCombatLockdown() then
+            f:StartMoving()
+            f.dragging = true
+        end
+    end)
     f:SetScript("OnDragStop", function()
+        if InCombatLockdown() then return end
         f:StopMovingOrSizing()
+        f.dragging = false
         SavePosition()
     end)
     f:SetScript("OnMouseUp", function(_, button)
@@ -271,6 +281,17 @@ function ns.ShowRunTracker()
 end
 
 -- Las caras que no se pudieron poner en combate
+-- y la ventana que se estaba arrastrando al empezar el combate
 local regen = CreateFrame("Frame")
 regen:RegisterEvent("PLAYER_REGEN_ENABLED")
-regen:SetScript("OnEvent", function() ns.RefreshRunTracker() end)
+regen:RegisterEvent("PLAYER_REGEN_DISABLED")
+regen:SetScript("OnEvent", function(_, event)
+    -- Un bloqueo no es un error de Lua (pcall no lo para): solo sin bloqueo, que en
+    -- PLAYER_REGEN_DISABLED aun no ha empezado
+    if frame and frame.dragging == true and not InCombatLockdown() then
+        frame:StopMovingOrSizing()
+        frame.dragging = false
+        SavePosition()
+    end
+    if event == "PLAYER_REGEN_ENABLED" then ns.RefreshRunTracker() end
+end)

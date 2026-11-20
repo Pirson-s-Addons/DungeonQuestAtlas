@@ -1060,7 +1060,7 @@ end
 -- ------------------------------------------
 -- Su cara redonda junto al historial: abre el requisito de acceso de tu faccion
 -- en Bandas (la pestana elige sola el primer paso sin hacer). Sale al llegar al
--- nivel del primer paso (ns.db.onyxiaIcon "auto"); "show" siempre, "hide" nunca.
+-- nivel del primer paso y se va con el ultimo hecho (ns.db.onyxiaIcon "auto"); "show" siempre, "hide" nunca.
 -- Clic derecho: ocultarlo (Opciones > Modo aventura lo devuelve).
 
 local function OnyxiaRaid()
@@ -1074,7 +1074,8 @@ function ns.OnyxiaIconShown()
     if not raid or mode == "hide" then return false end
     if mode == "show" then return true end
     local chain = raid.attunement[UnitFactionGroup("player") == "Horde" and "Horde" or "Alliance"]
-    local first = chain and ns.Quests[chain[1]]
+    if not chain or (chain[#chain] and ns.IsQuestDone(chain[#chain])) then return false end -- ya con acceso
+    local first = ns.Quests[chain[1]]
     return UnitLevel("player") >= (first and first.minLevel or 0)
 end
 
@@ -1089,6 +1090,7 @@ function ns.CreateOnyxiaButton(parent)
     hl:SetAllPoints()
     hl:SetColorTexture(1, 1, 1, 0.2)
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button.padAlt = "PAD_HIDE" -- con mando (UI/GamepadNav.lua)
     button:SetScript("OnClick", function(_, mouse)
         GameTooltip:Hide()
         if mouse == "RightButton" then

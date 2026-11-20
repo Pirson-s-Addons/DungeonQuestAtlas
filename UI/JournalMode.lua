@@ -345,6 +345,7 @@ local function CreateChooser()
     })
     f:SetBackdropColor(0.04, 0.035, 0.03, 0.97)
     tinsert(UISpecialFrames, "DungeonQuestAtlasModeChooser")
+    ns.GamepadNavFor(DungeonQuestAtlasModeChooser) -- con mando, sus botones son de la ventana
     local icon = f:CreateTexture(nil, "ARTWORK")
     icon:SetSize(28, 28)
     icon:SetPoint("TOPLEFT", 20, -18)

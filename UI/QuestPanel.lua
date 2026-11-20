@@ -284,6 +284,7 @@ local function CreateDetail(parent)
     local shareInfo = Text("GameFontBlack", 4, ns.INK_LIGHT) -- se puede compartir o no, aunque no la lleves
     local requires = Text("GameFontNormal", 6) -- "Antes: <paso anterior>", si aun no esta hecho
     local questWarn = Text("GameFontNormal", 6) -- q.warn: un aviso propio de esa mision
+    local repLine = Text("GameFontNormal", 6) -- q.rep: reputacion que pide para cogerla
 
     -- Cadena: un boton por paso, reutilizados. Cada paso abre su hoja.
     local chainHeader = Section(L.CHAIN)
@@ -673,6 +674,7 @@ local function CreateDetail(parent)
         Set(requires, previous and ns.QuestStatus(previous) ~= ns.STATUS_COMPLETED
             and ("|cff8c1a0d" .. L.CHAIN_REQUIRES:format(ns.QuestTitle(previous)) .. "|r") or nil)
         Set(questWarn, q.warn and ("|cff8c1a0d" .. L[q.warn] .. "|r") or nil)
+        Set(repLine, ns.RepRequirement(q))
 
         local objective = ns.QuestObjective(id)
         -- La llevas: el progreso de cada objetivo ("Cabeza de Arugal: 0/1"), del juego

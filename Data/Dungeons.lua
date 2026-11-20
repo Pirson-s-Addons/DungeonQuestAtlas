@@ -38,7 +38,7 @@ ns.Dungeons = {
         quests = { 92343, 92344, 97173, 97198, 92069, 92070, 92066, 92067, 92065, 97327, 99187 } },
     { key = "BRD", name = "Blackrock Depths", instanceID = 230, minLevel = 52, maxLevel = 60, isForever = false, faction = "Both",
         entrance = { mapID = 1428, x = 29.4, y = 38.3 },
-        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848, 4295, 97197, 82062 },
+        quests = { 4083, 3802, 4081, 4136, 4242, 7201, 3907, 4263, 4003, 4004, 4082, 4201, 4126, 4134, 4123, 4286, 4264, 4282, 4322, 4362, 4363, 4024, 4132, 4121, 4063, 9015, 7604, 3906, 3981, 4241, 4262, 4341, 7848, 4295, 97197, 82062, 81790 },
         -- Llave Sombraforja: abre la puerta del fondo (basta con que la lleve uno)
         attunement = { item = 11000, itemName = "Shadowforge Key", Both = { 3801, 3802 } } },
     { key = "DALARAN", name = "City of Dalaran", instanceID = 2959, minLevel = 28, maxLevel = 35, isForever = true, faction = "Both",
@@ -75,7 +75,7 @@ ns.Dungeons = {
         quests = { 4788, 4982, 5001, 4983, 4862, 4729, 5002, 4701, 4724, 5047, 5089, 5081, 4866, 6569, 5127, 4867, 4903, 4765, 4764, 4735, 4734, 4742, 4743, 5160, 8995, 8966, 8989, 4981, 5103, 5306 } },
     { key = "MARA", name = "Maraudon", instanceID = 349, minLevel = 46, maxLevel = 55, isForever = false, faction = "Both",
         entrance = { mapID = 1443, x = 29.1, y = 62.5 },
-        quests = { 7068, 7070, 7067, 7028, 7029, 7041, 7044, 7046, 7064, 7065, 7066, 93404, 96776 } },
+        quests = { 7068, 7070, 7067, 7028, 7029, 7041, 7044, 7046, 7064, 7065, 7066, 93404, 96776, 81790 } },
     { key = "RFC", name = "Ragefire Chasm", instanceID = 389, minLevel = 13, maxLevel = 18, isForever = false, faction = "Horde",
         entrance = { mapID = 1454, x = 53.2, y = 48.7 },
         quests = { 5723, 5728, 5724, 5761, 5725, 5722 } },
@@ -146,5 +146,5 @@ ns.Dungeons = {
         quests = { 914, 1486, 1491, 962, 959, 1487, 6981 } },
     { key = "ZF", name = "Zul'Farrak", instanceID = 209, minLevel = 44, maxLevel = 54, isForever = false, faction = "Both",
         entrance = { mapID = 1446, x = 38.7, y = 19.5 },
-        quests = { 2865, 3042, 2846, 2768, 2991, 3527, 2770, 2936, 96770, 96775, 82084 } },
+        quests = { 2865, 3042, 2846, 2768, 2991, 3527, 2770, 2936, 96770, 96775, 82084, 80411 } },
 }

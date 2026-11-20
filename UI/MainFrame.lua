@@ -115,7 +115,8 @@ local function UpdateNav(d, map, boss)
     if not d then return SetNav("dungeons") end
     local crumbs = { { name = ns.DungeonName(d), listFunc = DungeonCrumbList, OnClick = function()
         ui.boss = nil
-        ShowTab(ns.char.tab)
+        -- Modelo siempre ensena un jefe (elige el primero): la mazmorra es su Resumen
+        ShowTab(ns.char.tab == "model" and "overview" or ns.char.tab)
     end } }
     local bosses = ns.Bosses[d.key] or {}
     if boss and bosses[boss] and not map then
@@ -320,6 +321,30 @@ local function NavHome()
         return ns.RefreshUI()
     end
     ShowHome()
+end
+
+-- Atras (boton B / circulo del mando, UI/GamepadNav.lua): la miga anterior y, con una sola,
+-- "Principal". En la portada de la seccion no hay atras: false (el mando cierra la ventana).
+function ns.CanGoBack()
+    return ui and ui.nav and ui.nav.crumbs and #ui.nav.crumbs > 0 or false
+end
+
+function ns.GoBack()
+    if not ns.CanGoBack() then return false end
+    local crumbs = ui.nav.crumbs
+    local previous = crumbs[#crumbs - 1]
+    local before = ui.nav.key
+    ui.nav.key = nil -- que se rehagan las migas
+    if previous and previous.OnClick then
+        previous.OnClick()
+        ns.RefreshUI()
+        -- Si la pagina se queda donde estaba (un panel que vuelve a elegir lo mismo), a "Principal"
+        if ui.nav.key == before then ui.nav.key = nil; NavHome() end
+    else
+        NavHome()
+    end
+    if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF) end
+    return true
 end
 
 function ShowTab(name)
@@ -790,6 +815,8 @@ local function CreateMainFrame()
     end)
     frame:SetScript("OnShow", ns.RefreshUI)
     tinsert(UISpecialFrames, "DungeonQuestAtlasFrame")
+    ns.GamepadNavFor(DungeonQuestAtlasFrame) -- con mando, sus botones son de la ventana
+    frame.padCanGoBack, frame.padGoBack = ns.CanGoBack, ns.GoBack -- B / circulo: atras antes que cerrar
     -- Clic derecho mantenido y arrastrar: mas grande o mas pequena (la escala de opciones)
     ns.EnableRightDragScale(frame, { frame }, function(scale)
         ns.db.scale = scale
@@ -798,16 +825,22 @@ local function CreateMainFrame()
     if frame.SetTitle then frame:SetTitle("|cffd597ffDungeon Quest Atlas Forever|r") end
     if frame.SetPortraitToAsset then frame:SetPortraitToAsset(LOGO) end
     -- Rueda dentada de las opciones en la barra del titulo, a la izquierda de la X
+    -- (al nivel de la X: si no, el borde de la plantilla, NineSlice, la tapa)
     local cog = CreateFrame("Button", nil, frame)
-    cog:SetSize(18, 18)
-    if frame.CloseButton then cog:SetPoint("RIGHT", frame.CloseButton, "LEFT", -2, 0)
-    else cog:SetPoint("TOPRIGHT", -28, -3) end
+    cog:SetSize(20, 20)
+    if frame.CloseButton then
+        cog:SetPoint("RIGHT", frame.CloseButton, "LEFT", -1, 0)
+        cog:SetFrameLevel(frame.CloseButton:GetFrameLevel())
+    else
+        cog:SetPoint("TOPRIGHT", -28, -3)
+        cog:SetFrameLevel(frame:GetFrameLevel() + 10)
+    end
     local cogIcon = cog:CreateTexture(nil, "ARTWORK")
     cogIcon:SetAllPoints()
-    if not (C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("QuestLog-icon-setting")) then
-        cogIcon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+    if C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("questlog-icon-setting") then
+        cogIcon:SetAtlas("questlog-icon-setting")
     else
-        cogIcon:SetAtlas("QuestLog-icon-setting")
+        cogIcon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
     end
     cog:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     cog:SetScript("OnClick", function() ns.OpenOptions() end)
@@ -931,6 +964,7 @@ function ns.ShowCopyDialog(titleText, text)
         dialog:SetScript("OnDragStart", dialog.StartMoving)
         dialog:SetScript("OnDragStop", dialog.StopMovingOrSizing)
         tinsert(UISpecialFrames, "DungeonQuestAtlasCopyDialog")
+        ns.GamepadNavFor(DungeonQuestAtlasCopyDialog) -- con mando, sus botones son de la ventana
 
         dialog.title = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         dialog.title:SetPoint("TOP", 0, -5)

@@ -79,7 +79,8 @@ local function OnClick(self)
     local item = self.item
     if not (item.entry and not item.roll and not item.note) then return end
     if IsModifiedClick and IsModifiedClick("CHATLINK") and item.entry.link then
-        return ChatEdit_InsertLink(item.entry.link)
+        local insert = ChatFrameUtil and ChatFrameUtil.InsertLink or ChatEdit_InsertLink
+        return insert and insert(item.entry.link)
     end
     expanded[item.entry] = not IsOpen(item.entry, item.index)
     ns.RefreshRollHistory()
@@ -172,6 +173,7 @@ local function Create()
     win:SetScript("OnDragStop", win.StopMovingOrSizing)
     _G.DungeonQuestAtlasRollHistory = win
     tinsert(UISpecialFrames, "DungeonQuestAtlasRollHistory")
+    ns.GamepadNavFor(DungeonQuestAtlasRollHistory) -- con mando, sus botones son de la ventana
 
     local logo = win:CreateTexture(nil, "ARTWORK")
     logo:SetSize(20, 20)

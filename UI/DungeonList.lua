@@ -59,6 +59,7 @@ local function CreateCard(row, onSelect)
     card.lock:SetPoint("CENTER", 0, -8)
     card.lock:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-LOCK")
     card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    card.padAlt = "PAD_HIDE" -- con mando (UI/GamepadNav.lua): que hace el clic derecho
     card:SetScript("OnClick", function(self, button)
         if button == "RightButton" and IsShiftKeyDown() and ns.IsDungeonLocked(self.dungeon) then
             GameTooltip:Hide()

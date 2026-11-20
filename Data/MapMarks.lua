@@ -51,7 +51,8 @@ ns.MapMarks = {
     },
     BFD = {
         { { "entrance", 0.455, 0.085 }, { "floor", 0.615, 0.700, 2 } },
-        { { "floor", 0.470, 0.700, 3 }, { "floor", 0.389, 0.276, 1 } },
+        { { "floor", 0.470, 0.700, 3 }, { "floor", 0.389, 0.276, 1 },
+          { "spawn", 0.385, 0.194, 4, "MAP_NOTE_ALT_SPAWN" }, { "spawn", 0.442, 0.231, 4, "MAP_NOTE_ALT_SPAWN" } }, -- Lorgus Jett (FDJ 2.1.0)
         { { "floor", 0.407, 0.330, 2 } },
     },
     STOCKS = { { { "entrance", 0.500, 0.815 }, { "spawn", 0.499, 0.205, 3, "MAP_NOTE_ALT_SPAWN" },

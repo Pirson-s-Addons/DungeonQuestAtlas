@@ -86,10 +86,10 @@ ns.Bosses = {
         { name = "Cinder", npcID = 261974, level = 61, loot = { { 280029 }, { 280028 } } },
         { name = "Bolt", npcID = 262081, display = 143063, level = 62, loot = { { 280031 }, { 280032 } } },
         { name = "Snowtalon", npcID = 262297, level = 62, loot = { { 280026 } } },
-        { name = "Vitrix", npcID = 272561, display = 147098, level = 62, loot = { { 280031 }, { 280027, probable = true }, { 280028 } } },
+        { name = "Vitrix", npcID = 272561, display = 147098, level = 62, loot = { { 280031 }, { 280027 }, { 280028 }, { 280026 }, { 280029 } } }, -- FDJ 2.1.0: lista entera de Wowhead
         { name = "Izha'Rel and Tor'Rel", npcID = 253218, display = 143040, level = 61, loot = { { 280014 }, { 280013 }, { 280012 } } },
         { name = "Nanaya", npcID = 261809, display = 143832, level = 62, loot = { { 280023 }, { 280025 }, { 280024 }, { 273128 }, { 273116, 3.3 } } },
-        { name = "Trash mobs", kind = "trash", loot = { { 287037 }, { 287044, mobs = "Stegodon Young" }, { 287045, mobs = "Ravasaur Juvenile" }, { 287038 }, { 287039 }, { 287040 }, { 287041 }, { 287042 }, { 287043 }, { 287046 } } },
+        { name = "Trash mobs", kind = "trash", loot = { { 287037 }, { 287044, mobs = "Stegodon Young" }, { 287045, mobs = "Ravasaur Juvenile" }, { 287038 }, { 287039 }, { 287040 }, { 287041 }, { 287042 }, { 287043 }, { 287046 }, { 252938, mobs = "Azurepetal Trapper / Emerald Flayer" } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 273116, 3.3, from = { 10 } }, { 273128, from = { 10 } } } },
     },
     BFD = {

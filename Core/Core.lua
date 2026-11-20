@@ -40,9 +40,15 @@ local DEFAULTS = {
     trackerHideBosses = false,
     rareChime = true,     -- sonido al encontrar un raro vivo
     rareGlow = true,      -- la cara del raro brilla en la ventana de la partida
+    rareToast = true,     -- tarjeta grande y aviso de banda al encontrar un raro (UI/RareAlert.lua)
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     questAlert = true,    -- avisar en el chat de las misiones que faltan (Core/QuestAlert.lua)
     rollAdvisor = true,   -- a quien mejora cada tirada de botin (Core/Upgrades.lua, UI/RollAdvisor.lua)
+    threatPlates = true,  -- tu % de amenaza en cada placa enemiga en mazmorras (UI/Threat.lua)
+    threatList = true,    -- lista de amenaza debajo de la ventana de la partida (UI/Threat.lua)
+    threatPlateAt = "BOTTOMRIGHT", -- punto de la barra de vida donde va el % (UI/Threat.lua)
+    threatListAt = "BOTTOM",        -- punto de la ventana de la partida donde va la lista
+    threatListScale = 1,            -- tamano de la lista de amenaza (0.7 a 1.6)
     upgradePoints = {},   -- puntos de mejora cambiados por el jugador: ["PALADIN/3"] = { int = 0.5 } (UI/Options.lua)
     trackerPos = {},
     pickupGlow = true,    -- brillo dorado en las misiones listas para coger (UI/QuestPanel.lua)
@@ -103,6 +109,8 @@ function ns.ApplyLanguage(code)
     for key, text in pairs(ns.LOCALES.enUS) do L[key] = text end
     for key, text in pairs(ns.LOCALES[code] or {}) do L[key] = text end
 end
+-- Claves inglesas escritas tras la copia de enUS.lua: que no se pierdan
+for key, text in pairs(L) do ns.LOCALES.enUS[key] = ns.LOCALES.enUS[key] or text end
 ns.ApplyLanguage() -- el del juego mientras no se lean las opciones guardadas
 
 function ns.Print(msg)
@@ -286,11 +294,11 @@ function ManualQuestLink(id)
 end
 
 function InsertQuestLink(link)
+    -- Solo con la caja ya abierta, como el registro del juego. Abrirla desde aqui
+    -- (OpenChat) contamina ACTIVE_CHAT_EDIT_BOX y, con mando, Intro acaba en
+    -- ADDON_ACTION_FORBIDDEN de SetPreferredGamepadInteractTarget.
     local insert = ChatFrameUtil and ChatFrameUtil.InsertLink or ChatEdit_InsertLink
-    if not (insert and insert(link)) then
-        local open = ChatFrameUtil and ChatFrameUtil.OpenChat or ChatFrame_OpenChat
-        if open then open(link) end
-    end
+    if insert then insert(link) end
 end
 
 function ns.LinkQuestOnModifiedClick(id)
@@ -538,6 +546,7 @@ function ns.CommandList()
         { "/dqa runs", L.CMD_RUNS },
         { "/dqa rolls", L.CMD_ROLLS },
         { "/dqa tracker", L.CMD_TRACKER },
+        { "/dqa rare", L.CMD_RARE },
         { "/dqa rfk", L.CMD_ALIAS },
         { "/dqa bug", L.CMD_BUG },
         { "/dqa collect on|off", L.CMD_COLLECT },
@@ -584,6 +593,8 @@ function ns.HandleCommand(msg)
         ns.ToggleRollHistory()
     elseif cmd == "tracker" then
         ns.ShowRunTracker()
+    elseif cmd == "rare" then
+        ns.TestRareAlert()
     elseif cmd == "bug" then
         ns.ShowBugReport()
     elseif ns.DungeonsByAlias(cmd) then -- /dqa rfk, /dqa stocks...

@@ -309,6 +309,7 @@ ns.SetMapBossScale = SetBossScale
 local function CreatePlan(parent, onIdleDrag, onPinClick)
     local plan = { onPinClick = onPinClick }
     local viewport = CreateFrame("Frame", nil, parent)
+    viewport.padMain, viewport.padAlt = "PAD_NEXT_FLOOR", "PAD_ZONE" -- con mando (UI/GamepadNav.lua)
     viewport:SetClipsChildren(true)
     plan.viewport = viewport
     local canvas = CreateFrame("Frame", nil, viewport)

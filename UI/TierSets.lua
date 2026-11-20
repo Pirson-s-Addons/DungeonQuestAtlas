@@ -73,6 +73,7 @@ function ns.CreateTierButton(parent)
     hl:SetTexture(MASK)
     hl:SetVertexColor(1, 1, 1, 0.25)
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button.padAlt = "PAD_HIDE" -- con mando (UI/GamepadNav.lua)
     button:SetScript("OnClick", function(_, mouse)
         GameTooltip:Hide()
         if mouse == "RightButton" then

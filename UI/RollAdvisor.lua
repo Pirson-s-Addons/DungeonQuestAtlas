@@ -177,11 +177,7 @@ end
 -- Tooltip
 -- ------------------------------------------
 
-local function AddToTooltip(tooltip, link)
-    local rows = ns.RollAdviceRows(link)
-    if #rows == 0 then return end
-    tooltip:AddLine(" ")
-    tooltip:AddLine("|T" .. ns.LOGO .. ":14:14|t " .. L.UP_HEADER, 0.84, 0.59, 1)
+local function AddRows(tooltip, rows)
     for _, row in ipairs(rows) do
         if row == "sep" then
             tooltip:AddLine(" ")
@@ -191,6 +187,14 @@ local function AddToTooltip(tooltip, link)
             tooltip:AddDoubleLine(row.left, row.right, 1, 1, 1, 1, 1, 1)
         end
     end
+end
+
+local function AddToTooltip(tooltip, link)
+    local rows = ns.RollAdviceRows(link)
+    if #rows == 0 then return end
+    tooltip:AddLine(" ")
+    tooltip:AddLine("|T" .. ns.LOGO .. ":14:14|t " .. L.UP_HEADER, 0.84, 0.59, 1)
+    AddRows(tooltip, rows)
     tooltip:Show()
 end
 
@@ -311,6 +315,16 @@ local function CreatePanel(rollFrame)
     title:SetTextColor(0.84, 0.59, 1)
     panel.top = PAD + 20 -- donde empieza la linea bajo la cabecera
     panel.lines, panel.seps = {}, {}
+    -- Recortada (varias tiradas a la vez): el consejo entero al pasar el raton
+    panel:EnableMouse(true)
+    panel:SetScript("OnEnter", function(self)
+        if not self.truncated then return end
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("|T" .. ns.LOGO .. ":14:14|t " .. L.UP_HEADER, 0.84, 0.59, 1)
+        AddRows(GameTooltip, self.rows)
+        GameTooltip:Show()
+    end)
+    panel:SetScript("OnLeave", function() GameTooltip:Hide() end)
     rollFrame.dqaPanel = panel
     return panel
 end
@@ -344,7 +358,12 @@ local function Line(panel, i)
     return line
 end
 
-local function FillPanel(panel, rows)
+-- maxHeight: el hueco hasta la tirada de abajo. Si no cabe todo, se corta ahi con "..."
+-- (las filas van de mas a menos importante: tu, el grupo, misiones y otros sitios)
+local MORE_HEIGHT = 14
+local function FillPanel(panel, rows, maxHeight)
+    panel.rows, panel.truncated = rows, false
+    local limit = maxHeight and (maxHeight - PAD - MORE_HEIGHT) or math.huge
     for _, line in ipairs(panel.lines) do line.left:Hide(); line.right:Hide() end
     for _, sep in ipairs(panel.seps) do sep:Hide() end
     local width = PANEL_WIDTH - 2 * PAD
@@ -363,6 +382,7 @@ local function FillPanel(panel, rows)
                 line.left:SetWidth(width)
                 line.left:SetWordWrap(true)
                 line.left:SetText(row.note)
+                if y + line.left:GetStringHeight() > limit then panel.truncated = true; break end
                 line.left:Show()
                 y = y + line.left:GetStringHeight() + ROW_GAP
             else
@@ -373,12 +393,33 @@ local function FillPanel(panel, rows)
                 line.left:SetWidth(width - line.right:GetStringWidth() - 8)
                 line.left:SetWordWrap(false)
                 line.left:SetText(row.left)
+                if y + 12 > limit then line.right:Hide(); panel.truncated = true; break end
                 line.left:Show()
                 y = y + math.max(line.left:GetStringHeight(), 12) + ROW_GAP
             end
         end
     end
+    if panel.truncated then
+        local more = Line(panel, nLine + 1)
+        more.left:SetPoint("TOPLEFT", PAD, -y)
+        more.left:SetWidth(width)
+        more.left:SetWordWrap(false)
+        more.left:SetText(Colored("...", GREY))
+        more.left:Show()
+        y = y + MORE_HEIGHT
+    end
     panel:SetHeight(y + PAD - ROW_GAP)
+end
+
+-- Alto libre para la placa: hasta la tirada visible justo debajo (nil si no hay ninguna)
+local function SpaceBelow(rollFrame)
+    local top, below = rollFrame:GetTop(), nil
+    if not top then return nil end
+    for _, f in ipairs(RollFrames()) do
+        local t = f ~= rollFrame and f:IsShown() and f.rollID and f:GetTop()
+        if t and t < top and (not below or t > below) then below = t end
+    end
+    return below and (top - below - 10) -- 6 de bajada de la placa y 4 de aire
 end
 
 local function UpdatePanel(rollFrame)
@@ -400,7 +441,7 @@ local function UpdatePanel(rollFrame)
         return
     end
     panel = panel or CreatePanel(rollFrame)
-    FillPanel(panel, rows)
+    FillPanel(panel, rows, SpaceBelow(rollFrame))
     panel:Show()
 end
 
@@ -409,7 +450,9 @@ local function UpdateAll()
     for _, f in ipairs(RollFrames()) do
         if not hooked[f] then
             hooked[f] = true
-            f:HookScript("OnShow", function(self) C_Timer.After(0, function() UpdatePanel(self) end) end)
+            -- Al salir o irse una tirada, las otras se mueven: se recalcula el hueco de todas
+            f:HookScript("OnShow", function() C_Timer.After(0, UpdateAll) end)
+            f:HookScript("OnHide", function() C_Timer.After(0, UpdateAll) end)
         end
         UpdatePanel(f)
     end

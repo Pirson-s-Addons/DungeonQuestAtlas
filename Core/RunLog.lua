@@ -260,7 +260,8 @@ local function RareFound(boss)
     rares[boss.name] = { wait = FIRST_CHIME, nextAt = GetTime() + FIRST_CHIME }
     local run = Active()
     if run then run.found[boss.name] = true end
-    Chime()
+    -- La tarjeta grande con su sonido (UI/RareAlert.lua); sin ella, el aviso corto de siempre
+    if ns.db.rareToast and ns.ShowRareAlert then ns.ShowRareAlert(boss) else Chime() end
     Changed()
 end
 
@@ -278,6 +279,7 @@ end
 function ns.RunAckRare(name)
     if rares[name] then
         rares[name].ack = true
+        if ns.HideRareAlert then ns.HideRareAlert(name) end
         Changed()
     end
 end
@@ -294,7 +296,32 @@ end
 
 -- Lo llama ns.CheckBossUnit con cada unidad que se ve dentro
 function ns.RunLogUnit(unit, instance, zone, npcID, spawn, dead)
-    if not (inside and npcID and instance == inside) then return end
+    if not inside then return end
+    -- Sin GUID legible (dentro de la mazmorra suele llegar secreto): al menos los raros, por el
+    -- nombre (el ingles o el que da el juego). Sin esto, el raro con placa a la vista no avisaba.
+    if not npcID then
+        if dead or ns.PlainText(UnitIsFriend("player", unit)) == true then return end
+        local name = ns.PlainText(UnitName(unit))
+        local boss = name and BossFor(nil, name)
+        if boss and boss.kind == "rare" then return RareFound(boss) end
+        -- Tampoco el nombre: el dragon plateado (UnitClassification "rare"/"rareelite") y su
+        -- nivel. Si en esta mazmorra solo hay un raro que encaje, es el.
+        local class = UnitClassification and ns.PlainText(UnitClassification(unit))
+        if class ~= "rare" and class ~= "rareelite" then return end
+        local level = ns.PlainText(UnitLevel(unit))
+        local match, count = nil, 0
+        for _, d in ipairs(ns.DungeonsOf(inside)) do
+            for _, b in ipairs(ns.Bosses[d.key] or {}) do
+                if b.kind == "rare" and (type(level) ~= "number" or not b.level or b.level == level) then
+                    match, count = b, count + 1
+                end
+            end
+        end
+        ns.Debug("raro sin GUID: nombre %s, nivel %s, %d candidatos", tostring(name), tostring(level), count)
+        if count == 1 then RareFound(match) end
+        return
+    end
+    if instance ~= inside then return end
     CheckCopy(zone)
     if ns.PlainText(UnitIsFriend("player", unit)) == true then return end
     names[npcID] = ns.PlainText(UnitName(unit)) or names[npcID]
