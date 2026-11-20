@@ -18,14 +18,19 @@
 <sub>▶ Cómo usar Dungeon Quest Atlas</sub>
 </p>
 
+<p align="center">
+<img src="https://media.forgecdn.net/attachments/2241/911/mando-navegacion-curseforge-gif.gif" width="520" alt="También con mando (Xbox, PlayStation...)"><br>
+<sub>También con mando (Xbox, PlayStation...)</sub>
+</p>
+
 <table>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/113/screenshot_4-png.png" alt="Todas las mazmorras, como la Guía de aventuras"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/110/screenshot_7-png.png" alt="Misiones, cadenas y recompensas"><br><sub>Misiones, cadenas y recompensas</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/854/dungeons-dungeon-png.png" alt="Todas las mazmorras, como la Guía de aventuras"><br><sub>Todas las mazmorras, como la Guía de aventuras</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/849/cityofdalaran-quests-dungeon-png.png" alt="Misiones, cadenas y recompensas"><br><sub>Misiones, cadenas y recompensas</sub></td>
 </tr>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/112/screenshot_5-png.png" alt="Jefes, mapa, entrada y ruta"><br><sub>Jefes, mapa, entrada y ruta</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/111/screenshot_6-png.png" alt="Botín de cada mazmorra y jefe"><br><sub>Botín de cada mazmorra y jefe</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/851/cityofdalaran-dungeon-png.png" alt="Jefes, mapa, entrada y ruta"><br><sub>Jefes, mapa, entrada y ruta</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/850/cityofdalaran-loot-dungeon-png.png" alt="Botín de cada mazmorra y jefe"><br><sub>Botín de cada mazmorra y jefe</sub></td>
 </tr>
 <tr>
 <td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/109/screenshot_8-png.png" alt="Mapas de mazmorra con cada planta"><br><sub>Mapas de mazmorra con cada planta</sub></td>
@@ -33,7 +38,15 @@
 </tr>
 <tr>
 <td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/105/screenshot_12-png.png" alt="Portales de mazmorra en el mapa del mundo"><br><sub>Portales de mazmorra en el mapa del mundo</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/108/screenshot_9-png.png" alt="Bandas con su cuenta atrás"><br><sub>Bandas con su cuenta atrás</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/848/raids-dungeon-png.png" alt="Bandas con su cuenta atrás"><br><sub>Bandas con su cuenta atrás</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/847/onyxia-dungeon-png.png" alt="Páginas de banda con sus jefes"><br><sub>Páginas de banda con sus jefes</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/845/onyxia-attunedme-dungeon-png.png" alt="Requisito de acceso de Onyxia, paso a paso"><br><sub>Requisito de acceso de Onyxia, paso a paso</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/852/travellog-dungeon-png.png" alt="Registro de viajero: eventos de mundo"><br><sub>Registro de viajero: eventos de mundo</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/853/journeys-dungeon-png.png" alt="Viajes: qué hacer ahora"><br><sub>Viajes: qué hacer ahora</sub></td>
 </tr>
 </table>
 
@@ -47,7 +60,7 @@ Dungeon Quest Atlas reúne todas las **misiones de mazmorra** de **WoW Forever**
 
 - **Más de 300 misiones de mazmorra** con nivel, facción y estado, con los iconos del propio juego: **Disponible** (!), **En curso** (…), **Lista para entregar** (?), **Completada** (✓) o **Bloqueada** (por nivel o misión previa). Contador "3/7 completadas" por mazmorra.
 - **Cadenas de misiones**: todos los pasos con su estado y un "(2/5)" en la lista. Clic en cualquier paso, también los de fuera de la mazmorra, para abrirlo. Al entregar un paso, la flecha puede llevarte al siguiente.
-- **Aviso de misiones que faltan**: al llegar a la zona de una mazmorra de tu nivel, el chat te dice qué misiones suyas aún puedes coger, con enlaces. Una vez por mazmorra y sesión; se puede quitar.
+- **Aviso de misiones que faltan**: cerca de la entrada de una mazmorra de tu nivel, el chat te dice qué misiones suyas aún puedes coger, con enlaces; cerca de quien da alguna, esa. Una vez por mazmorra y misión en cada sesión; se puede quitar.
 - **Objetivos y recompensas** en el idioma de tu juego, con el tooltip del propio juego (Mayús para comparar), las que se eligen y las fijas, experiencia y dinero, incluidas las recompensas nuevas de Forever.
 - **Inicio y final de la misión**: el PNJ u objeto que la da y el que la recibe, con zona y coordenadas, y botones **Marcar inicio** / **Marcar final**.
 - **Misiones de clase** con el icono de su clase, bloqueadas para las demás clases y que se pueden ocultar.
@@ -93,7 +106,9 @@ Dungeon Quest Atlas reúne todas las **misiones de mazmorra** de **WoW Forever**
 | `/dqa config` | Abre las opciones |
 | `/dqa mode` | Elige Atlas completo o Modo aventura |
 | `/dqa runs` | Abre la lista de tus partidas de mazmorra |
+| `/dqa tracker` | Vuelve a mostrar la ventana de la partida si la cerraste |
 | `/dqa rolls` | Abre el historial de tiradas de botín |
+| `/dqa rare` | Enseña un aviso de raro de prueba, para ver cómo queda |
 | `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |
 | `/dqa clear` | Quita todos los marcadores |
 | `/dqa bug` | Muestra la dirección para informar de un fallo |

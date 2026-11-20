@@ -18,14 +18,19 @@
 <sub>▶ How to use Dungeon Quest Atlas</sub>
 </p>
 
+<p align="center">
+<img src="https://media.forgecdn.net/attachments/2241/911/mando-navegacion-curseforge-gif.gif" width="520" alt="Also with a gamepad (Xbox, PlayStation...)"><br>
+<sub>Also with a gamepad (Xbox, PlayStation...)</sub>
+</p>
+
 <table>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/113/screenshot_4-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Every dungeon, like the Adventure Guide</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/110/screenshot_7-png.png" alt="Quests, chains and rewards"><br><sub>Quests, chains and rewards</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/854/dungeons-dungeon-png.png" alt="Every dungeon, like the Adventure Guide"><br><sub>Every dungeon, like the Adventure Guide</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/849/cityofdalaran-quests-dungeon-png.png" alt="Quests, chains and rewards"><br><sub>Quests, chains and rewards</sub></td>
 </tr>
 <tr>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/112/screenshot_5-png.png" alt="Bosses, map, entrance and route"><br><sub>Bosses, map, entrance and route</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/111/screenshot_6-png.png" alt="Loot of every dungeon and boss"><br><sub>Loot of every dungeon and boss</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/851/cityofdalaran-dungeon-png.png" alt="Bosses, map, entrance and route"><br><sub>Bosses, map, entrance and route</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/850/cityofdalaran-loot-dungeon-png.png" alt="Loot of every dungeon and boss"><br><sub>Loot of every dungeon and boss</sub></td>
 </tr>
 <tr>
 <td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/109/screenshot_8-png.png" alt="Dungeon maps with every floor"><br><sub>Dungeon maps with every floor</sub></td>
@@ -33,7 +38,15 @@
 </tr>
 <tr>
 <td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/105/screenshot_12-png.png" alt="Dungeon portals on the world map"><br><sub>Dungeon portals on the world map</sub></td>
-<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2044/108/screenshot_9-png.png" alt="Raids with their countdown"><br><sub>Raids with their countdown</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/848/raids-dungeon-png.png" alt="Raids with their countdown"><br><sub>Raids with their countdown</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/847/onyxia-dungeon-png.png" alt="Raid pages with their bosses"><br><sub>Raid pages with their bosses</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/845/onyxia-attunedme-dungeon-png.png" alt="Onyxia attunement, step by step"><br><sub>Onyxia attunement, step by step</sub></td>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/852/travellog-dungeon-png.png" alt="Traveler's Log: world events"><br><sub>Traveler's Log: world events</sub></td>
+<td align="center" width="50%"><img src="https://media.forgecdn.net/attachments/2241/853/journeys-dungeon-png.png" alt="Journeys: what to do next"><br><sub>Journeys: what to do next</sub></td>
 </tr>
 </table>
 
@@ -47,7 +60,7 @@ Dungeon Quest Atlas lists every **dungeon quest** of **WoW Forever** in a window
 
 - **300+ dungeon quests** with level, faction and status, using the game's own icons: **Available** (!), **In progress** (…), **Ready to turn in** (?), **Completed** (✓) or **Locked** (by level or previous quest). A "3/7 completed" counter per dungeon.
 - **Quest chains**: every step with its status and a "(2/5)" in the list. Click any step, even outside the dungeon, to open it. When you turn in a step, the arrow can take you to the next one.
-- **Missing quest alert**: when you reach the zone of a dungeon for your level, the chat lists the quests you can still pick up for it, with links. Once per dungeon and session; it can be turned off.
+- **Missing quest alert**: near the entrance of a dungeon for your level, the chat lists the quests you can still pick up for it, with links; near someone who gives one, that one. Once per dungeon and quest each session; it can be turned off.
 - **Objectives and rewards** in your game's language, with the game's own item tooltips (Shift to compare), choice and fixed rewards, XP and money, including the new Forever rewards.
 - **Quest start and end**: the NPC or object that gives and receives the quest, with zone and coordinates, and **Mark start** / **Mark end** buttons.
 - **Class quests** show their class icon, are locked for other classes and can be hidden.
@@ -93,7 +106,9 @@ Dungeon Quest Atlas lists every **dungeon quest** of **WoW Forever** in a window
 | `/dqa config` | Opens the options |
 | `/dqa mode` | Choose Full Atlas or Adventure Mode |
 | `/dqa runs` | Opens the list of your dungeon runs |
+| `/dqa tracker` | Shows the dungeon run window again if you closed it |
 | `/dqa rolls` | Opens the loot roll history |
+| `/dqa rare` | Shows a test rare alert, to see how it looks |
 | `/dqa rfk` | Opens a dungeon by its shortcut (`stocks`, `gnomer`, `dala`...) |
 | `/dqa clear` | Removes all the markers |
 | `/dqa bug` | Shows the address to report a bug |
