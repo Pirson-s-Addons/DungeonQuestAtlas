@@ -634,6 +634,13 @@ L["PAD_KILLED"] = "Mark as slain"
 L["PAD_ZONE"] = "Zone map"
 L["PAD_NEXT_FLOOR"] = "Next floor"
 
+-- Tarjetas por fila (Opciones > Modo aventura)
+L["GRID_COLS"] = "Cards per row in %s"
+L["GRID_COLS_TOOLTIP"] = "How many cards each row of that tab shows, from 2 to 5. Fewer cards are bigger; more fit on screen without scrolling."
+L["GRID_MENU"] = "Cards: %d"
+L["GRID_MENU_TITLE"] = "Cards per row"
+L["GRID_MENU_ITEM"] = "%d per row"
+
 -- Tiene que ser lo ultimo del fichero (Core.ApplyLanguage copia de aqui)
 local english = {}
 for key, text in pairs(L) do english[key] = text end

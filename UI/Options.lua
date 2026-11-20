@@ -416,17 +416,89 @@ local function CreateAdventurePanel()
         function() return ns.OnyxiaIconShown() end, function(v) db.onyxiaIcon = v and "show" or "hide" end)
     Box(L.TIER_OPTION, L.TIER_OPTION_TOOLTIP, -263, false,
         function() return ns.TierIconShown() end, function(v) db.tierIcon = v and "show" or "hide" end)
-    Separator(panel, -297)
+    -- Tarjetas por fila de cada cuadricula (ns.GridLayout): una fila por pestana con un boton por
+    -- opcion que dibuja la cuadricula en pequeno; la elegida, en dorado. Textos fijados al crear:
+    -- el panel va en el idioma del cliente y L puede cambiar luego al idioma de la ventana.
+    local gridTitle = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    gridTitle:SetPoint("TOPLEFT", X, -300)
+    gridTitle:SetText(L.GRID_MENU_TITLE)
+    local GOLD, GREY = { 1, 0.82, 0 }, { 0.45, 0.45, 0.45 }
+    local itemText = L.GRID_MENU_ITEM
+    local tipText = L.GRID_COLS_TOOLTIP
+    local function Columns(key, section, y)
+        local label = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        label:SetPoint("TOPLEFT", X + 20, y - 9)
+        label:SetWidth(170)
+        label:SetJustifyH("LEFT")
+        label:SetText(section)
+        local row = { buttons = {} }
+        for cols = ns.GRID_COLS_MIN, ns.GRID_COLS_MAX do
+            local b = CreateFrame("Button", nil, panel, "BackdropTemplate")
+            b:SetSize(62, 32)
+            b:SetPoint("TOPLEFT", X + 200 + (cols - ns.GRID_COLS_MIN) * 70, y)
+            b:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
+            b:SetBackdropColor(0, 0, 0, 0.55)
+            -- La cuadricula en pequeno: cols tarjetas por fila, dos filas (con 2, tres de banners)
+            b.cells = {}
+            local areaW, areaH, gap = 46, 20, 2
+            local rows = cols == 2 and 3 or 2
+            local w = (areaW - (cols - 1) * gap) / cols
+            local h = (areaH - (rows - 1) * gap) / rows
+            for r = 0, rows - 1 do
+                for c = 0, cols - 1 do
+                    local cell = b:CreateTexture(nil, "ARTWORK")
+                    cell:SetSize(w, h)
+                    cell:SetPoint("TOPLEFT", 8 + c * (w + gap), -6 - r * (h + gap))
+                    b.cells[#b.cells + 1] = cell
+                end
+            end
+            local hl = b:CreateTexture(nil, "HIGHLIGHT")
+            hl:SetAllPoints()
+            hl:SetColorTexture(1, 1, 1, 0.08)
+            b:SetScript("OnClick", function()
+                if db[key] == cols then return end
+                db[key] = cols
+                if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+                row:Refresh()
+                ns.RebuildMainFrame()
+            end)
+            b:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText(itemText:format(cols))
+                GameTooltip:AddLine(tipText, 1, 1, 1, true)
+                GameTooltip:Show()
+            end)
+            b:SetScript("OnLeave", GameTooltip_Hide)
+            row.buttons[cols] = b
+        end
+        function row:Refresh()
+            for cols, b in pairs(self.buttons) do
+                local on = db[key] == cols
+                local c = on and GOLD or GREY
+                b:SetBackdropBorderColor(c[1], c[2], c[3], on and 1 or 0.6)
+                for _, cell in ipairs(b.cells) do cell:SetColorTexture(c[1], c[2], c[3], on and 0.9 or 0.5) end
+            end
+        end
+        widgets[#widgets + 1] = row
+    end
+    Columns("gridDungeons", L.TAB_DUNGEONS, -320)
+    Columns("gridRaids", L.TAB_RAIDS, -360)
+    Columns("gridEvents", L.TAB_EVENTS, -400)
+    Separator(panel, -440)
 
     panel:SetScript("OnShow", Refresh)
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(180, 26)
-    reset:SetPoint("TOPLEFT", X, -310)
+    reset:SetPoint("TOPLEFT", X, -453)
     reset:SetText(L.DEFAULTS)
     reset:SetScript("OnClick", function()
-        for _, key in ipairs({ "rpgAccount", "rpgShowQuests", "onyxiaIcon", "tierIcon" }) do db[key] = ns.DEFAULTS[key] end
+        local grids = db.gridDungeons ~= ns.DEFAULTS.gridDungeons or db.gridRaids ~= ns.DEFAULTS.gridRaids
+            or db.gridEvents ~= ns.DEFAULTS.gridEvents
+        for _, key in ipairs({ "rpgAccount", "rpgShowQuests", "onyxiaIcon", "tierIcon", "gridDungeons", "gridRaids", "gridEvents" }) do
+            db[key] = ns.DEFAULTS[key]
+        end
         Refresh()
-        ns.RefreshUI()
+        if grids then ns.RebuildMainFrame() else ns.RefreshUI() end
     end)
     return panel
 end

@@ -14,9 +14,9 @@ local unpack = unpack or table.unpack
 -- lateral elegida: Resumen, Botin, Modelo y, si la banda lo pide, Requisito de
 -- acceso (la cadena de misiones de la llave, por faccion).
 
-local COLS = 3
-local CARD_W, CARD_H = 236, 130 -- el boton de instancia del Diario (174x96) a escala
-local GAP_X, GAP_Y = 14, 12
+-- Columnas, tamano de tarjeta y titulo: ns.GridLayout al montar la cuadricula (2 a 5 por fila)
+local COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = 3, 236, 130, 14, 18, 0, false
+local GAP_Y = 12
 local EJ = "Interface\\EncounterJournal\\"
 local DEFAULT_BG = EJ .. "UI-EJ-BACKGROUND-Default"
 local LOCK = "Interface\\PetBattles\\PetBattle-LockIcon"
@@ -239,10 +239,10 @@ local function CreateCard(row, onSelect)
     ns.SetEJTexture(card.hl, "DungeonButtonHighlight")
     card.hl:SetBlendMode("ADD")
     card.name = card:CreateFontString(nil, "OVERLAY", "QuestTitleFontBlackShadow")
-    ns.SetTitleFont(card.name, 16) -- la fuente de la plantilla, a su tamano, se salia por arriba
+    ns.SetTitleFont(card.name, math.max(11, TITLE - 2)) -- la fuente de la plantilla, a su tamano, se salia por arriba
     -- Ancho y alto fijos de dos lineas: anclado por los lados se quedaba en una
     card.name:SetPoint("TOP", 0, -14)
-    card.name:SetSize(CARD_W - 52, 40)
+    card.name:SetSize(CARD_W - 52, math.floor(math.max(11, TITLE - 2) * 2.5))
     card.name:SetJustifyH("CENTER")
     card.name:SetJustifyV("TOP")
     card.name:SetWordWrap(true)
@@ -282,6 +282,10 @@ local function CreateCard(row, onSelect)
         GameTooltip:Show()
     end)
     card:SetScript("OnLeave", GameTooltip_Hide)
+    if BANNER then
+        ns.MakeBannerCard(card, TITLE, nil, card.info, card.when)
+        card.when:SetJustifyH("RIGHT")
+    end
     return card
 end
 
@@ -309,6 +313,7 @@ local function UpdateCard(card, item)
         card.info:SetText(L["RAID_SEASON_" .. item.season])
         card.when:SetText("|cffb0b0b0" .. L.RAID_TBA .. "|r")
     end
+    ns.CropBannerArt(card.art, card)
 end
 
 local function CreateHome(parent, onSelect)
@@ -329,15 +334,17 @@ local function CreateHome(parent, onSelect)
     home.subtitle = home:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     home.subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 1, -3)
 
+    ns.CreateGridColumnsButton(home, "gridRaids"):SetPoint("TOPRIGHT", -18, -14) -- tarjetas por fila
+    COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = ns.GridLayout("gridRaids", 66)
     local gridArea = CreateFrame("Frame", nil, home)
     gridArea:SetPoint("TOP", 0, -66)
     gridArea:SetPoint("BOTTOM", 0, 6)
-    gridArea:SetWidth(COLS * CARD_W + (COLS - 1) * GAP_X + 24) -- con la barra de scroll
+    gridArea:SetWidth(ns.GRID_WIDTH + 24) -- con la barra de scroll (las tarjetas, centradas: OFFSET_X)
     home.list = ns.CreateScrollList(gridArea, CARD_H + GAP_Y, function(row)
         row.cards = {}
         for i = 1, COLS do
             local card = CreateCard(row, onSelect)
-            card:SetPoint("TOPLEFT", (i - 1) * (CARD_W + GAP_X), 0)
+            card:SetPoint("TOPLEFT", OFFSET_X + (i - 1) * (CARD_W + GAP_X), 0)
             row.cards[i] = card
         end
     end, function(row, item)

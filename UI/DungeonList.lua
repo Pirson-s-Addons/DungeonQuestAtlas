@@ -10,9 +10,9 @@ local L = ns.L
 -- su dificultad, "Nueva" si es de Forever y las misiones hechas ("! 3/7"; la
 -- marca verde si estan todas). Las filas de la lista llevan COLS tarjetas.
 
-local COLS = 3
-local CARD_W, CARD_H = 236, 130 -- el boton de instancia del Diario (174x96) a escala, mismo ancho total que 4
-local GAP_X, GAP_Y = 14, 12
+-- Columnas, tamano de tarjeta y titulo: ns.GridLayout al montar la cuadricula (2 a 5 por fila)
+local COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = 3, 236, 130, 14, 18, 0, false
+local GAP_Y = 12
 local GREEN = "|cff40c040"
 
 local function CreateCard(row, onSelect)
@@ -43,7 +43,7 @@ local function CreateCard(row, onSelect)
     -- Nombre centrado y grande, en la fuente de los titulos de la Guia (Morpheus
     -- en los idiomas que la tienen)
     card.name = card:CreateFontString(nil, "OVERLAY", "QuestTitleFontBlackShadow")
-    ns.SetTitleFont(card.name, 18)
+    ns.SetTitleFont(card.name, TITLE)
     card.name:SetPoint("TOPLEFT", 8, -14)
     card.name:SetPoint("TOPRIGHT", -8, -14)
     card.name:SetJustifyH("CENTER")
@@ -97,12 +97,14 @@ local function CreateCard(row, onSelect)
         GameTooltip:Show()
     end)
     card:SetScript("OnLeave", GameTooltip_Hide)
+    if BANNER then ns.MakeBannerCard(card, TITLE, card.progress, card.info) end
     return card
 end
 
 local function UpdateCard(card, d)
     card.dungeon = d
     ns.SetDungeonArt(card.art, d, "card")
+    ns.CropBannerArt(card.art, card)
     card.name:SetText(ns.DungeonName(d))
     local info = ("|c%s%d–%d|r"):format(ns.LevelColor(d.minLevel, d.maxLevel, UnitLevel("player")), d.minLevel, d.maxLevel)
     if d.isForever then info = info .. "  |cffd597ff" .. L.NEW_TAG .. "|r" end
@@ -127,11 +129,12 @@ local function UpdateCard(card, d)
 end
 
 function ns.CreateDungeonGrid(parent, onSelect)
+    COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = ns.GridLayout("gridDungeons", 72) -- gridArea de UI/MainFrame.lua
     local list = ns.CreateScrollList(parent, CARD_H + GAP_Y, function(row)
         row.cards = {}
         for i = 1, COLS do
             local card = CreateCard(row, onSelect)
-            card:SetPoint("TOPLEFT", (i - 1) * (CARD_W + GAP_X), 0)
+            card:SetPoint("TOPLEFT", OFFSET_X + (i - 1) * (CARD_W + GAP_X), 0)
             row.cards[i] = card
         end
     end, function(row, item)
@@ -154,4 +157,4 @@ function ns.CreateDungeonGrid(parent, onSelect)
 end
 
 -- Ancho de la cuadricula (para centrarla)
-ns.GRID_WIDTH = COLS * CARD_W + (COLS - 1) * GAP_X
+ns.GRID_WIDTH = 3 * 236 + 2 * 14 -- igual con 2 a 5 tarjetas (ns.GridLayout)

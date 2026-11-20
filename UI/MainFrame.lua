@@ -241,6 +241,7 @@ function ns.RefreshUI()
         -- Texto fijo: "Ocultas (3)", no el de las casillas marcadas
         ui.hiddenButton:OverrideText(L.HIDDEN_MENU:format(filters.hiddenCount or 0))
         ui.hiddenButton:SetShown(not loot and not tiers)
+        ui.gridButton:SetShown(not loot and not tiers)
         if loot then ui.lootSearch:Refresh() end
         ui.grid:Refresh(list)
         ui.noResults:SetShown(not loot and not tiers and #list == 0)
@@ -586,6 +587,8 @@ local function CreateHome(area)
     end)
     hiddenButton:HookScript("OnLeave", GameTooltip_Hide)
     ui.hiddenButton = hiddenButton
+    ui.gridButton = ns.CreateGridColumnsButton(home, "gridDungeons") -- tarjetas por fila
+    ui.gridButton:SetPoint("RIGHT", hiddenButton, "LEFT", -8, 0)
     ui.noResults = home:CreateFontString(nil, "OVERLAY", "GameFontDisableLarge")
     ui.noResults:SetPoint("CENTER", 0, -20)
     ui.noResults:SetText(L.NO_RESULTS)
@@ -866,6 +869,11 @@ end
 function ns.SetLanguage(code)
     ns.db.language = code
     ns.ApplyLanguage(code)
+    ns.RebuildMainFrame()
+end
+
+-- Rehace la ventana (idioma, tarjetas por fila): lo que depende de eso se monta al construirla
+function ns.RebuildMainFrame()
     if not frame then return end
     local shown = frame:IsShown()
     frame:Hide()

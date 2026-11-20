@@ -456,3 +456,122 @@ function ns.CreateScrollFrame(parent)
     end
     return CreateFrame("ScrollFrame", nil, parent, "UIPanelScrollFrameTemplate")
 end
+
+-- Tarjetas por fila de las cuadriculas (Mazmorras, Bandas, Registro de viajero): ns.db.gridDungeons,
+-- gridRaids y gridEvents, de 2 a 5 (Opciones > Modo aventura > Portada). Siempre el mismo ancho
+-- total que las 3 de serie (el boton de instancia del Diario a escala, 236x130); el alto y el
+-- titulo siguen al ancho de la tarjeta.
+ns.GRID_COLS_MIN, ns.GRID_COLS_MAX = 2, 5
+local GRID_TOTAL = 3 * 236 + 2 * 14
+-- top: donde empieza la cuadricula dentro de la pagina. Siempre caben dos filas enteras (con 2
+-- por fila, 4 tarjetas a la vista): si no, la tarjeta se encoge en su proporcion y la cuadricula
+-- se centra (offsetX, el margen de la izquierda).
+local GRID_GAP_Y = 12
+function ns.GridLayout(key, top)
+    local cols = math.floor(tonumber(ns.db and ns.db[key]) or 3)
+    cols = math.max(ns.GRID_COLS_MIN, math.min(ns.GRID_COLS_MAX, cols))
+    local gap = cols >= 5 and 8 or cols == 4 and 10 or 14
+    local w = math.floor((GRID_TOTAL - (cols - 1) * gap) / cols)
+    local h = math.floor(w * 130 / 236 + 0.5)
+    local avail = ns.BOOK and ns.BOOK.height and top and (ns.BOOK.height - top - 6)
+    -- 2 por fila: banners anchos y bajos (ns.MakeBannerCard), tres filas a la vista
+    if cols == 2 and avail then
+        h = math.floor((avail - 2 * GRID_GAP_Y) / 3)
+        return cols, w, h, gap, 16, 0, true
+    end
+    if avail and 2 * h + GRID_GAP_Y > avail then
+        h = math.floor((avail - GRID_GAP_Y) / 2)
+        w = math.floor(h * 236 / 130)
+    end
+    local offsetX = math.floor((GRID_TOTAL - (cols * w + (cols - 1) * gap)) / 2)
+    local title = math.max(11, math.min(24, math.floor(18 * w / 236 + 0.5)))
+    return cols, w, h, gap, title, offsetX, false
+end
+
+-- Estilo banner (2 por fila): franja oscura arriba con el nombre a la izquierda y lo que va a la
+-- derecha (progreso), y abajo lo de cada esquina. Las regiones que no vienen se quedan donde estan.
+local bannerCards = setmetatable({}, { __mode = "k" })
+function ns.MakeBannerCard(card, title, topRight, bottomLeft, bottomRight)
+    bannerCards[card] = true
+    local band = card:CreateTexture(nil, "ARTWORK", nil, 2)
+    band:SetPoint("TOPLEFT", card.art, "TOPLEFT")
+    band:SetPoint("TOPRIGHT", card.art, "TOPRIGHT")
+    band:SetHeight(34)
+    band:SetColorTexture(1, 1, 1, 1)
+    if CreateColor and band.SetGradient then
+        band:SetGradient("VERTICAL", CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 0.85))
+    else
+        band:SetColorTexture(0, 0, 0, 0.6)
+    end
+    ns.SetTitleFont(card.name, title)
+    card.name:ClearAllPoints()
+    card.name:SetPoint("TOPLEFT", 14, -12)
+    card.name:SetPoint("TOPRIGHT", -110, -12)
+    card.name:SetJustifyH("LEFT")
+    card.name:SetJustifyV("TOP")
+    card.name:SetMaxLines(1)
+    if card.name.SetHeight then card.name:SetHeight(title + 4) end
+    for _, spot in ipairs({ { topRight, "TOPRIGHT", -12, -13 }, { bottomLeft, "BOTTOMLEFT", 14, 10 },
+        { bottomRight, "BOTTOMRIGHT", -12, 10 } }) do
+        local region = spot[1]
+        if region then
+            region:ClearAllPoints()
+            region:SetPoint(spot[2], spot[3], spot[4])
+        end
+    end
+end
+
+-- ns.IsBannerCard: para los tests
+function ns.IsBannerCard(card) return bannerCards[card] or false end
+
+-- El arte de una tarjeta banner: el de siempre (hecho para ~1,9:1) recortado por arriba y por
+-- abajo hasta la proporcion del banner, en vez de estirarlo. Si quien pone el arte no ha vuelto
+-- a poner sus coordenadas (siguen las del ultimo recorte), no se recorta otra vez.
+local CARD_ART_ASPECT = (236 - 12) / (130 - 12)
+function ns.CropBannerArt(texture, card)
+    if not bannerCards[card] then return end
+    local ulx, uly, llx, lly, urx = texture:GetTexCoord()
+    if type(uly) ~= "number" or type(lly) ~= "number" then return end
+    local last = rawget(texture, "dqaCrop")
+    if last and math.abs(last[1] - uly) < 1e-4 and math.abs(last[2] - lly) < 1e-4 then return end
+    local w, h = card:GetWidth(), card:GetHeight()
+    if type(w) ~= "number" or type(h) ~= "number" or h <= 12 then return end
+    w, h = w - 12, h - 12
+    local to = w / h
+    if to <= CARD_ART_ASPECT then return end
+    local span = lly - uly
+    local keep = span * CARD_ART_ASPECT / to
+    local top = uly + (span - keep) * 0.4
+    texture:SetTexCoord(ulx, urx, top, top + keep)
+    texture.dqaCrop = { top, top + keep }
+end
+
+-- Desplegable "Tarjetas: 3" en la cabecera de cada cuadricula, con las mismas columnas que
+-- Opciones > Modo aventura > Portada. Elegir rehace la ventana (al soltar el menu: el boton
+-- tambien se rehace).
+function ns.CreateGridColumnsButton(parent, key)
+    local button = CreateFrame("DropdownButton", nil, parent, "WowStyle1DropdownTemplate")
+    button:SetWidth(112)
+    local function Set(cols)
+        if ns.db[key] == cols then return end
+        ns.db[key] = cols
+        C_Timer.After(0, ns.RebuildMainFrame)
+    end
+    if button.SetupMenu then
+        button:SetupMenu(function(_, root)
+            root:CreateTitle(ns.L.GRID_MENU_TITLE)
+            for cols = ns.GRID_COLS_MIN, ns.GRID_COLS_MAX do
+                root:CreateRadio(ns.L.GRID_MENU_ITEM:format(cols), function() return ns.db[key] == cols end,
+                    function() Set(cols) end)
+            end
+        end)
+    end
+    if button.OverrideText then button:OverrideText(ns.L.GRID_MENU:format(select(1, ns.GridLayout(key)))) end
+    button:HookScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+        GameTooltip:SetText(ns.L.GRID_COLS_TOOLTIP, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    button:HookScript("OnLeave", GameTooltip_Hide)
+    return button
+end

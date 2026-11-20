@@ -213,7 +213,9 @@ end
 -- Portada: una tarjeta por evento (como las de Mazmorras)
 -- ------------------------------------------
 
-local COLS, CARD_W, CARD_H, GAP_X, GAP_Y = 3, 236, 130, 14, 12
+-- Columnas, tamano de tarjeta y titulo: ns.GridLayout al montar la cuadricula (2 a 5 por fila)
+local COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = 3, 236, 130, 14, 18, 0, false
+local GAP_Y = 12
 
 local function CreateCard(row, onSelect)
     local card = CreateFrame("Button", nil, row)
@@ -237,7 +239,7 @@ local function CreateCard(row, onSelect)
     ns.SetEJTexture(hl, "DungeonButtonHighlight")
     hl:SetBlendMode("ADD")
     card.name = card:CreateFontString(nil, "OVERLAY", "QuestTitleFontBlackShadow")
-    ns.SetTitleFont(card.name, 18)
+    ns.SetTitleFont(card.name, TITLE)
     card.name:SetPoint("TOPLEFT", 10, -12)
     card.name:SetPoint("TOPRIGHT", -10, -12)
     card.name:SetJustifyH("CENTER")
@@ -263,12 +265,14 @@ local function CreateCard(row, onSelect)
         GameTooltip:Show()
     end)
     card:SetScript("OnLeave", GameTooltip_Hide)
+    if BANNER then ns.MakeBannerCard(card, TITLE, card.progress, card.timer) end
     return card
 end
 
 local function UpdateCard(card, ev, now)
     card.event = ev
     SetEventArt(card.art, ev, CARD_CROP)
+    ns.CropBannerArt(card.art, card)
     card.name:SetText(ns.EventName(ev))
     -- La duracion sola: "Acaba dentro de" no cabe junto al progreso (lo dice el tooltip)
     local s, f = ns.EventWindow(ev, now)
@@ -331,6 +335,7 @@ function ns.CreateEventsSection(parent)
     ns.AddTooltip(levelCheck, L.EV_MY_LEVEL_TOOLTIP)
     local homeFaction = ns.CreateFactionToggle(home, 22)
     homeFaction:SetPoint("RIGHT", levelCheck, "LEFT", -12, 0)
+    ns.CreateGridColumnsButton(home, "gridEvents"):SetPoint("RIGHT", homeFaction, "LEFT", -12, 0) -- tarjetas por fila
 
     local function Open(ev)
         state.key, state.questID = ev.key, nil
@@ -341,15 +346,16 @@ function ns.CreateEventsSection(parent)
         state.key, state.questID = key, id
         ns.ShowSection("events")
     end
+    COLS, CARD_W, CARD_H, GAP_X, TITLE, OFFSET_X, BANNER = ns.GridLayout("gridEvents", HEADER_H + 8)
     local gridArea = CreateFrame("Frame", nil, home)
     gridArea:SetPoint("TOP", 0, -(HEADER_H + 8))
     gridArea:SetPoint("BOTTOM", 0, 6)
-    gridArea:SetWidth(COLS * CARD_W + (COLS - 1) * GAP_X + 24)
+    gridArea:SetWidth(ns.GRID_WIDTH + 24) -- las tarjetas, centradas: OFFSET_X
     local grid = ns.CreateScrollList(gridArea, CARD_H + GAP_Y, function(row)
         row.cards = {}
         for i = 1, COLS do
             local card = CreateCard(row, Open)
-            card:SetPoint("TOPLEFT", (i - 1) * (CARD_W + GAP_X), 0)
+            card:SetPoint("TOPLEFT", OFFSET_X + (i - 1) * (CARD_W + GAP_X), 0)
             row.cards[i] = card
         end
     end, function(row, item)

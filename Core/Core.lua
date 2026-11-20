@@ -15,6 +15,7 @@ local DB_VERSION = 4
 local DEFAULTS = {
     minimap = { hide = false },
     scale = 1,
+    gridDungeons = 3, gridRaids = 3, gridEvents = 3, -- tarjetas por fila (ns.GridLayout)
     hideCompleted = false,
     hideOtherClasses = false, -- ocultar las misiones de clase que no son de la tuya
     chainGuide = true,    -- al entregar un paso de una cadena, marcar el inicio del siguiente
