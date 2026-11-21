@@ -94,7 +94,7 @@ ns.MapMarks = {
     },
     BLACKMAW = { { { "entrance", 0.218, 0.723 } } }, -- el remolino de la planta I
     KROLDOK = { { { "entrance", 0.205, 0.806 } } },
-    SHAPERS = { { { "entrance", 0.088, 0.409 } } },
+    SHAPERS = { { { "entrance", 0.280, 0.678 } } },
     DALARAN = {
         { { "entrance", 0.192, 0.835 }, { "up", 0.641, 0.591, 2 } },
         { { "down", 0.610, 0.560, 1 } },

@@ -81,6 +81,12 @@ ns.MapQuests = {
     },
     -- Excavacion: Ardin en la torre de madera junto al Relic Guardian; el cuerpo de Daewyn en una tienda
     -- del Lost Dig Site (sitios de FDJ sobre este mismo dibujo).
+    KROLDOK = {
+        [1] = {
+            { 0.692, 0.492, "Tunk", { 94980, "loot", item = 267138 }, { 94973, "loot", item = 267137 } },
+            { 0.430, 0.494, "Zalfan Moonshadow", { 96771 } },
+        },
+    },
     EXCAVATION = {
         [1] = {
             { 0.262, 0.668, "Ardin Grassman", { 95647, "end" }, { 95809, "start" } },

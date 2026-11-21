@@ -131,8 +131,8 @@ ns.Maps = {
         { id = "DROWNED", pins = { { 1, 0.697, 0.572 }, { 2, 0.514, 0.689 }, { 3, 0.546, 0.344 }, { 4, 0.349, 0.536 }, { 9, 0.196, 0.539 }, { 7, 0.545, 0.829 }, { 8, 0.495, 0.368 } } },
         { id = "DROWNED2", pins = { { 5, 0.667, 0.549 } } }, -- Atal'Byzal
     },
-    KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.701 }, { 2, 0.392, 0.732 }, { 3, 0.621, 0.526 }, { 4, 0.411, 0.578 }, { 5, 0.617, 0.431 }, { 6, 0.688, 0.242 } } } },
-    SHAPERS = { { id = "SHAPERS", pins = {} } },
+    KROLDOK = { { id = "KROLDOK", pins = { { 1, 0.331, 0.701 }, { 2, 0.392, 0.732 }, { 3, 0.621, 0.526 }, { 4, 0.381, 0.525 }, { 5, 0.617, 0.431 }, { 6, 0.688, 0.242 } } } },
+    SHAPERS = { { id = "SHAPERS", pins = { { 1, 0.140, 0.414 }, { 2, 0.402, 0.615 }, { 3, 0.633, 0.717 }, { 4, 0.830, 0.595 }, { 5, 0.190, 0.620 }, { 6, 0.450, 0.686 }, { 7, 0.162, 0.174 }, { 8, 0.526, 0.320 }, { 9, 0.648, 0.399 }, { 10, 0.728, 0.584 } } } },
     -- Bastion Fauce Negra, 6 plantas en el orden de FDJ: Blackmaw Grove, Festering Grotto, Depths of the
     -- Fallen Grove, Depths of the Elders, Depths of the Burrow, Depths of Forbidden Magic. Dibujos de
     -- "Atlas de Azeroth: Forever" (Santiago Reyes) con el marco del addon, sin aclarar su permiso

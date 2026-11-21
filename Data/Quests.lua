@@ -676,7 +676,7 @@ ns.Quests = {
     [92070] = { name = "A Lost Memento", level = 55, minLevel = 47, faction = "Both", rep = { 576, 4 }, rewards = { 279893 }, xp = 11300, starts = { "item:249698" }, ends = { "npc:249855" }, verified = false },
     [92066] = { name = "The Twin Bears", level = 55, minLevel = 47, faction = "Both", rep = { 576, 4 }, choice = { 279891, 279892 }, xp = 11300, starts = { "npc:249853" }, ends = { "npc:249853" }, verified = false },
     [92067] = { name = "Feeding Time!", level = 55, minLevel = 45, faction = "Both", repeatable = true, rewards = { 249900 }, verified = false },
-    [92065] = { name = "Blackmaw Reclamation", level = 60, minLevel = 47, faction = "Both", rep = { 576, 4 }, chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, choice = { 260216, 260217, 260218, 260219 }, xp = 13200, starts = { "npc:236573" }, ends = { "npc:236573" }, verified = false },
+    [92065] = { name = "Blackmaw Reclamation", level = 60, minLevel = 47, faction = "Both", rep = { 576, 4 }, chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, choice = { 260216, 260217, 260218, 260219 }, xp = 13200, starts = { "npc:236573" }, ends = { "npc:236573" }, verified = false },
     [97327] = { name = "Blackmaw Pouches", level = 60, minLevel = 55, faction = "Both", need = { { 273050, 5 } }, xp = 1450, starts = { "npc:235903" }, ends = { "npc:235903" }, verified = false },
     -- Profundidades, Maraudon y Rajacieno
     [97197] = { name = "Fragment of the Firelands", level = 55, minLevel = 49, faction = "Horde", need = { { 277129, 1 } }, xp = 14800, money = 8500, starts = { "name:Alaana Stormwalker" }, ends = { "name:Alaana Stormwalker" }, verified = false },
@@ -712,15 +712,18 @@ ns.Quests = {
     [95924] = { name = "Panic at the Digsite", level = 60, minLevel = 55, faction = "Alliance", choice = { 279903, 279905 }, xp = 17650, starts = { "npc:8256" }, ends = { "npc:8256" }, verified = false },
     [95925] = { name = "Mapping the Way Forward", level = 60, minLevel = 55, faction = "Alliance", choice = { 279908, 279910, 279912 }, xp = 17650, starts = { "npc:8256" }, ends = { "npc:8256" }, verified = false },
     [95790] = { name = "Digestible Research", level = 60, minLevel = 55, faction = "Alliance", choice = { 279931, 279901 }, xp = 17650, starts = { "name:Partially Digested Journal" }, ends = { "npc:8256" }, verified = false },
-    -- Cadena de Blackmaw Reclamation (FDJ 2.0.6, Icy Veins y Wowhead Forever): el paso 1 vale con
-    -- cualquiera de las tres de Korsa (alt = las otras que tambien lo cumplen).
-    [86777] = { name = "Master Feardred", level = 53, minLevel = 47, faction = "Both", alt = { 86792, 86796 }, chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, need = { { 235334, 1 } }, xp = 5250, starts = { "npc:236770" }, ends = { "npc:236770" } },
-    [86792] = { name = "Thinning Their Forces", level = 54, minLevel = 47, faction = "Both", alt = { 86777, 86796 }, xp = 5450, starts = { "npc:236770" }, ends = { "npc:236770" } },
-    [86796] = { name = "Later, Satyr", level = 54, minLevel = 47, faction = "Both", alt = { 86777, 86792 }, xp = 5450, starts = { "npc:237007" }, ends = { "npc:236770" } },
-    [86797] = { name = "Return to Rageroar", level = 53, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, xp = 525, starts = { "npc:236770" }, ends = { "npc:236573" } },
-    [86798] = { name = "Timbermaw Reinforcements", level = 55, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, xp = 550, starts = { "npc:236573" }, ends = { "npc:11555" } },
-    [87346] = { name = "Chieftain Bloodmaw", level = 55, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, need = { { 236631, 1 } }, xp = 5650, starts = { "npc:11555" }, ends = { "npc:11555" } },
-    [86814] = { name = "Blackmaw Counter-Offensive", level = 55, minLevel = 47, faction = "Both", chain = { 86777, 86797, 86798, 87346, 86814, 92065 }, provided = { 235518 }, xp = 7050, starts = { "npc:11555" }, ends = { "npc:236573" } },
+    -- Cadena de Blackmaw Reclamation (Wowhead Forever; probado en el juego por un jugador, 20-11):
+    -- empieza con Ekkal y las tres de Korsa son pasos, no "una de tres".
+    [86746] = { name = "The Legashi Threat", level = 53, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 5250, starts = { "npc:235903" }, ends = { "npc:235903" } },
+    [86752] = { name = "Report to Rageroar", level = 53, minLevel = 47, faction = "Both", rep = { 576, 4 }, chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 530, starts = { "npc:235903" }, ends = { "npc:236573" } },
+    [86791] = { name = "Missing Blackmaw Scouts", level = 53, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 530, starts = { "npc:236573" }, ends = { "npc:236770" } },
+    [86777] = { name = "Master Feardred", level = 53, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, need = { { 235334, 1 } }, xp = 5250, starts = { "npc:236770" }, ends = { "npc:236770" } },
+    [86792] = { name = "Thinning Their Forces", level = 54, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 5450, starts = { "npc:236770" }, ends = { "npc:236770" } },
+    [86796] = { name = "Later, Satyr", level = 54, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 5450, starts = { "npc:237007" }, ends = { "npc:236770" } },
+    [86797] = { name = "Return to Rageroar", level = 53, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 525, starts = { "npc:236770" }, ends = { "npc:236573" } },
+    [86798] = { name = "Timbermaw Reinforcements", level = 55, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, xp = 550, starts = { "npc:236573" }, ends = { "npc:11555" } },
+    [87346] = { name = "Chieftain Bloodmaw", level = 55, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, need = { { 236631, 1 } }, xp = 5650, starts = { "npc:11555" }, ends = { "npc:11555" } },
+    [86814] = { name = "Blackmaw Counter-Offensive", level = 55, minLevel = 47, faction = "Both", chain = { 86746, 86752, 86791, 86777, 86792, 86796, 86797, 86798, 87346, 86814, 92065 }, provided = { 235518 }, xp = 7050, starts = { "npc:11555" }, ends = { "npc:236573" } },
     -- Antes de Horrors in the Highland (FDJ 2.0.5): la cadena de Rethiel. The Greenwarden (463) es solo de paso.
     [276] = { name = "Tramping Paws", level = 21, minLevel = 20, faction = "Alliance", chain = { 276, 277, 275, 95646 }, starts = { "npc:1244" }, ends = { "npc:1244" } },
     [277] = { name = "Fire Taboo", level = 23, minLevel = 20, faction = "Alliance", chain = { 276, 277, 275, 95646 }, starts = { "npc:1244" }, ends = { "npc:1244" } },
