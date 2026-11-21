@@ -174,10 +174,17 @@ function ns.ExpireBossKills()
 end
 
 -- Un jefe de la mazmorra actual ha muerto: por npcID, por el ID del encuentro
--- (ENCOUNTER_END, el mismo que da el Diario) o por nombre (el del cliente, el
+-- (ENCOUNTER_END: el del Diario o ns.BossEncounters de Data/Bosses.lua) o por nombre (el del cliente, el
 -- ingles o el del encuentro del Diario; sin distinguir mayusculas)
 local function Same(a, b)
     return type(a) == "string" and type(b) == "string" and a:lower() == b:lower()
+end
+
+-- El encuentro es de este jefe (ns.BossEncounters: un nombre o la lista del encuentro de varios)
+local function InEncounter(encounterID, boss)
+    local e = ns.BossEncounters and ns.BossEncounters[encounterID]
+    if type(e) == "table" then return tContains(e, boss.name) end
+    return e == boss.name
 end
 
 function ns.MarkBossKilled(npcID, name, encounterID, source)
@@ -199,7 +206,8 @@ function ns.MarkBossKilled(npcID, name, encounterID, source)
             local all = boss.members ~= nil
             for _, m in ipairs(boss.members or {}) do all = all and ns.IsMemberKilled(d, boss, m) end
             local match = (npcID and boss.npcID == npcID) or (member and all)
-                or (encounterID and journal and journal.encounterID == encounterID)
+                or (encounterID and ((journal and journal.encounterID == encounterID)
+                    or InEncounter(encounterID, boss)))
                 or (name and (Same(name, boss.name) or Same(name, ns.BossName(boss, d))
                     or (journal and (Same(name, journal.name) or Same(name, journal.encounter)))))
             if match and boss.kind ~= "trash" and not ns.IsBossKilled(d, boss) then
