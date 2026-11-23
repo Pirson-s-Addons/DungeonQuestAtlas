@@ -202,32 +202,29 @@ local function CreateQuestList(parent, onSelect)
 
     -- La mision desplegada: la elegida o, si se eligio uno de sus pasos, la de antes
     local expanded
-    local function PriorSteps(id)
+    -- Todos los pasos de la cadena de esa mision, en orden (vacio si no es de una cadena)
+    local function ChainOf(id)
         local q = ns.Quests[id] or {}
-        local step = ChainStep(q, id)
-        if not step or step < 2 then return {} end
-        local out = {}
-        for i = 1, step - 1 do out[i] = q.chain[i] end
-        return out
+        return type(q.chain) == "table" and #q.chain > 1 and q.chain or {}
     end
 
     local list = ns.CreateScrollList(parent, ROW_H, Setup, Update)
     return {
-        -- El ScrollBox guarda tablas, no numeros sueltos. Bajo la mision elegida, los
-        -- pasos anteriores de su cadena (idea de otro addon, sin su codigo):
-        -- numerados, con su estado; clic, su hoja, y la lista sigue desplegada
+        -- El ScrollBox guarda tablas, no numeros sueltos. Bajo cualquier mision de cadena
+        -- elegida, su cadena entera numerada, con su estado; clic en un paso, su hoja y la
+        -- lista sigue desplegada
         Refresh = function(_, ids, questID)
             selected = questID
-            if tContains(ids, questID) then
+            if tContains(ids, questID) and #ChainOf(questID) > 0 then
                 expanded = questID
-            elseif not (expanded and tContains(PriorSteps(expanded), questID)) then
+            elseif not (expanded and tContains(ChainOf(expanded), questID)) then
                 expanded = nil
             end
             local items = {}
             for _, id in ipairs(ids) do
                 items[#items + 1] = { id = id }
                 if id == expanded then
-                    for n, stepID in ipairs(PriorSteps(id)) do
+                    for n, stepID in ipairs(ChainOf(id)) do
                         items[#items + 1] = { id = stepID, step = n, height = STEP_H }
                     end
                 end

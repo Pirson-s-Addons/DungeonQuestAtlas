@@ -48,6 +48,10 @@ local DIRS = { UP = { 0, 1 }, DOWN = { 0, -1 }, LEFT = { -1, 0 }, RIGHT = { 1, 0
 local windows = {}   -- ventanas de DQA abiertas, la ultima arriba
 local current        -- elemento elegido
 local bound = false
+-- Mando en uso (el jugador lo ultimo que pulso): solo entonces hay atajos y barra. Lo avisa
+-- GAME_PAD_ACTIVE_CHANGED; sin mando, la ventana se usa como cualquier otra.
+local active = false
+ns.GamepadActive = function() return active end
 
 local owner = CreateFrame("Frame")
 local nav = CreateFrame("Button", (ADDON_NAME:gsub("%W", "")) .. "PadNav", UIParent)
@@ -442,7 +446,7 @@ stickFrame:SetScript("OnUpdate", function(_, elapsed)
 end)
 
 local function Bind()
-    if bound or InCombatLockdown() then return end
+    if bound or InCombatLockdown() or not active then return end
     for key, action in pairs(KEYS) do SetOverrideBindingClick(owner, true, key, nav:GetName(), action) end
     bound = true
     BindConfirm(current)
@@ -464,8 +468,12 @@ end
 
 owner:RegisterEvent("PLAYER_REGEN_DISABLED") -- aun se puede: se sueltan antes del bloqueo
 owner:RegisterEvent("PLAYER_REGEN_ENABLED")
-owner:SetScript("OnEvent", function(_, event)
-    if event == "PLAYER_REGEN_DISABLED" then Release()
+owner:RegisterEvent("GAME_PAD_ACTIVE_CHANGED")
+owner:SetScript("OnEvent", function(_, event, isActive)
+    if event == "GAME_PAD_ACTIVE_CHANGED" then
+        active = isActive == true
+        if not active then Release() elseif Window() then Bind() UpdateBar() end
+    elseif event == "PLAYER_REGEN_DISABLED" then Release()
     elseif Window() then Bind() UpdateBar() end
 end)
 
