@@ -1,0 +1,29 @@
+name: Release
+
+# Publishing a GitHub release packages the addon and uploads it to CurseForge and Wago with the
+# release notes as changelog (shared workflow in Pirson-s-Addons/.github). Run it by hand on a tag
+# already released, with "wago", to put that version on Wago only.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag already released (for example v1.05)
+        required: true
+      targets:
+        description: wago = Wago only; all = CurseForge, Wago and the GitHub release
+        type: choice
+        options: [wago, all]
+        default: wago
+
+jobs:
+  package:
+    uses: Pirson-s-Addons/.github/.github/workflows/package.yml@main
+    with:
+      tag: ${{ github.event.release.tag_name || inputs.tag }}
+      targets: ${{ github.event_name == 'release' && 'all' || inputs.targets }}
+      wago-id: mNwwdzNo
+    permissions:
+      contents: write
+    secrets: inherit
