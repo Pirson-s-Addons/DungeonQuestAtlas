@@ -21,8 +21,15 @@ local builtFor        -- mazmorra con las caras puestas
 local dismissed, forced = false, false
 
 local function BossTooltip(self)
+    local boss = self.came or self.boss
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetText(ns.BossName(self.came or self.boss, self.dungeon), 1, 0.82, 0)
+    -- Con npcID, el titulo lo pinta el propio juego en el idioma del cliente (no se lee,
+    -- asi no depende de la cache de nombres, que puede guardar el ingles de los datos)
+    local hyperlinked = boss.npcID and ns.JournalBoss(self.dungeon, boss) == nil
+        and pcall(GameTooltip.SetHyperlink, GameTooltip, ("unit:Creature-0-0-0-0-%d-0000000000"):format(boss.npcID))
+    if not hyperlinked then
+        GameTooltip:SetText(ns.BossName(boss, self.dungeon), 1, 0.82, 0)
+    end
     if self.boss.oneOf and not self.came then GameTooltip:AddLine(L.RING_OF_LAW_ANY, 1, 1, 1, true) end
     -- Grupo (los seis del altar): cuantos van y cuales
     if self.boss.members then
@@ -92,7 +99,8 @@ local function SetMacro(face)
     local name = (boss.npcID and ns.RunSeenName and ns.RunSeenName(boss.npcID)) or ns.BossName(boss, face.dungeon)
     if face.macroName == name then return end
     face.macroName = name
-    local macro = face.boss.kind == "rare" and ("/targetexact %s\n/tm !%d"):format(name, SKULL) or ("/targetexact %s"):format(name)
+    -- Calavera en todos los jefes (la marca no se cambia si ya la tiene otro: "!")
+    local macro = ("/targetexact %s\n/tm !%d"):format(name, SKULL)
     face:SetAttribute("type1", "macro")
     face:SetAttribute("macrotext1", macro)
 end

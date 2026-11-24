@@ -477,6 +477,18 @@ owner:SetScript("OnEvent", function(_, event, isActive)
     elseif Window() then Bind() UpdateBar() end
 end)
 
+-- Con el menu de Esc (o cualquier panel del juego que recorra los atajos de mando) abierto,
+-- nuestros atajos contaminan el destino de interaccion del juego y da ADDON_ACTION_FORBIDDEN
+-- en SetPreferredGamepadInteractTarget. Se sueltan mientras el menu esta abierto y vuelven al cerrarlo.
+if GameMenuFrame and GameMenuFrame.HookScript then
+    GameMenuFrame:HookScript("OnShow", function()
+        if bound and not InCombatLockdown() then Release() end
+    end)
+    GameMenuFrame:HookScript("OnHide", function()
+        if Window() and active and not bound then Bind() UpdateBar() end
+    end)
+end
+
 -- Vigila la ventana con un hijo invisible: recibe OnShow/OnHide con ella y ningun SetScript
 -- posterior de la ventana lo pisa (un HookScript si). Devuelve ese hijo.
 function ns.GamepadNavFor(frame)
