@@ -41,6 +41,13 @@ function ns.BossName(boss, d)
     if boss.kind == "recipes" then return L.RECIPES end
     local journal = d and ns.JournalBoss(d, boss)
     if journal then return journal.name end
+    -- Nombre en el idioma del cliente de Data/BossNames.lua (de Wowhead Forever)
+    local names = boss.npcID and ns.BossNames and ns.BossNames[boss.npcID]
+    if names and names[ns.LOCALE] then return names[ns.LOCALE] end
+    -- Nombre visto dentro de la mazmorra (en el idioma del cliente) antes que el tooltip,
+    -- que a veces aun no tiene al PNJ en cache y devuelve el ingles de los datos
+    local seen = boss.npcID and ns.RunSeenName and ns.RunSeenName(boss.npcID)
+    if seen then return seen end
     return boss.npcID and ns.PlaceName(boss) or boss.name
 end
 

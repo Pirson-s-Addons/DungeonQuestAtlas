@@ -137,6 +137,7 @@ Locales/csCZ.lua
 Data/Dungeons.lua
 Data/Quests.lua
 Data/Bosses.lua
+Data/BossNames.lua
 Data/Places.lua
 Data/QuestText.lua
 Data/Maps.lua
