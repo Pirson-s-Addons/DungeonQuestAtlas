@@ -106,7 +106,7 @@ Dungeon Quest Atlas reúne todas las **misiones de mazmorra** de **WoW Forever**
 | `/dqa config` | Abre las opciones |
 | `/dqa mode` | Elige Atlas completo o Modo aventura |
 | `/dqa runs` | Abre la lista de tus partidas de mazmorra |
-| `/dqa tracker` | Vuelve a mostrar la ventana de la partida si la cerraste |
+| `/dqa tracker` | Vuelve a mostrar la ventana de la partida si la cerraste (o Mayús + clic derecho en el botón del minimapa) |
 | `/dqa rolls` | Abre el historial de tiradas de botín |
 | `/dqa rare` | Enseña un aviso de raro de prueba, para ver cómo queda |
 | `/dqa rfk` | Abre una mazmorra por su atajo (`stocks`, `gnomer`, `dala`...) |

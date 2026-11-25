@@ -11,7 +11,7 @@ local L = ns.L
 
 DungeonQuestAtlas = ns -- objeto global del addon (para otros addons y /dump)
 
-local DB_VERSION = 4
+local DB_VERSION = 5
 local DEFAULTS = {
     minimap = { hide = false },
     scale = 1,
@@ -45,8 +45,8 @@ local DEFAULTS = {
     runHistoryButton = true, -- la cara del personaje (historial) en la portada
     questAlert = true,    -- avisar en el chat de las misiones que faltan (Core/QuestAlert.lua)
     rollAdvisor = true,   -- a quien mejora cada tirada de botin (Core/Upgrades.lua, UI/RollAdvisor.lua)
-    threatPlates = true,  -- tu % de amenaza en cada placa enemiga en mazmorras (UI/Threat.lua)
-    threatList = true,    -- lista de amenaza debajo de la ventana de la partida (UI/Threat.lua)
+    threatPlates = false, -- tu % de amenaza en cada placa enemiga en mazmorras (UI/Threat.lua)
+    threatList = false,   -- lista de amenaza debajo de la ventana de la partida (UI/Threat.lua)
     threatPlateAt = "BOTTOMRIGHT", -- punto de la barra de vida donde va el % (UI/Threat.lua)
     threatListAt = "BOTTOM",        -- punto de la ventana de la partida donde va la lista
     threatListScale = 1,            -- tamano de la lista de amenaza (0.7 a 1.6)
@@ -146,6 +146,8 @@ function ns.MigrateDB(db, defaults)
     db = CopyDefaults(defaults, db)
     -- v3/v4: el marcador de 16 px casi no se veia y el de 26 era grande; 20 por defecto
     if v < 4 and (db.pinSize == 16 or db.pinSize == 26) then db.pinSize = 20 end
+    -- v5: la amenaza pasa a venir apagada (el juego ya la trae); una vez, luego manda la casilla
+    if v < 5 then db.threatPlates, db.threatList = false, false end
     db.dbVersion = DB_VERSION
     return db
 end

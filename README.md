@@ -106,7 +106,7 @@ Dungeon Quest Atlas lists every **dungeon quest** of **WoW Forever** in a window
 | `/dqa config` | Opens the options |
 | `/dqa mode` | Choose Full Atlas or Adventure Mode |
 | `/dqa runs` | Opens the list of your dungeon runs |
-| `/dqa tracker` | Shows the dungeon run window again if you closed it |
+| `/dqa tracker` | Shows the dungeon run window again if you closed it (or Shift + right-click the minimap button) |
 | `/dqa rolls` | Opens the loot roll history |
 | `/dqa rare` | Shows a test rare alert, to see how it looks |
 | `/dqa rfk` | Opens a dungeon by its shortcut (`stocks`, `gnomer`, `dala`...) |

@@ -4,8 +4,8 @@ local L = ns.L
 -- ==========================================
 -- BOTON DEL MINIMAPA (LibDataBroker + LibDBIcon)
 -- ==========================================
--- Clic izquierdo: ventana. Clic derecho: opciones. Si faltan las librerias no
--- hay boton y el addon sigue funcionando con /dqa.
+-- Clic izquierdo: ventana. Clic derecho: opciones. Mayus + clic derecho: seguimiento.
+-- Si faltan las librerias no hay boton y el addon sigue funcionando con /dqa.
 
 -- Imagenes del addon (img/*.tga, 32 bits con alfa, lado potencia de 2)
 ns.IMG = "Interface\\AddOns\\DungeonQuestAtlas\\img\\"
@@ -22,7 +22,8 @@ function ns.CreateMinimapButton()
         type = "launcher",
         icon = ns.LOGO, -- el logo del addon, como en la ventana
         OnClick = function(_, button)
-            if button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
+            if button == "RightButton" and IsShiftKeyDown() then ns.ShowRunTracker()
+            elseif button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
         end,
         OnTooltipShow = function(tooltip)
             tooltip:AddLine("|cffd597ffDungeon Quest Atlas|r |cff00ccffForever|r")
@@ -30,6 +31,7 @@ function ns.CreateMinimapButton()
             tooltip:AddLine(" ")
             tooltip:AddLine(L.MM_LEFT, 0.8, 0.8, 0.8)
             tooltip:AddLine(L.MM_RIGHT, 0.8, 0.8, 0.8)
+            tooltip:AddLine(L.MM_SHIFT_RIGHT, 0.8, 0.8, 0.8)
         end,
     })
     if not icon:IsRegistered(NAME) then icon:Register(NAME, launcher, ns.db.minimap) end
@@ -46,7 +48,8 @@ end
 -- La entrada del addon en el menu de addons del minimapa (registrada abajo):
 -- los mismos clics y el mismo tooltip que el boton.
 function DungeonQuestAtlas_OnAddonCompartmentClick(_, button)
-    if button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
+    if button == "RightButton" and IsShiftKeyDown() then ns.ShowRunTracker()
+    elseif button == "RightButton" then ns.OpenOptions() else ns.ToggleMainFrame() end
 end
 
 function DungeonQuestAtlas_OnAddonCompartmentEnter(_, frame)
@@ -56,6 +59,7 @@ function DungeonQuestAtlas_OnAddonCompartmentEnter(_, frame)
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(L.MM_LEFT, 0.8, 0.8, 0.8)
     GameTooltip:AddLine(L.MM_RIGHT, 0.8, 0.8, 0.8)
+    GameTooltip:AddLine(L.MM_SHIFT_RIGHT, 0.8, 0.8, 0.8)
     GameTooltip:Show()
 end
 
