@@ -19,6 +19,7 @@ local frame
 local faces = {}
 local builtFor        -- mazmorra con las caras puestas
 local dismissed, forced = false, false
+local shownIn        -- instancia en la que ya salio: ahi se queda hasta salir o cerrarla a mano
 
 local function BossTooltip(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -212,7 +213,11 @@ local function ShouldShow()
         if not (UnitIsDeadOrGhost and UnitIsDeadOrGhost("player")) then dismissed, forced = false, false end
         return false
     end
-    if not ns.CurrentDungeon() or dismissed then return false end
+    if dismissed then return false end
+    -- Ya salio en esta copia: no se va a mitad de mazmorra porque alguien deje el grupo
+    -- o el mapa de una planta no sea de la mazmorra (los jugadores lo perdian en cada partida)
+    if shownIn == inside then return true end
+    if not ns.CurrentDungeon() then return false end
     if forced then return true end
     return not ns.db.trackerNever and ((IsInGroup and IsInGroup()) or ns.db.trackerSolo) and true or false
 end
@@ -228,13 +233,17 @@ function ns.RefreshRunTracker()
     if not ns.db then return end
     local combat = InCombatLockdown()
     if not ShouldShow() then
+        if frame and frame:IsShown() then ns.Debug("ventana de la partida oculta (dentro: %s)", tostring(ns.RunInside())) end
         if frame and not combat then frame:Hide() end
+        if not ns.RunInside() then shownIn = nil end
         return
     end
     if not frame then CreateTracker() end
     if combat and not frame:IsShown() then return end -- se abre al acabar el combate
     local run = ns.RunActive()
-    local d = run and ns.DungeonByKey[run.key] or ns.CurrentDungeon()
+    local d = run and ns.DungeonByKey[run.key] or ns.CurrentDungeon() or builtFor
+    if not d then return end
+    shownIn = ns.RunInside()
     BuildFaces(d)
     frame.title:SetText(ns.DungeonName(d))
     ShowStat(frame.time, not ns.db.trackerHideTime, L.RUN_TIME, ns.FormatRunTime(run and ns.RunDuration(run) or 0))
