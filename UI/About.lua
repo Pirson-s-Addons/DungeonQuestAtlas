@@ -73,49 +73,61 @@ function ns.CreateAbout(info)
     local panel = CreateFrame("Frame")
     panel:Hide() -- nace oculto: si no, el Show() al abrir la categoria no dispara OnShow
 
-    local logo = panel:CreateTexture(nil, "ARTWORK")
+    -- La lista de comandos puede pasar del alto del panel: todo va en un marco que se desplaza
+    local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", 0, -4)
+    scroll:SetPoint("BOTTOMRIGHT", -28, 4)
+    local body = CreateFrame("Frame", nil, scroll)
+    body:SetSize(600, 1)
+    scroll:SetScrollChild(body)
+    scroll:SetScript("OnSizeChanged", function(_, width) body:SetWidth(width) end)
+
+    local logo = body:CreateTexture(nil, "ARTWORK")
     logo:SetWidth(128)
     logo:SetHeight(128)
     logo:SetPoint("TOPLEFT", MARGIN_X + 8, -16)
     logo:SetTexture(info.logo)
 
-    local name = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
+    local name = body:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
     name:SetPoint("TOPLEFT", logo, "TOPRIGHT", 20, -18)
     name:SetText(BRAND .. info.name .. "|r")
 
-    local version = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    local version = body:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     version:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -10)
     version:SetText(GOLD .. L.VERSION .. "|r " .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "?"))
 
-    local author = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    local author = body:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     author:SetPoint("TOPLEFT", version, "BOTTOMLEFT", 0, -6)
     author:SetText(GOLD .. L.AUTHOR .. "|r " .. (C_AddOns.GetAddOnMetadata(ADDON_NAME, "Author") or "Pirson"))
 
-    local desc = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    local desc = body:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     desc:SetPoint("TOPLEFT", MARGIN_X, -160)
     desc:SetWidth(560)
     desc:SetJustifyH("LEFT")
     desc:SetText(L.ABOUT_DESC)
 
-    local y = SectionHeader(panel, -200, L.LINKS)
-    y = UrlBox(panel, y, "GitHub", info.github)
-    y = UrlBox(panel, y, "CurseForge", info.curseforge)
-    if info.issues then y = UrlBox(panel, y, L.BUG_REPORT, info.issues) end
-    y = SectionHeader(panel, y - 14, L.COMMANDS)
+    local y = SectionHeader(body, -200, L.LINKS)
+    y = UrlBox(body, y, "GitHub", info.github)
+    y = UrlBox(body, y, "CurseForge", info.curseforge)
+    if info.issues then y = UrlBox(body, y, L.BUG_REPORT, info.issues) end
+    y = SectionHeader(body, y - 14, L.COMMANDS)
 
     for _, entry in ipairs(info.commands) do
-        local cmd = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+        local cmd = body:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
         cmd:SetPoint("TOPLEFT", MARGIN_X + 8, y)
         cmd:SetText(GOLD .. entry[1] .. "|r")
 
-        local text = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        local text = body:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
         text:SetPoint("TOPLEFT", MARGIN_X + 160, y)
         text:SetWidth(400)
         text:SetJustifyH("LEFT")
         text:SetText(entry[2])
 
-        y = y - 20
+        -- Una descripcion de dos lineas no pisa la fila de abajo
+        y = y - math.max(20, (text:GetStringHeight() or 0) + 6)
     end
+
+    body:SetHeight(-y + 16)
 
     -- Logo y morado del addon en la lista de Opciones
     local category = Settings.RegisterCanvasLayoutCategory(panel,
