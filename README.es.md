@@ -196,6 +196,8 @@ if api and api.version == 1 then
     api.GetItemSources(itemID)        -- { { who, where, chance } | { quest, where }, ... } quién lo suelta
     api.GetQuestPlaces(questID, "starts") -- { { name, mapID, x, y }, ... } quién da la misión ("ends": dónde se entrega)
     api.GetRuns()                     -- { { key, name, started, duration, finished, deaths, bosses, loot, needs, party }, ... } tus partidas, la más reciente primero
+    api.EvaluateItem(link)            -- { pct, gain, empty, upgrade, blocked, lowerArmor, against } si el objeto te mejora (Loot Advisor)
+    api.GetUpgradeAdvice(link)        -- { me, members = { { name, class, result } }, unknown } a quién del grupo mejora más
 end
 ```
 

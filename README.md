@@ -196,6 +196,8 @@ if api and api.version == 1 then
     api.GetItemSources(itemID)        -- { { who, where, chance } | { quest, where }, ... } who drops it
     api.GetQuestPlaces(questID, "starts") -- { { name, mapID, x, y }, ... } quest giver ("ends": turn-in)
     api.GetRuns()                     -- { { key, name, started, duration, finished, deaths, bosses, loot, needs, party }, ... } your runs, newest first
+    api.EvaluateItem(link)            -- { pct, gain, empty, upgrade, blocked, lowerArmor, against } does the item upgrade you (Loot Advisor)
+    api.GetUpgradeAdvice(link)        -- { me, members = { { name, class, result } }, unknown } who in your group it upgrades most
 end
 ```
 

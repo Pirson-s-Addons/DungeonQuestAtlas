@@ -38,6 +38,16 @@ local function QuestLine(id)
     return { questID = id, title = ns.QuestTitle(id), status = status, reason = reason }
 end
 
+-- Lo que da ns.EvaluateItem, copiado: { pct, gain, empty, lowerArmor, blocked, against = { enlace, ... } }
+-- blocked: "class" o el nivel que pide; nil si no se sabe o no se equipa (bolsas, camisas...)
+local function Evaluation(r)
+    if not r then return nil end
+    local against = {}
+    for i, link in ipairs(r.against or {}) do against[i] = link end
+    return { pct = r.pct, gain = r.gain, empty = r.empty or false, lowerArmor = r.lowerArmor or false,
+        blocked = r.blocked, upgrade = ns.IsUpgrade(r), against = against }
+end
+
 local function RaidByKey(key)
     for _, raid in ipairs(ns.Raids or {}) do
         if raid.key == key then return raid end
@@ -200,6 +210,29 @@ DungeonQuestAtlasAPI = {
     --     needs = { { itemID, link, won } } (lo que tiraste a Necesidad),
     --     party = { { name, class } } }, ... }
     -- started y los tiempos en segundos de GetServerTime(); finished: mato a todos los jefes.
+    -- Si un objeto te mejora (el Loot Advisor, con tus pesos de stats): Evaluation de arriba
+    -- mas upgrade (true si llega al minimo que usa el addon). nil si no se sabe.
+    EvaluateItem = function(link)
+        if type(link) ~= "string" then return nil end
+        local ok, r = pcall(ns.EvaluateItem, link, ns.MyUpgradeInfo())
+        return ok and Evaluation(r) or nil
+    end,
+
+    -- A quien del grupo mejora un objeto, el que mas primero:
+    -- { me = Evaluation, members = { { name, class, result = Evaluation } }, unknown = { { name, class } } }
+    -- unknown: los del grupo de los que aun no se sabe el equipo.
+    GetUpgradeAdvice = function(link)
+        if type(link) ~= "string" then return nil end
+        local ok, a = pcall(ns.UpgradeAdvice, link)
+        if not (ok and a) then return nil end
+        local out = { me = Evaluation(a.me), members = {}, unknown = {} }
+        for i, m in ipairs(a.members) do
+            out.members[i] = { name = m.name, class = m.class, result = Evaluation(m.result) }
+        end
+        for i, u in ipairs(a.unknown) do out.unknown[i] = { name = u.name, class = u.class } end
+        return out
+    end,
+
     GetRuns = function()
         local out = {}
         for _, run in ipairs(ns.char and ns.char.runLog or {}) do
