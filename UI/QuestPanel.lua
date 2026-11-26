@@ -223,7 +223,14 @@ local function CreateQuestList(parent, onSelect)
             local items = {}
             for _, id in ipairs(ids) do
                 items[#items + 1] = { id = id }
+                -- Si la lista ya trae todos los pasos, no se despliega (seria repetirlos)
+                local missing = false
                 if id == expanded then
+                    for _, stepID in ipairs(ChainOf(id)) do
+                        if not tContains(ids, stepID) then missing = true break end
+                    end
+                end
+                if missing then
                     for n, stepID in ipairs(ChainOf(id)) do
                         items[#items + 1] = { id = stepID, step = n, height = STEP_H }
                     end

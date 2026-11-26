@@ -62,6 +62,7 @@ for _, key in ipairs({ "THANES", "LORDAERON", "EXCAVATION", "DALARAN", "DROWNED"
     ns.ART_FILES["card_" .. key] = true
     ns.ART_FILES["lore_" .. key] = true
 end
+ns.ART_FILES.card_BEDROLL = true -- Saco de dormir acogedor (Registro de viajero)
 
 -- Pone en la textura la pieza "name": la de Art/UI si la hay; si no, la del juego
 function ns.SetSkin(texture, name)

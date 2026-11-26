@@ -138,9 +138,11 @@ ns.Maps = {
     -- "Atlas de Azeroth: Forever" (Santiago Reyes) con el marco del addon, sin aclarar su permiso
     -- (_project/docs/DungeonQuestAtlas/logs.md, 14-11). Chinchetas solo donde el dibujo lo dice: en la I, Bonesnout
     -- (su original rotula "Bonesnout's Thicket") e Impaan (la otra cabeza, junto a la entrada); en la VI, Varrox en el altar final.
+    -- Jefes y pasos de FDJ 2.1.7 (marcados por un jugador), pasados a nuestro plano: los de 4:3
+    -- llevan relleno a los lados (x * 0.893 + 0.054). Orden real: I, II, vuelta a I, III, IV, V, VI.
     BLACKMAW = {
-        { id = "BLACKMAW1", pins = { { 1, 0.180, 0.665 }, { 2, 0.781, 0.494 } } }, { id = "BLACKMAW2", pins = {} }, { id = "BLACKMAW3", pins = {} },
-        { id = "BLACKMAW4", pins = {} }, { id = "BLACKMAW5", pins = {} }, { id = "BLACKMAW6", pins = { { 10, 0.718, 0.690 } } },
+        { id = "BLACKMAW1", pins = { { 1, 0.432, 0.700 }, { 3, 0.580, 0.842 }, { 2, 0.688, 0.773 } } }, { id = "BLACKMAW2", pins = { { 6, 0.692, 0.269 } } }, { id = "BLACKMAW3", pins = { { 9, 0.585, 0.350 } } },
+        { id = "BLACKMAW4", pins = { { 7, 0.453, 0.363 } } }, { id = "BLACKMAW5", pins = { { 8, 0.552, 0.347 } } }, { id = "BLACKMAW6", pins = { { 10, 0.638, 0.586 } } },
     },
     EXCAVATION = { { id = "EXCAVATION", pins = { { 1, 0.550, 0.361 }, { 2, 0.305, 0.484 }, { 3, 0.324, 0.687 } } } },
     LORDAERON = { { id = "LORDAERON", pins = { { 1, 0.588, 0.700 }, { 2, 0.688, 0.458 }, { 3, 0.401, 0.504 }, { 4, 0.416, 0.278 }, { 5, 0.451, 0.592 }, { 6, 0.369, 0.614 }, { 7, 0.342, 0.377 } } } },

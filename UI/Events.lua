@@ -153,6 +153,13 @@ function ns.EventQuests(key, myLevel, search)
     table.sort(list, function(a, b)
         local qa, qb = ns.Quests[a] or {}, ns.Quests[b] or {}
         if (qa.minLevel or 0) ~= (qb.minLevel or 0) then return (qa.minLevel or 0) < (qb.minLevel or 0) end
+        -- Mismo nivel: en el orden de su cadena (1/5, 2/5...); las sueltas, delante
+        local function Step(q, id)
+            for i, c in ipairs(q.chain or {}) do if c == id then return i end end
+            return 0
+        end
+        local sa, sb = Step(qa, a), Step(qb, b)
+        if sa ~= sb then return sa < sb end
         return a < b
     end)
     return list
@@ -183,7 +190,27 @@ local ART_SIZE = 0.7109375
 -- Recorte de la tarjeta (174x96): franja del centro del dibujo
 local CARD_CROP = { 0, ART_SIZE, 0.16, 0.16 + ART_SIZE * 96 / 174 }
 
+-- Cadenas sin fechas (ev.item, el Saco de dormir): su arte propio (Art/UI/card_<CLAVE>) si lo hay;
+-- si no, un fondo oscuro y el icono del objeto encima (texture.itemIcon, la de la tarjeta)
+local function ItemIcon(ev)
+    return ev.item and C_Item and C_Item.GetItemIconByID and C_Item.GetItemIconByID(ev.item)
+end
+
 local function SetEventArt(texture, ev, crop)
+    local big = rawget(texture, "itemIcon")
+    if big then big:Hide() end
+    if ev.item then
+        if ns.ART_FILES["card_" .. ev.key] then
+            texture:SetTexture(ns.ART .. "card_" .. ev.key)
+            texture:SetTexCoord(0, 1, 0, 1)
+            return
+        end
+        texture:SetTexture(FALLBACK)
+        texture:SetTexCoord(0, 0.77, 0.1, 0.6)
+        local tex = ItemIcon(ev)
+        if big and tex then big:SetTexture(tex); big:Show() end
+        return
+    end
     local path = ART[ev.key] and HOLIDAY .. ART[ev.key]
     local exists = path and not (GetFileIDFromPath and not GetFileIDFromPath(path))
     if exists and texture:SetTexture(path) ~= false then
@@ -226,6 +253,10 @@ local function CreateCard(row, onSelect)
     card.art = card:CreateTexture(nil, "BORDER")
     card.art:SetPoint("TOPLEFT", 6, -6)
     card.art:SetPoint("BOTTOMRIGHT", -6, 6)
+    card.art.itemIcon = card:CreateTexture(nil, "BORDER", nil, 2)
+    card.art.itemIcon:SetSize(56, 56)
+    card.art.itemIcon:SetPoint("CENTER", card.art, "CENTER", 0, -6)
+    card.art.itemIcon:Hide()
     local shade = card:CreateTexture(nil, "ARTWORK")
     shade:SetAllPoints(card.art)
     if CreateColor and shade.SetGradient then
@@ -358,7 +389,17 @@ function ns.CreateEventsSection(parent)
             card:SetPoint("TOPLEFT", OFFSET_X + (i - 1) * (CARD_W + GAP_X), 0)
             row.cards[i] = card
         end
+        row.header = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        row.header:SetPoint("BOTTOMLEFT", OFFSET_X + 2, 8)
+        row.headerLine = row:CreateTexture(nil, "ARTWORK")
+        row.headerLine:SetColorTexture(1, 0.82, 0, 0.35)
+        row.headerLine:SetHeight(1)
+        row.headerLine:SetPoint("BOTTOMLEFT", OFFSET_X, 4)
+        row.headerLine:SetPoint("RIGHT", row, "LEFT", OFFSET_X + COLS * CARD_W + (COLS - 1) * GAP_X, 0)
     end, function(row, item)
+        row.header:SetText(item.header or "")
+        row.header:SetShown(item.header ~= nil)
+        row.headerLine:SetShown(item.header ~= nil)
         for i, card in ipairs(row.cards) do
             card:SetShown(item[i] ~= nil)
             if item[i] then UpdateCard(card, item[i], item.now) end
@@ -482,12 +523,19 @@ function ns.CreateEventsSection(parent)
             if (a.active or false) ~= (b.active or false) then return a.active or false end
             return a.t < b.t
         end)
-        local rows = {}
-        for i, o in ipairs(order) do
-            local r = math.floor((i - 1) / COLS) + 1
-            rows[r] = rows[r] or { now = now }
-            rows[r][#rows[r] + 1] = o.ev
+        -- Festividades arriba; las cadenas sin fechas (Saco de dormir), en su propia seccion
+        local rows, holidays, chains = {}, {}, {}
+        for _, o in ipairs(order) do table.insert(o.ev.item and chains or holidays, o.ev) end
+        local function Add(list)
+            for i, e in ipairs(list) do
+                if (i - 1) % COLS == 0 then rows[#rows + 1] = { now = now } end
+                local r = rows[#rows]
+                r[#r + 1] = e
+            end
         end
+        Add(holidays)
+        if #chains > 0 then rows[#rows + 1] = { header = L.EV_CHAINS, height = 34 } end
+        Add(chains)
         grid:SetItems(rows)
         empty:SetShown(#order == 0)
         section.cards = order
@@ -495,6 +543,10 @@ function ns.CreateEventsSection(parent)
 
     local function RefreshBook(ev, now)
         SetEventArt(icon, ev, { 0, ART_SIZE, 0, ART_SIZE })
+        if ev.item and ItemIcon(ev) then
+            icon:SetTexture(ItemIcon(ev))
+            icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        end
         bookTitle:SetText(ns.EventName(ev))
         bookFaction:Sync()
         local done, total = ns.EventProgress(ev.key)

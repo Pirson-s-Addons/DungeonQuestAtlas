@@ -21,6 +21,11 @@ ns.MapQuests = {
             { 0.501, 0.331, "The Discs of Norgannon", { 2278, "start", "end" }, { 2279, "start" }, { 2280, "start" } },
         },
     },
+    -- Totems de The Twin Bears (FDJ 2.1.7, marcados por un jugador).
+    BLACKMAW = {
+        [4] = { { 0.438, 0.445, "Totem of Ursol", { 92066, "loot", item = 249693 } } },
+        [5] = { { 0.477, 0.513, "Totem of Ursoc", { 92066, "loot", item = 249694 } } },
+    },
     DM_N = {
         [1] = {
             { 0.217, 0.526, "Ogre Tannin Basket", { 5518, "loot", item = 18240 } },

@@ -92,7 +92,14 @@ ns.MapMarks = {
         { { "entrance", 0.845, 0.522 }, { "down", 0.575, 0.599, 2 }, { "down", 0.590, 0.837, 2 } },
         { { "up", 0.679, 0.111, 1 }, { "up", 0.262, 0.792, 1 } },
     },
-    BLACKMAW = { { { "entrance", 0.218, 0.723 } } }, -- el remolino de la planta I
+    -- Pasos de FDJ 2.1.7 en nuestro plano. De la II se vuelve a la I por otra cueva.
+    BLACKMAW = {
+        { { "entrance", 0.218, 0.723 }, { "down", 0.687, 0.328, 2 }, { "down", 0.756, 0.512, 3 } },
+        { { "up", 0.570, 0.791, 1 } },
+        { { "up", 0.320, 0.906, 1 }, { "down", 0.313, 0.298, 4 } },
+        { { "up", 0.812, 0.301, 3 }, { "down", 0.638, 0.675, 5 } },
+        { { "up", 0.378, 0.765, 4 }, { "down", 0.635, 0.329, 6 } },
+    },
     KROLDOK = { { { "entrance", 0.205, 0.806 } } },
     SHAPERS = { { { "entrance", 0.280, 0.678 } } },
     DALARAN = {

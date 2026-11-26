@@ -51,6 +51,7 @@ ns.Bosses = {
         { name = "Trash mobs", kind = "trash", loot = { { 287036, mobs = "Legashi Ritualist" }, { 287032 }, { 287034 }, { 287028 }, { 251453, mobs = "Legashi Summoner" }, { 287029, mobs = "Blackmaw Berserker / Blackmaw Thrall" }, { 287030, mobs = "Legashi Subjugator" }, { 287033, mobs = "Blackmaw Devotee / Blackmaw Berserker / Legashi Slayer" }, { 252893 }, { 287031 }, { 287035 } } },
         -- Raro de Forever en la entrada de la cueva, dentro de la mazmorra.
         { name = "Sabella No-Eyes", npcID = 269151, kind = "rare", loot = { { 280083 }, { 280084 } } },
+        { name = "Mopes", npcID = 247412, display = 130499, kind = "rare", loot = { { 280082 }, { 280081 } } }, -- FDJ 2.1.6 (Wowhead Forever)
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 252893, from = { 11 } }, { 251453, from = { 11 } } } },
     },
     -- Lo visto caer hasta ahora (07-11-2026). probable = true: objetos de la misma tanda del
@@ -91,6 +92,7 @@ ns.Bosses = {
         { name = "Vitrix", npcID = 272561, display = 147098, level = 62, loot = { { 280031 }, { 280027 }, { 280028 }, { 280026 }, { 280029 } } }, -- FDJ 2.1.0: lista entera de Wowhead
         { name = "Izha'Rel and Tor'Rel", npcID = 253218, display = 143040, level = 61, loot = { { 280014 }, { 280013 }, { 280012 } } },
         { name = "Nanaya", npcID = 261809, display = 143832, level = 62, loot = { { 280023 }, { 280025 }, { 280024 }, { 273128 }, { 273116, 3.3 } } },
+        { name = "King Op", npcID = 261993, display = 143129, kind = "rare", loot = { { 280027 }, { 280026 } } }, -- FDJ 2.1.6 (Wowhead Forever)
         { name = "Trash mobs", kind = "trash", loot = { { 287037 }, { 287044, mobs = "Stegodon Young" }, { 287045, mobs = "Ravasaur Juvenile" }, { 287038 }, { 287039 }, { 287040 }, { 287041 }, { 287042 }, { 287043 }, { 287046 }, { 252938, mobs = "Azurepetal Trapper / Emerald Flayer" } } },
         { name = "Recipes & Patterns", kind = "recipes", loot = { { 273116, 3.3, from = { 10 } }, { 273128, from = { 10 } } } },
     },
@@ -401,7 +403,7 @@ ns.Bosses = {
         { name = "Balcony Minibosses", display = 6701, level = 52, members = { { name = "Gasher", npcID = 5713, level = 51 }, { name = "Hukku", npcID = 5715, level = 52 }, { name = "Loro", npcID = 5714, level = 51 }, { name = "Mijan", npcID = 5717, level = 52 }, { name = "Zolo", npcID = 5712, level = 51 }, { name = "Zul'Lor", npcID = 5716, level = 52 } }, loot = { { 10783, 5 }, { 10784, 2.6 }, { 10787, 7 }, { 10788, 10.1 }, { 10785, 5.7 }, { 10786, 8.3 }, { 20606, 20 }, { 20607, 23.9 }, { 20608, 22.4 } } },
         { name = "Atal'alarion", npcID = 8580, display = 7873, level = 50, loot = { { 10800, 38.1 }, { 10798, 36.6 }, { 10799, 18.3 } } },
         { name = "Spawn of Hakkar", npcID = 5708, display = 4065, level = 51, loot = { { 10801, 46.7 }, { 10802, 23.7 } } },
-        { name = "Avatar of Hakkar", npcID = 8443, display = 8053, level = { 49, 50 }, loot = { { 12462, 0.1 }, { 10843, 28.5 }, { 10845, 26.5 }, { 10842, 30.3 }, { 10846, 30.2 }, { 10838, 14.3 }, { 10844, 14.1 }, { 10663, quest = true } } },
+        { name = "Avatar of Hakkar", npcID = 8443, display = 8053, level = { 49, 50 }, loot = { { 12462, 0.1 }, { 10843, 28.5 }, { 10845, 26.5 }, { 10842, 30.3 }, { 10846, 30.2 }, { 10838, 14.3 }, { 10844, 14.1 }, { 252871 }, { 10663, quest = true } } },
         { name = "Jammal'an the Prophet", npcID = 5710, display = 6708, level = 54, loot = { { 10806, 27 }, { 10808, 29.6 }, { 10807, 27.2 }, { 254102 }, { 252919 }, { 252918 }, { 252869 }, { 251405 }, { 273119 } } },
         { name = "Ogom the Wretched", npcID = 5711, display = 6709, level = 53, loot = { { 10805, 29.9 }, { 10803, 30.4 }, { 10804, 30.8 } } },
         { name = "Dreamscythe", npcID = 5721, display = 7553, level = 53, loot = { { 12465, 9.5 }, { 12466, 9.7 }, { 12464, 8.5 }, { 10797, 10.2 }, { 12463, 8.1 }, { 12243, 8.6 }, { 10795, 9.4 }, { 10796, 9.2 } } },
@@ -410,7 +412,7 @@ ns.Bosses = {
         { name = "Morphaz", npcID = 5719, display = 7975, level = 52, loot = { { 12465, 7.9 }, { 12466, 8.2 }, { 12464, 6.9 }, { 10797, 7.3 }, { 12463, 8.2 }, { 12243, 7.7 }, { 10795, 7.3 }, { 10796, 8.3 }, { 20019, quest = true }, { 20022, quest = true }, { 20025, quest = true }, { 20085, quest = true } } },
         { name = "Shade of Eranikus", npcID = 5709, display = 7806, level = 55, loot = { { 10847, 0.2 }, { 10833, 30.9 }, { 10829, 31.8 }, { 10836, 26.3 }, { 10835, 28.9 }, { 10837, 14.2 }, { 10828, 16.4 }, { 10454, 63.7 }, { 254106 }, { 252919 }, { 251403 } } },
         { name = "Trash mobs", kind = "trash", loot = { { 10630, 0.1, all = true }, { 10632, all = true }, { 10631, all = true }, { 10633, 0.1, all = true }, { 10629, all = true }, { 10634, all = true }, { 10624, all = true }, { 10623, all = true }, { 10625, all = true }, { 10626, 0.1, all = true }, { 10628, all = true }, { 10627, all = true }, { 10782 }, { 10781 }, { 10780 }, { 16216, mobs = "Atal'ai Witch Doctor" }, { 15733, mobs = "Murk Worm" }, { 10783, 4.2 }, { 10784, 2.8 }, { 10785, 5.6 }, { 10786, 8.3 }, { 10787, 7 }, { 10788, 9.7 }, { 10795, 8.9 }, { 10796, 8.8 }, { 10797, 8.9 }, { 10838, 16.5 }, { 10842, 32.8 }, { 10843, 31.9 }, { 10844, 15.9 }, { 10845, 30.8 }, { 10846, 33.2 }, { 12243, 8.6 }, { 12463, 8.9 }, { 12464, 7.9 }, { 12465, 8.7 }, { 12466, 8.8 } } },
-        { name = "Recipes & Patterns", kind = "recipes", loot = { { 254106, from = { 11 } }, { 252919, from = { 11, 5 } }, { 251403, from = { 11 } }, { 254102, from = { 5 } }, { 252918, from = { 5 } }, { 252869, from = { 5 } }, { 251405, from = { 5 } }, { 15733, from = { 12 } }, { 16216, from = { 12 } } } },
+        { name = "Recipes & Patterns", kind = "recipes", loot = { { 254106, from = { 11 } }, { 252919, from = { 11, 5 } }, { 251403, from = { 11 } }, { 254102, from = { 5 } }, { 252918, from = { 5 } }, { 252869, from = { 5 } }, { 251405, from = { 5 } }, { 15733, from = { 12 } }, { 16216, from = { 12 } }, { 252871, from = { 4 } } } },
     },
     DM = {
         { name = "Rhahk'Zor", npcID = 644, display = 14403, level = 19, loot = { { 872, 3.9 }, { 5187, 72.9 }, { 273289 }, { 251362, 0.02 }, { 251363, 0.02 }, { 251364, 0.03 }, { 252779, 0.01 }, { 252781, 0.02 }, { 252782, 0.01 }, { 253906, 0.03 }, { 253908, 0.01 }, { 253910, 0.01 } } },
@@ -505,7 +507,7 @@ ns.Bosses = {
 -- tambien en las mazmorras nuevas, que no estan en el Diario del juego. Los que el cliente
 -- llama distinto, emparejados a mano (Overseer Mugg, Deathless Guardians, Geilhast...). Una lista:
 -- encuentro de varios jefes, se tachan todos. Sin emparejar: Ring of Law (sale uno de seis: va
--- por npcID), King Op y Mana Wraith (no los tenemos), Hurley, Ribbly, The Vault...
+-- por npcID), Mana Wraith (no los tenemos), Hurley, Ribbly, The Vault...
 ns.BossEncounters = {
     [227] = "High Interrogator Gerstahn", -- BRD
     [228] = "Lord Roccor", -- BRD
@@ -761,6 +763,7 @@ ns.BossEncounters = {
     [3501] = "Venomridge", -- SHAPERS
     [3502] = "Nanaya", -- SHAPERS
     [3503] = "Cinder", -- SHAPERS
+    [3504] = "King Op", -- SHAPERS
     [3505] = "Bolt", -- SHAPERS
     [3507] = "Direhorn Matriarch", -- SHAPERS
     [3511] = "Primeval Elemental", -- DROWNED

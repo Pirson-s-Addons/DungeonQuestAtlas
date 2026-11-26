@@ -81,7 +81,7 @@ ns.Dungeons = {
         quests = { 5723, 5728, 5724, 5761, 5725, 5722 } },
     { key = "RFD", name = "Razorfen Downs", instanceID = 129, minLevel = 37, maxLevel = 46, isForever = false, faction = "Both",
         entrance = { mapID = 1413, x = 50.9, y = 92.9 },
-        quests = { 6626, 6521, 3525, 3523, 3341, 3636, 97196, 96773, 93604 } },
+        quests = { 6626, 6521, 3525, 3523, 3341, 3636, 97196, 96773 } },
     { key = "RFK", name = "Razorfen Kraul", instanceID = 47, minLevel = 29, maxLevel = 38, isForever = false, faction = "Both",
         entrance = { mapID = 1413, x = 42.2, y = 89.8 },
         quests = { 1221, 6522, 1144, 1142, 1102, 1101, 1109, 1701, 1838, 96016, 79442 } },
