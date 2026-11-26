@@ -3,3 +3,9 @@ package-as: DungeonQuestAtlas
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
+
+optional-dependencies:
+  - tomtom
+  - atlasloot-forever
+  - questie
+  - questiedb
